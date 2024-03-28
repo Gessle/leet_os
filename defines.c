@@ -1,0 +1,21 @@
+//#define ASSERT_ON
+//#define NO_HALT
+
+#define KEY_ALTTAB 165
+#define KEY_ALTM 50
+#define KEY_ENTER 13
+#define KEY_ESC 27
+
+#define WM_KBDMOVEWINDOW 1
+#define WM_CLOSEWINDOW 2
+#define WM_KBDRESIZEWINDOW 4
+#define WM_MINIMIZEWINDOW 5
+#define WM_MINIMIZEALL 50
+#define WM_TILE 51
+#define WM_CASCADE 52
+
+#define WM_QUIT 60
+
+#define WM_WINPROGACT 0x8000
+
+#define WM_ICONSELECT 70

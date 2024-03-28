@@ -1,0 +1,46 @@
+Loading lEEt/OS directly as a DOS shell
+
+lEEt/OS can be loaded directly over the DOS kernel without the command
+interpreter in memory. Below are instructions how to do it.
+
+  About STSHELL.COM
+
+STSHELL.COM is the "bootloader" that loads lEEt/OS directly on top of the
+DOS kernel. It does the following:
+
+1. First the command interpreter is called to run AUTOEXEC.BAT.
+
+2. Then a file named ENVS.TXT is searched in the root directory of the system
+partition. If the file is found, the environment variables are read from that 
+file and saved to the memory.
+
+3. Finally the lEEt/OS MAIN.EXE program is started. The STSHELL.COM will be 
+overwritten in the memory.
+
+  Using SHELL.PTH
+
+SHELL.PTH is the configuration file for STSHELL.COM. It must contain three 
+lines. The first line must contain a full path to a command interpreter.
+The second line must contain command line arguments that are passed to the
+command interpreter. The third line must contain path to the directory where
+lEEt/OS is.
+
+  Example of SHELL.PTH:
+
+C:\COMMAND.COM
+/E:1024 /C C:\AUTOEXEC.BAT
+C:\LEETOS\
+
+
+  Using STSHELL.COM
+  
+1. Move STSHELL.COM to the root directory of your system partition.
+
+2. Edit the SHELL variable in your CONFIG.SYS or FDCONFIG.SYS. It must point
+to the STSHELL.COM executable, for example:
+SHELL=C:\STSHELL.COM
+
+3. You may also want to add the line "SET > ENVS.TXT" to the end of your
+AUTOEXEC.BAT file. That ensures that every environment variable is passed to
+lEEt/OS shell.
+

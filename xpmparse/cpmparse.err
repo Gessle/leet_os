@@ -1,0 +1,38 @@
+cpmparse.c(11): Warning! W131: No prototype found for function 'strcmp'
+cpmparse.c(41): Error! E1060: Invalid type
+cpmparse.c(49): Warning! W100: Parameter 1 contains inconsistent levels of indirection
+cpmparse.c(49): Note! I2003: source conversion type is 'char **'
+cpmparse.c(49): Note! I2004: target conversion type is 'char *'
+cpmparse.c(50): Warning! W100: Parameter 1 contains inconsistent levels of indirection
+cpmparse.c(50): Note! I2003: source conversion type is 'char **'
+cpmparse.c(50): Note! I2004: target conversion type is 'char const *'
+cpmparse.c(50): Note! I2002: 'atoi' defined in: C:\WATCOM\H\stdlib.h(181)
+cpmparse.c(51): Warning! W100: Parameter 1 contains inconsistent levels of indirection
+cpmparse.c(51): Note! I2003: source conversion type is 'char **'
+cpmparse.c(51): Note! I2004: target conversion type is 'char *'
+cpmparse.c(52): Warning! W100: Parameter 1 contains inconsistent levels of indirection
+cpmparse.c(52): Note! I2003: source conversion type is 'char **'
+cpmparse.c(52): Note! I2004: target conversion type is 'char const *'
+cpmparse.c(52): Note! I2002: 'atoi' defined in: C:\WATCOM\H\stdlib.h(181)
+cpmparse.c(53): Warning! W100: Parameter 1 contains inconsistent levels of indirection
+cpmparse.c(53): Note! I2003: source conversion type is 'char **'
+cpmparse.c(53): Note! I2004: target conversion type is 'char *'
+cpmparse.c(54): Warning! W100: Parameter 1 contains inconsistent levels of indirection
+cpmparse.c(54): Note! I2003: source conversion type is 'char **'
+cpmparse.c(54): Note! I2004: target conversion type is 'char const *'
+cpmparse.c(54): Note! I2002: 'atoi' defined in: C:\WATCOM\H\stdlib.h(181)
+cpmparse.c(55): Warning! W100: Parameter 1 contains inconsistent levels of indirection
+cpmparse.c(55): Note! I2003: source conversion type is 'char **'
+cpmparse.c(55): Note! I2004: target conversion type is 'char *'
+cpmparse.c(56): Warning! W100: Parameter 1 contains inconsistent levels of indirection
+cpmparse.c(56): Note! I2003: source conversion type is 'char **'
+cpmparse.c(56): Note! I2004: target conversion type is 'char const *'
+cpmparse.c(56): Note! I2002: 'atoi' defined in: C:\WATCOM\H\stdlib.h(181)
+cpmparse.c(57): Warning! W107: Missing return value for function 'get_xpm_initdata'
+cpmparse.c(65): Warning! W101: Non-portable pointer conversion
+cpmparse.c(65): Note! I2003: source conversion type is 'int '
+cpmparse.c(65): Note! I2004: target conversion type is 'int *'
+cpmparse.c(68): Warning! W101: Non-portable pointer conversion
+cpmparse.c(68): Note! I2003: source conversion type is 'int '
+cpmparse.c(68): Note! I2004: target conversion type is 'int *'
+cpmparse.c(71): Warning! W107: Missing return value for function 'load_xpm_bitmap'

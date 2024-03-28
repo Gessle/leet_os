@@ -1,0 +1,8 @@
+FONTEDIT
+
+Usage: $ FONTEDIT [FONT_HEIGHT] FILE.FON
+
+... where the [FONT_HEIGHT] is 8 for CGA fonts and 16 for VGA fonts.
+
+Otherwise the program works the same as the ICONEDIT, but you must use 
++ and - buttons to select the character that you want to edit.

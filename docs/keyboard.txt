@@ -1,0 +1,35 @@
+Keyboard usage
+
+lEEt/OS can be used with or without the mouse. Almost every button on
+every window has an underlined character. The button can be used by pressing
+the letter key of the underlined character.
+
+Other keyboard shortcuts are listed below.
+
+General:
+- ALT+F4: Close window
+- ALT+F3: Minimize window
+- ALT+F2: Minimize all windows (show desktop)
+- ALT+F5: Tile windows
+- ALT+F6: Cascade windows
+- ESC: Quit FreeDOSshell
+- ALT+M: Window menu
+
+Dialog windows:
+- Enter: OK/YES
+- ESC: NO/CANCEL
+- F1: Help
+
+Desktop:
+- Arrow keys: Change icon selection
+- Enter: Use selected icon
+
+File manager:
+- Arrow keys, PGUP, PGDN: Change file selection
+- DEL: Delete file
+- CTRL+C: Copy file
+- CTRL+X: Cut file
+- CTRL+V: Paste file
+- ALT+T: Open command prompt to the current directory
+- F5: Update file list
+

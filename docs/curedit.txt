@@ -1,0 +1,5 @@
+CUREDIT
+
+usage: $ CUREDIT FILE.CUR
+
+CUREDIT.COM is used to edit mouse cursor.

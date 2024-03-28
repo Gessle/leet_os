@@ -1,0 +1,20 @@
+system dos 
+option eliminate 
+option stack=4k 
+file main.obj 
+file vpu_main.obj 
+file serwrite.obj 
+file serrecv.obj
+file drivers.obj 
+file drvinst.obj 
+file vpuhwint.obj 
+file vpudint.obj 
+file xpmparse.obj 
+file strings.obj 
+file timerrtn.obj 
+file 86serpar.obj 
+file ibmpc.obj 
+file int28hdl.obj
+file idlehdl.obj
+option map=main.map
+

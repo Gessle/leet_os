@@ -1,0 +1,16 @@
+str error "Error"
+str works "Conversion works"
+
+mov al -100
+sconvw bx al
+sconvw ah bx
+cmp ah al
+je success
+mov ax $error
+jmp loppu
+
+:success
+mov ax $works
+
+:loppu
+printstr ax

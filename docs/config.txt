@@ -1,0 +1,11 @@
+Readme for configuration
+
+CONFIG.COM is the main configuration program for lEEt/OS. It can be used
+to edit the basic settings such as video mode and desktop colors. The settings
+are stored in the SETUP.INI file.
+
+If the config file SETUP.INI gets corrupted, it can be easily fixed by deleting
+it and then running CONFIG.COM and saving changes after that.
+
+The settings are automatically reloaded, if CONFIG.COM is executed from
+the Control Panel window.

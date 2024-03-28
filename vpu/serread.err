@@ -1,0 +1,3 @@
+serread.c(9): Warning! W131: No prototype found for function 'outp'
+serread.c(20): Warning! W131: No prototype found for function 'inp'
+serread.c(25): Warning! W131: No prototype found for function 'putchar'

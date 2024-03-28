@@ -1,0 +1,9 @@
+  PROCESS PRIVILEGES
+
+0x0001: Filesystem read
+0x0002: Filesystem write
+0x0004: Access to parent directories of initial working directory
+0x0008: Sending signals to other processes
+0x0010: Use kernel modules
+0x0020: Load kernel modules and run DOS programs
+0x0080: Root privileges, modify privileges of processes

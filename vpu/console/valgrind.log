@@ -1,0 +1,76 @@
+==13704== Memcheck, a memory error detector
+==13704== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==13704== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==13704== Command: ./a.out
+==13704== Parent PID: 12290
+==13704== 
+==13704== Syscall param ioctl(generic) points to uninitialised byte(s)
+==13704==    at 0x58D95D7: ioctl (syscall-template.S:78)
+==13704==    by 0xD922727: drmIoctl (in /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0)
+==13704==    by 0xD92549B: drmCommandWriteRead (in /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0)
+==13704==    by 0x14FA3BF8: ??? (in /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0)
+==13704==    by 0x14FA44B2: nouveau_device_new (in /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0)
+==13704==    by 0xF0F2C50: nouveau_drm_screen_create (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE665A5: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEF0B2D0: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE6AC3A: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE67DE0: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xD4B75C4: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==    by 0xD4A7F3B: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==  Address 0xca56bc2 is 2 bytes inside a block of size 72 alloc'd
+==13704==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==13704==    by 0x14FA3B9B: ??? (in /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0)
+==13704==    by 0x14FA44B2: nouveau_device_new (in /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0)
+==13704==    by 0xF0F2C50: nouveau_drm_screen_create (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE665A5: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEF0B2D0: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE6AC3A: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE67DE0: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xD4B75C4: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==    by 0xD4A7F3B: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==    by 0xD4A35D3: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==    by 0xD4A3F94: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704== 
+==13704== Syscall param ioctl(generic) points to uninitialised byte(s)
+==13704==    at 0x58D95D7: ioctl (syscall-template.S:78)
+==13704==    by 0xD922727: drmIoctl (in /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0)
+==13704==    by 0xD92549B: drmCommandWriteRead (in /usr/lib/x86_64-linux-gnu/libdrm.so.2.4.0)
+==13704==    by 0x14FA3DF7: nouveau_object_mthd (in /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0)
+==13704==    by 0x14FA44CD: nouveau_device_new (in /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0)
+==13704==    by 0xF0F2C50: nouveau_drm_screen_create (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE665A5: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEF0B2D0: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE6AC3A: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE67DE0: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xD4B75C4: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==    by 0xD4A7F3B: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==  Address 0xca56c52 is 2 bytes inside a block of size 136 alloc'd
+==13704==    at 0x4C2FB0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==13704==    by 0x14FA3DBF: nouveau_object_mthd (in /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0)
+==13704==    by 0x14FA44CD: nouveau_device_new (in /usr/lib/x86_64-linux-gnu/libdrm_nouveau.so.2.0.0)
+==13704==    by 0xF0F2C50: nouveau_drm_screen_create (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE665A5: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEF0B2D0: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE6AC3A: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xEE67DE0: ??? (in /usr/lib/x86_64-linux-gnu/dri/nouveau_dri.so)
+==13704==    by 0xD4B75C4: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==    by 0xD4A7F3B: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==    by 0xD4A35D3: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704==    by 0xD4A3F94: ??? (in /usr/lib/x86_64-linux-gnu/libGLX_mesa.so.0.0.0)
+==13704== 
+==13704== 
+==13704== HEAP SUMMARY:
+==13704==     in use at exit: 1,604,563 bytes in 4,886 blocks
+==13704==   total heap usage: 23,541 allocs, 18,655 frees, 7,958,694 bytes allocated
+==13704== 
+==13704== LEAK SUMMARY:
+==13704==    definitely lost: 96 bytes in 2 blocks
+==13704==    indirectly lost: 176 bytes in 4 blocks
+==13704==      possibly lost: 26,879 bytes in 437 blocks
+==13704==    still reachable: 1,577,412 bytes in 4,443 blocks
+==13704==         suppressed: 0 bytes in 0 blocks
+==13704== Rerun with --leak-check=full to see details of leaked memory
+==13704== 
+==13704== For counts of detected and suppressed errors, rerun with: -v
+==13704== Use --track-origins=yes to see where uninitialised values come from
+==13704== ERROR SUMMARY: 8 errors from 2 contexts (suppressed: 4 from 1)

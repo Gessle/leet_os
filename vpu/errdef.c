@@ -1,0 +1,8 @@
+#define EWOULDBLOCK 0x100
+#define EACCESS 0x101
+#define ENOTCONN 0x102
+#define ENOBUFS 0x103
+#define EADDRINUSE 0x104
+#define ENOMEM 0x105
+#define EINTR 0x106
+

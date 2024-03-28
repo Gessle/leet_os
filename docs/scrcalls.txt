@@ -1,0 +1,162 @@
+    Window calls
+
+Note: X is the horizontal axis and Y is the vertical axis.
+ 
+Insert SCR instruction after setting the registers to make a window call.
+
+  New window (AX == 0)
+  
+BX = horizontal resolution
+CX = vertical resolution
+DX = pointer to a string containing window title
+EX = keypress interrupt signal
+FX = port to read keypresses
+GX = (optional) signal that is given to the program when the window is clicked
+     using mouse
+HX = (optional) starting port that is used to read mouse position
+
+Creates a new window. Window descriptor is returned in AX.
+If GX is not zero, port in HX contains mouse cursor's X position and port HX+1
+contains Y position.
+
+
+  New fullscreen window (AX == 1)
+  
+BX = Display mode
+DX = pointer to a string containing window title
+EX = keypress interrupt signal
+FX = port to read keypresses
+GX = (optional) signal that is given to the program when the window is clicked
+     using mouse
+
+Creates a fullscreen window. Supported display modes are 0x06, 0x0F, 0x10,
+0x11, 0x12 and 0x13. A double buffer is allocated if enough memory is
+available. Window contents are then drawn into the double buffer and must be
+updated to display memory using the update call (AX == 2).
+
+
+  Draw pixel (AX == 5)
+  
+EX = Window descriptor
+BX = X
+CX = Y
+DX = Pixel color
+
+Draws pixel to position X,Y in window.
+
+
+  Video memset (AX == 6)
+  
+BX = starting point's X
+CX = starting point's Y
+DX = color
+EX = window descriptor
+FX = count
+
+Sets FX pixels in window to color DX. The row is incremented when the right
+border of the window is reached.
+
+
+  Video memcpy (AX == 7)
+  
+BX = starting point's X
+CX = starting point's Y
+DX = pointer to buffer
+EX = window descriptor
+FX = count
+
+Copies FX bytes from buffer in DX to window. One byte in the buffer
+corresponds to one pixel.
+
+
+  Update (AX == 2)
+  
+EX = Window descriptor
+
+Updates window contents.
+
+
+  Clear (AX == 3)
+
+EX = Window descriptor
+  
+Removes any individually drawn pixels from the window.
+
+
+  Text (AX == 4)
+  
+BX = X
+CX = Y
+DX = Pointer to text
+EX = Window descriptor
+FX = text color
+
+Writes text to a window. Returns -1 into AX if error, otherwise the register
+contents are unmodified.
+
+
+  Button (AX == 8)
+  
+BX = X
+CX = Y
+DX = Pointer to text
+EX = Window descriptor
+FX = Text color
+GX = Width
+HX = Height
+
+Inserts a button to a window. Returns the keycode of the button into AX
+register.
+
+
+  Textbox (AX == 9)
+  
+BX = X
+CX = Y
+DX = Pointer to text
+EX = Window descriptor
+FX = Max length of string
+GX = Width in pixels
+
+Inserts a textbox to a window. Returns the keycode of the element into AX and
+element descriptor into BX.
+
+
+  Multi-line list (AX == 10)
+  Multi-line textbox (AX == 16)
+  
+BX = X
+CX = Y
+DX = Pointer to an array of pointers to list entries
+EX = Window descriptor
+FX = Width
+GX = Height
+HX = Count of list entries
+
+Inserts a list or a multi-line textbox to a window. Returns the keycode of the
+element into AX and element descriptor into BX.
+
+
+  Scrollbar (AX == 11)
+  
+BX = X
+CX = Y
+DX = type
+EX = Window descriptor
+FX = length in pixels
+GX = count of possible values
+HX = value to connect
+
+Inserts a scrollbar to a window.
+
+  Text buffer (AX == 29)
+
+BX = X
+CX = Y
+DX = pointer to null-terminated buffer
+EX = window descriptor
+FX = max length of buffer
+GX = width of textbox
+HX = height of textbox
+
+Inserts an user-editable textbox to a window.

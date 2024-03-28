@@ -1,0 +1,7 @@
+OPTVGA.C(494): Warning! W112: Pointer truncated
+OPTVGA.C(494): Note! I2003: source conversion type is 'union REGS __far *'
+OPTVGA.C(494): Note! I2004: target conversion type is 'union REGS *'
+OPTVGA.C(494): Warning! W112: Pointer truncated
+OPTVGA.C(494): Note! I2003: source conversion type is 'union REGS __far *'
+OPTVGA.C(494): Note! I2004: target conversion type is 'union REGS *'
+OPTVGA.C(494): Note! I2002: 'int86' defined in: C:\WATCOM\H\i86.h(239)

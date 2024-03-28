@@ -1,0 +1,6 @@
+ICONEDIT
+
+Usage: $ ICONEDIT FILE.ICO
+
+Use arrow keys to navigate on the bitmap. Toggle individual pixel ON/OFF by
+pressing SPACE. Press S to save or ESC to close the program without saving.

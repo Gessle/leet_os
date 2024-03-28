@@ -1,0 +1,13 @@
+C:\WATCOM\H\dos.h(2): Error! E065: Operator is expected
+C:\WATCOM\H\dos.h(2): Note! N591: included by file int28hdl.c(1)
+C:\WATCOM\H\dos.h(3): Error! E020: Expecting comma
+C:\WATCOM\H\dos.h(3): Note! N591: included by file int28hdl.c(1)
+C:\WATCOM\H\dos.h(13): Error! E094: This instruction is not supported
+C:\WATCOM\H\dos.h(13): Note! N591: included by file int28hdl.c(1)
+C:\WATCOM\H\dos.h(18): Error! E032: Syntax error
+C:\WATCOM\H\dos.h(18): Note! N591: included by file int28hdl.c(1)
+C:\WATCOM\H\dos.h(21): Error! E032: Syntax error
+C:\WATCOM\H\dos.h(21): Note! N591: included by file int28hdl.c(1)
+int28hdl.c(75): Error! E086: Unexpected end of file
+int28hdl.c(75): Error! E601: 2 unclosed conditional directive(s) detected
+int28hdl.c(75): Error! E549: End directive required at end of file

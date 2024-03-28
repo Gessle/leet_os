@@ -1,0 +1,255 @@
+0.9.439: Drawing optimizations. Dithering for XPM images.
+
+0.9.482: Fixed a file descriptor leak.
+
+0.9.481: Rewrote file functions. 
+
+0.9.479: Fixed PC/XT compatibility issues.
+
+0.9.477: Fixed a memory bug in shortcuts and added an option for working directory.
+
+0.9.477: Fixed some memory bugs in dupfiles
+
+0.9.476: - Text drawing optimizations
+         - Bugfix: Text was copied or cut wrongly when a textbox was first scrolled using END or LEFT ARROW key while selecting text.
+         - Replaced "FreeDOSShell" words in documentations with "lEEt/OS"
+
+0.9.475: Optimizations...
+
+0.9.473: Better out of memory handler.
+
+0.9.472: Fixed memory bugs.
+
+0.9.471: Fixed mouse drawing bugs.
+
+0.9.467: Carry flag now works properly in the ADD and SUB instructions.
+
+0.9.465: Optimized text input routines.
+
+0.9.464: Optimized drawing of text in textboxes.
+
+0.9.463: Added MEMCMP instruction. Optimized drawing of text
+         in textboxes.
+
+0.9.461: Arithmetic instructions can now take an immediate value as the
+         second operand. Added TEST instruction. Added MEMCHR instruction.
+         Changed the calling convention of MEMCPY instruction.
+
+0.9.460: Fixed a typo/wrong instruction in dosexec() function.
+
+0.9.459: Fixed a memory bug in close() syscall.
+
+0.9.458: Fixed a memory bug in the driver loading routine.
+
+0.9.457: Virtual terminals.
+
+0.9.455: Non-blocking critical error handler.
+
+0.9.454: Optimized drawing of list elements.
+
+0.9.453: Optimized pipe I/O.
+
+0.9.452: exec() syscall can now trigger the OOM handler.
+         Fixed wrong return values in init_vpu() function.
+
+0.9.451: Changed the calling convention of error number
+        function in driver API. Modules can now be unloaded.
+
+0.9.450: Added powersave() syscall and NOP instruction.
+
+0.9.447: New, optimized driver API.
+
+0.9.446: Optimized disk operations.
+
+Build 445: Backspace now works in the terminal without line
+           buffering.
+
+Build 444: Fixed bugs in the kernel and the TCP/IP stack.
+           The telnet client now works also without line buffering.
+           Started using semantic version numbering.
+
+Build 441: Fixed a large number of small kernel bugs. Implemented
+           getcwd() syscall. Optimizations.
+
+Build 440: Overflowing pid counter does not crash the system anymore.
+           When receiving a file descriptor with SIGFDRECVD, 
+           the new file descriptor is now placed into port 0 instead of
+           AX.
+           Segfaulting programs now only go to the debug console if
+           debug mode is on (command "debug" in VPU console).
+
+Build 439: Cache optimizations
+
+Build 438: Made changes to the emulation to make code generation
+           easier for a compiler. All registers can now be used like
+           "general purpose" registers - for example "dec sp" and
+           "mov ,sp ax" (== move contents of AX to where SP points)
+           are now valid instructions.
+
+Build 437: File manager can now be opened to an empty
+           root directory.
+
+Build 436: Added drive selection menu to the File manager.
+            Shortcuts can now point to directories.
+
+Build 434: Added timestamp to the "File info" window.
+           Size optimizations.
+
+Build 433: Notepad should now work properly after saving.
+           
+
+Build 429: Window elements cannot be drawn outside a
+           window anymore.
+
+Build 426: Fontedit and iconedit can now be compiled again.
+           Changed the behaviour of process blocking,
+           this should save electricity and make the
+           computer more responsive.
+
+Build 425: Text can now be copied, cut and pasted.
+           Caret jumps over words when CTRL is being pressed.
+
+Build 423: Rewrote parts of the windowing API. Removed Text Viewer.
+           Notepad should be used instead. Some old programs may
+           be broken.
+
+Build 421: Optimized text rendering and text editing in multi-line textboxes.
+           Still experimental
+
+Build 420: Fixed a bug that pressing TAB caused the system to freeze.
+           New experimental API for multi-line textboxes.
+
+Build 419: Drawing optimization to dropdown menus and VPU console should now 
+           properly stop running the program when the program exits.
+
+Build 417: Fixed a glitch that caused the file copying window to not close
+           normally.
+
+Build 416: Copying files is now non-blocking. Added system startup time to
+           the kernel parameter list.
+
+Build 415: Fixed drawing bugs and removed a possibility to crash the system
+           with VPU's file pointer structs.
+
+Build 414: BREAK button does not cause crash anymore.
+
+Build 412: New "signal loop" for window manager.
+
+Build 409: New api for menus and textboxes.
+
+Build 403: Kernel mutex optimizations.
+
+Build 402: Security features. New window calls, not documented yet. Terminal optimizations and fixes.
+
+Build 397: Dynamically allocated data should now become copied correctly in the fork syscall. Scheduler optimizations.
+
+Build 396: Fixed a null-pointer bug that resulted in reading the mouse status struct in systems that don't have a mouse.
+
+Build 395: The terminal is now 80x25. CTRL+C, CTRL+D, CTRL+S and CTRL+Q key combinations.
+
+Build 390: More draw optimizations.
+
+Build 389: Optimizations, and visibility check for rectangles.
+
+Build 388: More bug fixes.
+
+Build 382: Bug fixes in mmap and munmap syscalls.
+
+Build 381: ANSI terminal escape sequences.
+
+Build 380: Bugfix: Spawning new VPU process from changed working directory crashed system.
+
+Build 379: Terminal fixes.
+
+Build 378: Killing processes with hidden console should now work correctly.
+
+Build 377½: Bug fix: Command interpreter now actually exits when it reads EOF from stdin.
+
+Build 377: New command interpreter!
+
+Build 376: FSYNC syscall now works with stdout.
+
+Build 375: HLT instruction to save power.
+
+Build 372: Bug fix: Changing video more from settings works again without rebooting.
+
+Build 371: Bug fixes and implementation of error codes.
+
+Build 369: Speed optimizations for putpixel. Handler for ctrl+alt+del, no accidental reboots anymore.
+
+Build 364: Bugfix: Hidden windows sometimes caused inactive windows to capture mouse and            keyboard input. It should be fixed now.
+
+Build 359: Assigning byte registers in threads works now correctly.
+           Programs don't stop anymore when their console windows are minimized.
+           Drivers can now have 0xFFFF devices.
+           Implemented TCP/IP stack. Highly experimental.
+           Fixed bugs in CMDMOD syscall.
+
+Build 354: Implemented icon buttons.
+
+Build 353: Implemented scrollbars.
+
+Build 352: Optimized desktop drawing.
+
+Build 351: Added window that shows progress when copying file.
+           File manager bug fixes.
+
+Build 350: Bug fixes and API to detect mouse clicks
+
+Build 337: Random number generator
+
+Build 332: The driver interface now has a fixed calling convention.
+
+Build 331: Fixed the order of $PATH variables in the install program.
+
+Build 327: Fixed bugs in CHDIR syscall. Improved command interpreter. New version of TEXTEDIT.
+
+Build 326: MAIN.EXE now takes arguments. The first argument is a bytecode program to run, and all following arguments are passed to the bytecode program.           
+
+Build 324: Fixed a bug in XPM2 parsing that caused the intensity bit to be always 0.
+
+Build 323: Optimizations and bug fixes for images.
+
+Build 321: Image element for windows.
+
+Build 319: Desktop wallpaper. It works very slowly with VGA's planar modes. Todo: double buffering video driver...
+
+Build 318: Implemented memcpy and memset screen calls.
+
+Build 317: unsethwint syscall now takes the hardware interrupt as an argument.
+
+Build 316: Mov, push and pop instructions now also work with CS, IP, DS and SP registers.
+
+Build 310: Experimental interrupt redirecting to userspace signals.
+
+Build 286: Experimental kernel-level mutex locks.
+
+Build 285: Scheduler optimizations
+
+Build 284: sendfd syscall and signal SIGFDRECVD.
+
+Build 283: Clones are now killed when doing EXEC syscall.
+
+Build 282: Fixed lots of memory errors.
+
+Build 274: Optimized scheduler.
+
+Build 273: Fixed scheduler bugs.
+
+Build 270: Added a built-in memory leak detector. The program now exits if it detects an erroneous memory allocation operation.
+
+Build 269: Fixed a bug which caused the kernel to write file position info to random memory addresses when a duplicate file descriptor of an actual file was passed to a fork of a process.
+
+Build 267: Scheduler optimizations. Bug fixes.
+
+Build 266: The kernel now sends SIGSEGV signal to a process when the process tries to access an out-of-bounds memory area.
+
+Syscall exit() in the VPU Console window is now handled properly.
+
+Fixed a bug in exec syscall that caused memory errors (freeing other other processes arguments).
+
+Console input/output can now be reopened after closing.
+
+Fixed a bug in dup & dup2 syscalls that allowed the program to make a duplicate from an unassigned file descriptor.
+
+Assembler should now be able to grow data segment bigger than 1024 bytes.

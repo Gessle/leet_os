@@ -1,0 +1,7 @@
+NULL.C(78): Warning! W112: Pointer truncated
+NULL.C(78): Note! I2003: source conversion type is 'union REGS __far *'
+NULL.C(78): Note! I2004: target conversion type is 'union REGS *'
+NULL.C(78): Warning! W112: Pointer truncated
+NULL.C(78): Note! I2003: source conversion type is 'union REGS __far *'
+NULL.C(78): Note! I2004: target conversion type is 'union REGS *'
+NULL.C(78): Note! I2002: 'int86' defined in: C:\WATCOM\H\i86.h(239)

@@ -1,0 +1,5 @@
+Readme for desktop shortcuts
+
+Every time lEEt/OS is started, it searches for files with .LNK extension
+in the DESKTOP\ directory. These files are the desktop shortcuts. They can be
+edited using SCEDITOR.COM executable that comes with lEEt/OS.

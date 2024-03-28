@@ -1,0 +1,280 @@
+Open Watcom Linker Version 1.9
+Portions Copyright (c) 1985-2002 Sybase, Inc. All Rights Reserved.
+Created on:       23/09/25 04:34:18
+Executable Image: dbuffvga.exe
+creating a DOS executable
+
+
+                        +------------+
+                        |   Groups   |
+                        +------------+
+
+Group                           Address              Size
+=====                           =======              ====
+
+DGROUP                          0228:0000            00000c20
+
+
+
+                        +--------------+
+                        |   Segments   |
+                        +--------------+
+
+Segment                Class          Group          Address         Size
+=======                =====          =====          =======         ====
+
+BEGTEXT                CODE           AUTO           0000:0000       00000007
+_TEXT                  CODE           AUTO           0000:0010       00002266
+FAR_DATA               FAR_DATA       AUTO           0227:0006       00000000
+_NULL                  BEGDATA        DGROUP         0228:0000       00000020
+_AFTERNULL             BEGDATA        DGROUP         022a:0000       00000002
+_DATA                  DATA           DGROUP         022a:0002       00000256
+CONST                  DATA           DGROUP         024f:0008       0000006c
+CONST2                 DATA           DGROUP         0256:0004       00000102
+XIB                    DATA           DGROUP         0266:0006       00000000
+XI                     DATA           DGROUP         0266:0006       0000000c
+XIE                    DATA           DGROUP         0267:0002       00000000
+YIB                    DATA           DGROUP         0267:0002       00000000
+YI                     DATA           DGROUP         0267:0002       0000000c
+YIE                    DATA           DGROUP         0267:000e       00000000
+STRINGS                DATA           DGROUP         0267:000e       00000000
+DATA                   DATA           DGROUP         0267:000e       00000000
+_BSS                   BSS            DGROUP         0267:000e       0000001c
+STACK                  STACK          DGROUP         026a:0000       00000800
+
+
+                        +----------------+
+                        |   Memory Map   |
+                        +----------------+
+
+* = unreferenced symbol
++ = symbol only referenced locally
+
+Address        Symbol
+=======        ======
+
+Module: dbuffasm.obj(D:\LEETSRC\483\DRIVERS\dbuffasm.asm)
+0000:0010      set_mode_
+Module: dbuffvga.obj(D:\LEETSRC\483\DRIVERS\dbuffvga.c)
+0000:0019+     _plane
+0000:0029+     _VGA
+0000:002d+     tsr_free_
+0000:003b+     update_screen_
+0000:009c+     put_pixel_
+0000:014b+     get_pixel_
+0000:01e2+     vmemcpy_
+0000:0229+     draw_rectangle_
+0000:0655+     fill_screen_
+0000:06f7      main_
+Module: C:\WATCOM/lib286/dos\clibs.lib(strtol.c)
+0000:0aa6      strtoul_
+0000:0aae*     strtol_
+Module: C:\WATCOM/lib286/dos\clibs.lib(intx086.c)
+0000:0ab4+     int86x_
+0000:0b38      int86_
+Module: C:\WATCOM/lib286/dos\clibs.lib(puts.c)
+0000:0b56      puts_
+Module: C:\WATCOM/lib286/dos\clibs.lib(iob.c)
+0228:00e2      ___iob
+0228:01fa*     __fmode
+0228:03fe      ___OpenStreams
+0228:0400      ___ClosedStreams
+Module: C:\WATCOM/lib286/dos\clibs.lib(fgetc.c)
+0000:0b7c+     __fill_buffer_
+0000:0c31      fgetc_
+Module: C:\WATCOM/lib286/dos\clibs.lib(d_keep.c)
+0000:0cb0      _dos_keep_
+Module: C:\WATCOM/lib286/dos\clibs.lib(cstart)
+0000:0003*     ___begtext
+0228:0000*     __nullarea
+0000:0cb6      _cstart_
+0000:0d8b*     _Not_Enough_Memory_
+0000:0eb6      __exit_
+0000:0ed5      __do_exit_with_msg__
+0000:0f18      __GETDS
+Module: C:\WATCOM/lib286/dos\clibs.lib(cmodel)
+0000:0f22      _small_code_
+0000:0f22*     CodeModelMismatch
+Module: C:\WATCOM/lib286/dos\clibs.lib(argcv.c)
+0228:0402      __argc
+0228:0404      __argv
+0228:0406      ___argc
+0228:0408      ___argv
+Module: C:\WATCOM/lib286/dos\clibs.lib(tolower.c)
+0000:0f22      tolower_
+Module: C:\WATCOM/lib286/dos\clibs.lib(istable.c)
+0228:02e4      __IsTable
+Module: C:\WATCOM/lib286/dos\clibs.lib(seterrno.c)
+0000:0f30      __set_errno_
+0000:0f3e*     __set_EDOM_
+0000:0f4a*     __set_ERANGE_
+0000:0f56*     __set_EINVAL_
+0000:0f65      __set_doserrno_
+Module: C:\WATCOM/lib286/dos\clibs.lib(i4m)
+0000:0f6e*     __I4M
+0000:0f6e      __U4M
+Module: C:\WATCOM/lib286/dos\clibs.lib(intr.c)
+0000:0f86      intr_
+Module: C:\WATCOM/lib286/dos\clibs.lib(segread.c)
+0000:0f98      segread_
+Module: C:\WATCOM/lib286/dos\clibs.lib(fputs.c)
+0000:0fb0      fputs_
+Module: C:\WATCOM/lib286/dos\clibs.lib(fputc.c)
+0000:1027      fputc_
+Module: C:\WATCOM/lib286/dos\clibs.lib(initfile.c)
+0000:10cd      __InitFiles_
+Module: C:\WATCOM/lib286/dos\clibs.lib(ioexit.c)
+0000:118f*     fcloseall_
+0000:1194      __full_io_exit_
+Module: C:\WATCOM/lib286/dos\clibs.lib(flushall.c)
+0000:119c      __flushall_
+0000:11cd*     flushall_
+Module: C:\WATCOM/lib286/dos\clibs.lib(gtche.c)
+0000:11d2      getche_
+Module: C:\WATCOM/lib286/dos\clibs.lib(ioalloc.c)
+0000:11e7      __ioalloc_
+Module: C:\WATCOM/lib286/dos\clibs.lib(qread.c)
+0000:1253      __qread_
+Module: C:\WATCOM/lib286/dos\clibs.lib(xmsg.c)
+0000:1269*     __exit_with_msg_
+0000:126c      __fatal_runtime_error_
+Module: C:\WATCOM/lib286/dos\clibs.lib(cmain086.c)
+0000:1286      __CMain
+Module: C:\WATCOM/lib286/dos\clibs.lib(initrtns.c)
+0000:12d7*     __FInitRtns
+0000:12db      __InitRtns
+0000:1336*     __FFiniRtns
+0000:133a      __FiniRtns
+Module: C:\WATCOM/lib286/dos\clibs.lib(crwdata)
+0228:01fc      __curbrk
+0228:0204      __STACKLOW
+0228:0206      __STACKTOP
+0228:0208      __cbyte
+0228:020a      __child
+0228:020c      __no87
+0228:021a      ___FPE_handler
+0228:01fe      __psp
+0228:020e      __get_ovl_stack
+0228:0212      __restore_ovl_stack
+0228:0216      __close_ovl_file
+0228:021e      __LpCmdLine
+0228:0222      __LpPgmName
+0228:0200      __osmajor
+0228:0201      __osminor
+0228:0202      __osmode
+0228:0203      __HShift
+Module: C:\WATCOM/lib286/dos\clibs.lib(uselfn.c)
+0228:0226      ___uselfn
+Module: C:\WATCOM/lib286/dos\clibs.lib(dosseg)
+0000:139e      __DOSseg__
+Module: C:\WATCOM/lib286/dos\clibs.lib(initargv.c)
+0000:139f      __Init_Argv_
+0000:13d0+     _getargv_
+0000:1535      __Fini_Argv_
+Module: C:\WATCOM/lib286/dos\clibs.lib(errno.c)
+0000:1540      __get_errno_ptr_
+0000:1544      __get_doserrno_ptr_
+0228:040c+     _errno
+0228:040e+     __doserrno
+Module: C:\WATCOM/lib286/dos\clibs.lib(dointr)
+0000:1548      _DoINTR_
+Module: C:\WATCOM/lib286/dos\clibs.lib(flush.c)
+0000:18c1      __flush_
+Module: C:\WATCOM/lib286/dos\clibs.lib(nmalloc.c)
+0000:19aa      _nmalloc_
+0000:19aa      malloc_
+0228:0228      ___nheapbeg
+0228:022a      ___MiniHeapRover
+0228:022c      ___LargestSizeB4MiniHeapRover
+Module: C:\WATCOM/lib286/dos\clibs.lib(fclose.c)
+0000:1a63+     __doclose_
+0000:1ae4      __shutdown_stream_
+0000:1af5*     fclose_
+0228:0410+     ___RmTmpFileFn
+Module: C:\WATCOM/lib286/dos\clibs.lib(freefp.c)
+0000:1b17      __freefp_
+0000:1b44      __purgefp_
+Module: C:\WATCOM/lib286/dos\clibs.lib(chktty.c)
+0000:1b68      __chktty_
+Module: C:\WATCOM/lib286/dos\clibs.lib(dosret.c)
+0000:1b8d*     _dosretax_
+0000:1b92*     _dosret0_
+0000:1b99      __set_errno_dos_
+0000:1be9*     __set_errno_dos_reterr_
+Module: C:\WATCOM/lib286/dos\clibs.lib(enterdb.c)
+0000:1bf3      __EnterWVIDEO_
+0228:0242+     ___WD_Present
+Module: C:\WATCOM/lib286/dos\clibs.lib(___argc.c)
+0228:0412      ____Argc
+0228:0414      ____Argv
+Module: C:\WATCOM/lib286/dos\clibs.lib(amblksiz.c)
+0228:0244      __amblksiz
+Module: C:\WATCOM/lib286/dos\clibs.lib(exit.c)
+0000:1c0f+     __null_int23_exit_
+0000:1c10      exit_
+0000:1c2e*     _exit_
+0228:0246+     ___int23_exit
+0228:0248+     ___FPE_handler_exit
+Module: C:\WATCOM/lib286/dos\clibs.lib(sgdef086)
+0228:03e6      __Start_XI
+0228:03f2      __End_XI
+0228:03f2      __Start_YI
+0228:03fe      __End_YI
+Module: C:\WATCOM/lib286/dos\clibs.lib(histsplt.c)
+0228:0416      ___historical_splitparms
+Module: C:\WATCOM/lib286/dos\clibs.lib(nfree.c)
+0000:1c3e      _nfree_
+0000:1c3e      free_
+0228:0418+     ___MiniHeapFreeRover
+Module: C:\WATCOM/lib286/dos\clibs.lib(__lseek.c)
+0000:1cff      __lseek_
+Module: C:\WATCOM/lib286/dos\clibs.lib(qwrit.c)
+0000:1d37      __qwrite_
+Module: C:\WATCOM/lib286/dos\clibs.lib(fsync.c)
+0000:1d8d      fsync_
+Module: C:\WATCOM/lib286/dos\clibs.lib(nmemneed.c)
+0000:1d90      __nmemneed_
+Module: C:\WATCOM/lib286/dos\clibs.lib(mem.c)
+0000:1da0      __MemAllocator
+0000:1e6a      __MemFree
+Module: C:\WATCOM/lib286/dos\clibs.lib(grownear.c)
+0000:2033+     __LastFree_
+0000:209a      __ExpandDGROUP_
+Module: C:\WATCOM/lib286/dos\clibs.lib(_clse.c)
+0000:2174      __close_
+Module: C:\WATCOM/lib286/dos\clibs.lib(isatt.c)
+0000:21a3      isatty_
+Module: C:\WATCOM/lib286/dos\clibs.lib(iomode.c)
+0000:21bf      __GetIOMode_
+0000:21d6      __SetIOMode_nogrow_
+0228:024a+     ___NFiles
+0228:024c+     ___init_mode
+0228:0274+     ___io_mode
+Module: C:\WATCOM/lib286/dos\clibs.lib(filedos.c)
+0000:21eb*     _dos_close_
+0000:21f7      _dos_commit_
+Module: C:\WATCOM/lib286/dos\clibs.lib(heapen.c)
+0000:2205*     _heapenable_
+0228:0276      ___heap_enabled
+Module: C:\WATCOM/lib286/dos\clibs.lib(sbrk.c)
+0000:2211*     sbrk_
+0000:2215      __brk_
+Module: C:\WATCOM/lib286/dos\clibs.lib(doserror)
+0000:226a      __doserror_
+
+
+                        +--------------------+
+                        |   Libraries Used   |
+                        +--------------------+
+
+C:\WATCOM/lib286/dos\clibs.lib
+
+
+                        +-----------------------+
+                        |   Linker Statistics   |
+                        +-----------------------+
+
+Stack size:  0800 (2048.)
+Memory size:  2ea0 (11936.)
+Entry point address: 0000:0cb6
+Link time: 00:00.59

@@ -1,0 +1,495 @@
+    SYSCALLS
+    
+
+Insert SYS instruction after setting the registers to make a system call.
+    
+  READ (AX == 0)
+
+BX = pointer to buffer
+CX = count of bytes to read
+DX = file descriptor
+
+Count of bytes read is returned in AX.
+
+Equivalent to C function call fread(BX, 1, CX, DX);
+  
+
+  WRITE (AX == 1)
+
+BX = pointer to buffer
+CX = count of bytes to write
+DX = file descriptor
+
+Count of bytes written is returned in AX.
+
+Equivalent to C function call fwrite(BX, 1, CX, DX);
+
+  OPEN (AX == 2)
+  
+BX = file mode
+CX = Permissions (not implemented)
+DX = pointer to a string containing file name
+EX = Pointer to a struct containing the file descriptor data (optional)
+
+The file descriptor is returned in AX. Returns -1 (0xFFFF) on error.
+
+Equivalent to C function call fopen(DX, BX);
+
+FILE MODES
+
+The default open mode is read-only (BX == 0).
+If bit 0 is set (BX & 0x01), the file is truncated to zero length and opened
+in write mode.
+If bits 0 and 1 are set (BX & 0x02), the file is opened in append mode.
+
+If bit 2 is set (BX & 0x04), the file is opened in read-write-mode. Bit 2 
+represents the plus sign in C fopen()'s second argument string.
+
+If bit 3 is set (BX & 0x08), the file is opened in unbuffered mode.
+
+If bit 11 is set (BX & 0x1000), the stream is opened in non-blocking mode.
+
+OPENING SYSTEM PORTS
+
+Serial and parallel ports can be opened with OPEN syscall. Serial ports are
+named COMn, where n is the port number starting from 1. Parallel ports are
+named LPTn. Parallel ports are currently write-only. Serial ports are bi-
+directional.
+
+With system ports the BX register does not work the same way as with actual
+files. If BL is non-zero when opening a parallel port, the printer (if any)
+in that port is initialized to use automatic newline. With serial ports the
+workings of the BX register are described below.
+
+The lowest 4 bits in the BH register represent the baud rate as shown
+below:
+
+0       == 50 baud
+1       == 110 baud
+2       == 150 baud
+3       == 300 baud
+4       == 600 baud
+5       == 1200 baud
+6       == 2400 baud
+7       == 4800 baud
+8       == 9600 baud
+9       == 19200 baud
+10      == 38400 baud
+11      == 57600 baud
+12      == 115200 baud
+
+The upmost two bytes in the BH register select what flow control to use.
+0b00 means no flow control, 0b01 means XON/XOFF and 0b10 means RTS/CTS.
+
+Bits 0-1 in BL register are used to select word length.
+0b00 = 5 bit,
+0b01 = 6 bit,
+0x10 = 7 bit,
+0x11 = 8 bit.
+
+If bit 2 is set, two stop bits are used. Else only one stop bit.
+
+Bits 3-4 are used to select parity.
+0b00 = no parity,
+0b01 = odd parity,
+0x11 = even parity.
+If bit 5 is set, stuck parity is used.
+
+If bit 6 is set, break control is used.
+
+OPENING DEVICES
+
+Device nodes of every device driver reside in the DEV:\ pseudofilesystem.
+If the device driver supports it, the device node can be opened to a file
+descriptor. If the driver has only one device node and the name of the driver
+is foo, the file name is "DEV:\foo". If the driver has multiple devices,
+the device number is appended to the name in uppercase hexadecimal notation.
+One driver can have 0xFFFF device nodes.
+
+  CLOSE (AX == 3)
+  
+BX = file descriptor
+
+NULL is returned in AX if success. Else -1 is returned.
+
+Equivalent to C function call fclose(BX);
+
+  LSEEK (AX == 8)
+  
+DX = file descriptor
+CX = mode (0 = SEEK_SET, 1 = SEEK_CUR, 2 = SEEK_END)
+BX = count (signed!)
+
+New position is returned in AX.
+
+Equivalent to C function call fseek(DX, BX, CX);
+
+
+  MMAP (AX == 9)
+  
+BX = data segment to allocate
+CX = Length of data segment
+DX = File descriptor (optional)
+EX = File position added to the current position (optional)
+
+Allocates a new [CX] bytes long memory segment. Tries to allocate segment [BX],
+and if fails, tries to allocate other segment. The newly allocated segment is
+returned into AX. If [DX] is not 0, contents from file starting from file pos
+[EX] are read into the new segment. -1 (0xFFFF) is returned on error.
+
+
+  MUNMAP (AX == 11)
+  
+BX = data segment to unallocate
+
+Unallocates (frees) a memory segment that is previously dynamically allocated
+with MMAP call. Returns 0 on success and -1 (0xFFFF) on error.
+
+
+  EXIT (AX == 12)
+  
+BX = return value
+
+Exits the program and returns. Equivalent to C function call exit(BX);
+
+
+  GETARGC (AX == 13)
+  
+Returns program argument count to AX.
+
+
+  GETARGV (AX == 14)
+  
+BX = Argument string
+CX = Argument string offset
+
+Returns a single character of argument string to AX. Equivalent to C array
+read argv[BX][CX].
+
+
+  SPAWN (AX == 15)
+  
+BX = Pointer to a buffer where the new program's PID is returned
+CX = Pointer to a string containing path to the program executable
+DX = Pointer to a string containing program arguments
+EX = Privileges
+
+Executes another program. Returns 0 to AX if success, -1 if error.
+
+
+  Clone (AX == 16)
+  
+BX = segment of the function that the clone executes
+CX = offset address of the function that the clone executes
+DX = an interrupt (terminating signal) that is triggered in the parent process
+     when the clone exits
+EX = pointer to a buffer where the clone's return value is returned
+FX = argument to the clone
+
+Makes a new thread. Returns the PID of the new thread into AX. Returns -1 on
+error. The clone thread shares the memory space of its parent process. Only
+a new stack is allocated for the clone. Argument goes to the clone's AX
+register.
+
+
+  Fork (AX == 17)
+  
+DX = terminating signal
+EX = pointer to the buffer where the clone's return value is returned
+
+Makes a complete copy of the current process. Returns the PID of the clone to
+the AX register of the parent, and 0 to the AX of the clone.
+
+
+  Gettime (AX == 18)
+  
+Returns 64-bit unsigned presentation of UNIX time to registers AX - DX and
+32-bit unsigned presentation of nanoseconds to registers EX - FX.
+
+
+  Sound (AX == 19)
+  
+BX = frequency in Hz
+
+Plays sound from PC speaker.
+
+
+  No sound (AX == 20)
+  
+Stops playing sound.
+
+
+  Wait screen retrace (AX == 21)
+  
+Waits for VGA's vertical retrace.
+
+
+  Sleep (AX == 22)
+  
+BX - EX = 64-bit presentation of time when to wake up
+
+Pauses the process and does nothing until wakeup time has passed. The process
+can be invoked before that by other processes using the signal SIGCONT.
+
+
+  Send signal (AX == 23)
+  
+BX = PID
+CX = signal
+
+Sends a signal to the process of that pid. If BX is zero, the signal is sent 
+to the caller process itself.
+
+
+  Process info (AX == 24)
+  
+BX = process table index
+CX = pointer to str buff
+
+If a process is found with the specified index, the pid of the process is
+returned into AX register and the process's name is returned to the str buffer.
+Returns -1 if no process is found.
+
+
+  Get priority (AX == 25)
+  
+BX = process id (own if zero)
+
+Returns process's priority to AX.
+
+
+  Set priority (AX == 26)
+  
+BX = process id (own if zero)
+CX = new priority
+
+Sets process's priority to CX.
+
+
+  Fsync (AX == 27)
+  
+BX = file descriptor
+
+Flushes file output buffer. Returns 0 if success, -1 if error.
+
+
+  Chdir (AX == 4)
+  
+BX = pointer to a string containing directory path
+
+Sets the current working directory. Returns 0 if success, -1 if error.
+
+
+  Opendir (AX == 5)
+  
+BX = pointer to a string containing directory path
+
+Opens a directory for making a file list. Returns directory descriptor in AX.
+Returns -1 if an error happened.
+
+
+  Readdir (AX == 6)
+  
+BX = directory descriptor
+CX = pointer to a buffer for filename
+
+Reads one filename entry from the directory. Filename is written in the buffer
+where CX points to. File attributes are returned in DX register. 0 is returned
+to AX, or -1 on error.
+
+
+  Closedir (AX == 7)
+  
+BX = directory descriptor
+
+Closes the directory.
+
+
+  Stat (AX == 10)
+  
+BX = pointer to return struct
+CX = pointer to a string containing filename
+
+
+Returns information about the file. If no file was found, -1 is returned to AX.
+Otherwise 0 is returned and file information is written into the struct pointed
+in BX. The struct values are stored like described below:
+
+
+Offset 0: File attributes (8-bit unsigned)
+Offset 1: File size (32-bit unsigned)
+Offset 5: Modification timestamp (64-bit unsigned, seconds from Unix epoch)
+
+
+  Exec (AX == 30)
+  
+BX = pointer to a string containing path of executable
+CX = pointer to a string containing arguments
+
+Runs a program that replaces the current process in memory.
+Returns -1 if fails. Normally should not return.
+
+
+  Dup (AX == 31)
+  
+BX = old file descriptor
+
+Returns a duplicate file descriptor.
+
+
+  Dup2 (AX == 32)
+  
+BX = old file descriptor
+CX = new file descriptor
+
+Makes a duplicate file descriptor to file descriptor CX. If there is already
+an opened file with the new file descriptor, it is closed.
+
+
+  Pipe (AX == 33)
+  
+Makes a pipe. Returns the pipe's read end to BX and the write end to CX.
+
+
+  Mkdir (AX == 34)
+  
+BX = pointer to a string containing directory name
+
+Creates a new directory.
+
+
+  Sendfd (AX == 35)
+  
+BX = pid of the receiver process
+CX = file descriptor
+
+Send a duplicate of the file descriptor to another process. Returns 0 if
+the call succeeded, and -1 if the file descriptor could not be sent.
+
+The receiving process gets signal SIGFDRECVD (signal 132).
+The duplicate of the file descriptor is returned to the receiving process's
+port 0.
+
+
+  Sethwint (AX == 36)
+  
+BX = physical interrupt
+CX = signal
+DX = chain interrupt with old interrupt (0 = false)
+
+Sends a signal to the process every time when an interrupt in BX is triggered
+in the computer. The process also instantly gets CPU time.
+
+
+  Unsethwint (AX == 37)
+  
+BX = hardware interrupt
+
+Unsets the interrupt signal redirection.
+
+
+  Loadmod (AX == 28)
+
+BX = pointer to a string that contains path to the TSR program
+CX = pointer to a string that contains the name of the device nodes
+
+Loads a module.
+
+
+  Cmdmod (AX == 29)
+
+BX = pointer to a string that contains name of the device node without the
+     preceding "DEV:\"
+CX = pointer to the command
+
+
+  Geterrno (AX == 38)
+
+Returns the last error code to AX.
+
+
+  Seterrno (AX == 39)
+
+BX = new value of error code
+
+Sets the error code. Used mainly for zeroing the errno.
+
+
+  Unlink (AX == 40)
+
+BX = path of the file to remove
+
+Removes a file.
+
+
+  Rmdir (AX == 41)
+
+BX = path of the directory
+
+Removes a directory.
+
+
+  Setprivs (AX == 42)
+
+BX = PID
+CX = privileges
+
+Sets the privileges of process PID. See PRIVS.TXT.
+
+
+  Getkernelparm (AX == 43)
+
+BX = kernel parameter
+
+Returns the value of the kernel parameter to AX. See KRNLPARM.C for the parameters.
+
+
+  Setkernelparm (AX == 44)
+
+BX = kernel parameter
+CX = new value
+
+Sets the value of the kernel parameter.
+
+
+  Getcwd (AX == 45)
+
+BX = pointer to destination buffer
+CX = maximum number of bytes to copy
+
+Copies the current working directory to the buffer.
+
+
+  Powersave (AX == 46)
+
+Ends the CPU time of this process and tells the kernel
+that this process does not have anything important
+to do.
+
+
+  Unload module (AX == 47)
+
+BX = pointer to string containing module name
+
+Unloads a module.
+
+
+  Get environment variable (AX == 48)
+
+BX = ID of the variable
+CX = maximum length of the string to be stored to the buffer
+DX = pointer to destination buffer
+
+Copies an environment variable to the destination buffer. The stored string
+is in the form of "NAME=VALUE", where NAME is the name of the environment
+variable and VALUE is its value. The string ends in a null character.
+
+
+  Set environment variable (AX == 49)
+
+BX = pointer to a null-terminated string containing the name of the variable
+CX = pointer to a null-terminated string containing the new value of the
+     variable
+DX = overwrite (0 = no, 1 = yes, 2 = delete variable)
+
+Sets or unsets (if DX == 2) an environment variable.

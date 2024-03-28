@@ -1,0 +1,180 @@
+    How to use Virtual Processing Units
+    
+
+Virtual Processing Units (VPU) can be programmed like any real CPU that uses
+Harward architecture. VPUs have separate memory spaces for code, data and
+stack. 
+
+Data and code memorys are divided into segments (or pages). Technically
+there can be 16^2 pages for data memory and 15^2 pages for code memory. The
+smaller limitation for code memory comes from the way the JMP instruction is
+implemented. The pages can be 16^2 bytes long, but because the implementation
+of the host system may not allow 16^2 bytes long arrays (arrays can have some
+overhead in the runtime of the compiler) it's recommended to use few bytes
+smaller pages. Currently the assembler does not support multiple segments,
+so the program and data must fit in single segments.
+
+  Contents:
+  1. Using VPU console
+  2. Using the assembler
+  2.1. Program header
+  3. Programming the VPU
+  3.1. Declaring variables
+  3.2. Writing VPU instructions
+  3.3. Comments
+
+
+# 1. Using VPU Console
+
+VPU Console can be used to write small programs and experiment with assembly
+procedures. You can write any built-in command, VPU instruction or symbol
+declaration into the command line.
+
+Built-in commands:
+
+EXIT            - Close the console.
+EDIT            - Go to code edit mode. Return to command line by ESC key.
+STATUS          - Show VPU status.
+RESET           - Reset VPU status.
+DEBUG           - Show more or less debug information when running the program.
+                  It's not recommended to use this with the STRGET instruction.
+DEBUG [file]    - Saves the debug information to a file.
+RUN             - Assemble and run the program.
+STEP            - Assemble the program and run it by one instruction at a time.
+CONTINUE        - Continue running the program if it was stopped by a WAIT
+                  instruction.
+LOAD [filename] - Load a file into the editor.
+SAVE [filename] - Save the editor contents to a file.
+
+LSSYM                               - List all symbols.
+$[symbol]                           - Show information about a symbol.
+CODE [segment] [offset] [count]     - List contents of the code memory starting
+                                      from [segment:offset] and stopping after
+                                      [count] lines.
+                                      Note: If the first listed byte is an
+                                      operand (not the opcode that starts an
+                                      instruction) then the definitions listed
+                                      in the rightmost column are not accurate.
+DATA [segment] [offset] [count]     - List contents of the DATA memory.
+STACK [base]                        - List contents of the stack.
+MEMBYTE [segment] [offset]          - Show contents of the memory address
+                                      [segment:offset] as an unsigned char.
+MEMWORD [segment] [offset]          - Show contents of the memory address
+                                      [segment:offset] as an unsigned short.
+PID [pid]                           - Sets or shows the pid of the program that
+                                      is being debugged.
+
+
+# 2. Using the assembler
+  
+The assembler (ASSEMBLE.EXE) can be used to assemble larger programs. It 
+produces an executable bytecode binary file that does not need to be assembled
+every time before running. Command example:
+
+ASSEMBLE [source file] [executable]
+
+If the executable file's name ends with .APP extension, it can be run from 
+anywhere in the window manager like any executable.
+
+# 2.1. Program header
+
+The first four lines in the source code must define the header information.
+The header is needed to know how much memory needs to be allocated for the VPU.
+VPU console does not need the header.
+
+Example header:
+
+code 1 2048
+data 1 4096
+stack 128
+interrupts 16
+
+This header produces a VPU with one code segment of 2048 bytes, one data
+segment of 4096 bytes, a 128 entries long stack and 16 entries long interrupt
+table.
+
+# 3. Programming the VPU
+  
+# 3.1. Declaring variables
+
+There are currently 4 data types: 
+8-bit unsigned integer "byte",
+16-bit unsigned integer "word",
+8-bit signed integer "signed byte",
+and 16-bit signed integer "signed word".
+  
+After declaring the data can be accessed by inserting $ before the variable
+name. Inserting a dot (.) returns the segment where the variable is contained.
+
+Declaring a byte:
+byte [symbol_name] [value]
+
+Examples:
+byte foo 10
+byte bar 0x26
+
+Declaring a signed byte:
+signed byte [symbol_name] [value]
+
+Examples:
+signed byte foo 21
+signed byte bar -52
+
+Declaring a word:
+word [symbol_name] [value]
+
+Examples:
+word foo 18523
+word biz 0x2451
+word aaa 15
+
+Declaring a signed word:
+signed word [symbol_name] [value]
+
+Examples:
+signed word foo -2568
+signed word asdfghjkl 0x516
+
+Declaring a string with contents
+str [symbol_name] "[string]"
+
+Example:
+str hello "Hello world"
+
+The above example creates a symbol $hello that points to the memory
+address of the first character of the string.
+
+Declaring an empty string
+str [symbol_name] [string_length]
+
+Example:
+str buff 80
+
+The above example creates an 80 bytes long array of null characters. A
+symbol $buff is created, and it points to the first cell of the
+array.
+
+Declaring an array:
+
+str arrayofstrs { "Hello world" "Hello friends" "Goodbye cruel world" }
+
+The above example creates three strings and an array of three unsigned words 
+that point to the first bytes of each string. A symbol named $arrayofstrs is
+created, and it points to the first entry of the word array.
+
+signed word arrayofints { 3620 0x650 0b11001001 0562 -50 }
+
+The above example creates an array of signed words. A symbol named
+$arrayofints is created, and it points to the first entry of the array.
+
+byte arrayofuchars { 0x28 0x58 0x00 0x53 }
+
+The above example creates an array of bytes. A symbol named $arrayofuchars is
+created, and it points to the first entry of the array.
+
+# 3.2. Writing instructions:
+See INSTRLST.TXT.
+
+# 3.3. Comments
+
+Comment lines begin with a semicolon (;).

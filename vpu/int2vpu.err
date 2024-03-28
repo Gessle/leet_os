@@ -1,0 +1,40 @@
+int2vpu.c(15): Warning! W131: No prototype found for function '_dos_getvect'
+int2vpu.c(19): Warning! W131: No prototype found for function 'malloc'
+int2vpu.c(19): Warning! W102: Type mismatch (warning)
+int2vpu.c(19): Note! I2003: source conversion type is 'int '
+int2vpu.c(19): Note! I2004: target conversion type is 'unsigned char *'
+int2vpu.c(25): Error! E1011: Symbol 'dummy_handler_cont_len' has not been declared
+int2vpu.c(25): Warning! W102: Type mismatch (warning)
+int2vpu.c(25): Note! I2003: source conversion type is 'int '
+int2vpu.c(25): Note! I2004: target conversion type is 'unsigned char *'
+int2vpu.c(29): Warning! W131: No prototype found for function 'memcpy'
+int2vpu.c(43): Warning! W131: No prototype found for function 'calloc'
+int2vpu.c(43): Error! E1113: Expression has incomplete type
+int2vpu.c(43): Note! I2003: source conversion type is 'struct vpu_hw_int '
+int2vpu.c(43): Warning! W102: Type mismatch (warning)
+int2vpu.c(43): Note! I2003: source conversion type is 'int '
+int2vpu.c(43): Note! I2004: target conversion type is 'struct vpu_hw_int *'
+int2vpu.c(53): Warning! W131: No prototype found for function 'realloc'
+int2vpu.c(53): Error! E1113: Expression has incomplete type
+int2vpu.c(53): Note! I2003: source conversion type is 'struct vpu_hw_int '
+int2vpu.c(53): Warning! W102: Type mismatch (warning)
+int2vpu.c(53): Note! I2003: source conversion type is 'int '
+int2vpu.c(53): Note! I2004: target conversion type is 'void *'
+int2vpu.c(60): Error! E1113: Expression has incomplete type
+int2vpu.c(60): Note! I2003: source conversion type is 'struct vpu_hw_int '
+int2vpu.c(60): Warning! W102: Type mismatch (warning)
+int2vpu.c(60): Note! I2003: source conversion type is 'int '
+int2vpu.c(60): Note! I2004: target conversion type is 'struct vpu_hw_int *'
+int2vpu.c(64): Error! E1031: Name 'hw_int' not found in struct/union vpu_hw_int
+int2vpu.c(65): Error! E1031: Name 'vpu' not found in struct/union vpu_hw_int
+int2vpu.c(66): Error! E1031: Name 'vpu_int' not found in struct/union vpu_hw_int
+int2vpu.c(67): Error! E1031: Name 'prev_int' not found in struct/union vpu_hw_int
+int2vpu.c(68): Warning! W131: No prototype found for function '_dos_setvect'
+int2vpu.c(74): Warning! W131: No prototype found for function 'outp'
+int2vpu.c(74): Warning! W131: No prototype found for function 'inp'
+int2vpu.c(88): Warning! W102: Type mismatch (warning)
+int2vpu.c(88): Note! I2003: source conversion type is 'int '
+int2vpu.c(88): Note! I2004: target conversion type is 'void *'
+int2vpu.c(90): Warning! W131: No prototype found for function 'free'
+int2vpu.c(93): Error! E1031: Name 'hw_int' not found in struct/union vpu_hw_int
+int2vpu.c(96): Error! E1031: Name 'prev_int' not found in struct/union vpu_hw_int

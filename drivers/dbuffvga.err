@@ -1,0 +1,7 @@
+dbuffvga.c(329): Warning! W112: Pointer truncated
+dbuffvga.c(329): Note! I2003: source conversion type is 'union REGS __far *'
+dbuffvga.c(329): Note! I2004: target conversion type is 'union REGS *'
+dbuffvga.c(329): Warning! W112: Pointer truncated
+dbuffvga.c(329): Note! I2003: source conversion type is 'union REGS __far *'
+dbuffvga.c(329): Note! I2004: target conversion type is 'union REGS *'
+dbuffvga.c(329): Note! I2002: 'int86' defined in: C:\WATCOM\H\i86.h(239)

@@ -1,0 +1,5 @@
+address 192.168.10.6 
+gateway 192.168.10.5 
+broadcast 192.168.10.225 
+netmask 225.225.225.0 
+dns 8.8.8.8 

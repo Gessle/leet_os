@@ -1,0 +1,277 @@
+    VPU Instruction list by opcode
+   
+
+  0x00 WAIT
+
+Pauses the program and starts waiting for an interrupt. The instruction
+pointer is incremented once.
+The WAIT flag is set and the instruction pointer is not incremented again
+until the WAIT flag is unset.
+
+  0x01 MOV [dst] [src]
+
+Copies data from src to dst. Operands can be registers, half-registers, symbols
+or data/code/stack memory addresses in a register.
+
+A MOV instruction can vary in length. The assembler automatically generates a
+valid instruction and the VPU automatically increments the IP to the next
+instruction.
+
+Insert asterisk char (*) before a register name to dereference register 
+contents as a data pointer. Using a plus sign (+) dereferences the contents
+as a code pointer and comma (,) as a stack pointer. Remember that stack pointer
+increments by 16-bit words, not bytes.
+
+Examples of MOV instruction:
+
+mov ax bx              - Copies contents from bx to ax.
+
+mov bl dh              - Copies contents from dh to bl.
+
+mov bl dx              - Copies contents from dx to bl. The most significant
+                         byte from dx is not copied.
+
+mov cx al              - Copies contents from bl to cx. The most significant
+                         byte in cx is zeroed.
+
+mov ax $sym            - Copies the value of $sym to ax.
+
+mov ax .sym            - Copies the value of the segment where $sym is to ax.
+
+mov *ax 10             - Copies immediate number 10 to a memory address in AX.
+
+mov ax &sym            - Copies memory address of symbol $sym into AX as an
+                         immediate number.
+                         
+mov ax +bx             - Copies a word from code address in BX into
+                         AX.
+
+mov al *bx             - Copies a byte from data address in BX into AX.
+                         
+mov ax ,bx             - Copies a word from stack offset in BX into AX.
+
+  0x02 JMP [dst]
+  
+Jumps to [dst]. [dst] must be a label defined somewhere in the code.
+
+  0x03 INC [reg]
+  0x04 DEC [reg]
+  
+Increments or decrements the contents of the register [reg].
+
+  0x05 CMP [reg0] [reg1]/[imm]
+
+Compare contents of two registers. The result is returned into a hidden 
+register and used by the conditional jump instructions JE, JNE, JG, JGE, JLE
+and JL. If the value of [reg0] is greater than [reg1], the comparison result
+is positive. If the values are equals, the comparison result is 0. Else the
+result is negative.
+
+  0x06 JE [dst]
+  
+If the comparison result is 0 (equals), jumps to dst.
+
+  0x07 PUSH [reg]
+  
+Pushes the contents of a 16-bit register [reg] to the stack and decrements the
+stack pointer.
+
+  0x08 POP [reg]
+  
+Gets the last pushed value from the stack into the 16-bit register [reg] and
+increments the stack pointer.
+
+  0x09 ADD [reg0] [reg1]/[imm]
+  
+Adds the value of [reg1] to [reg0].
+
+  0x0A SUB [reg0] [reg1]/[imm]
+  
+Substracts the value of [reg1] from [reg0].
+
+  0x0B DSEG [reg]
+  
+Copies value from 16-bit register [reg] to data segment register.
+
+  0x0C MUL [reg0] [reg1]/[imm]
+  
+Multiplies the value of [reg0] by [reg1].
+
+  0x0D DIV [reg0] [reg1]/[imm]
+  
+Divides the value of [reg0] by [reg1]. The quotient is returned into [reg0]
+and the remainder into [reg1]. The numbers are treated as unsigned integers.
+
+  0x0E PRINTUINT [reg]
+  
+Prints the unsigned value of the register [reg].
+
+  0x0F AND [reg0] [reg1]/[imm]
+  0x10 OR [reg0] [reg1]/[imm]
+  0x11 XOR [reg0] [reg1]/[imm]
+
+Ands, ors or xors the value of [reg0] by [reg1].
+
+  0x12 INV [reg]
+  
+Inverts the value of [reg].
+
+  0x13 SHL [reg0] [reg1]/[imm]
+  0x14 SHR [reg0] [reg1]/[imm]
+
+Shifts the value of [reg0] left or right by the value of [reg1]. 
+  
+  0x15 CALL [label]
+  
+Pushes the the incremented value of instruction pointer and the value of code
+segment to the stack and jumps to [label]. Stack pointer is decremented by 2.
+
+  0x16 RET
+  
+Jumps to the last double-word address pushed to the stack and increments stack
+pointer by 2.
+
+  0x17 INT [int]
+  
+Software-triggers interrupt [int].
+
+  0x18 IRET
+  
+Pops code segment, instruction pointer and VPU flags from the stack. Stack
+pointer is incremented by 3.
+
+  0x19 SETINT [int] [labelseg] [labeloffset]
+  
+Points interrupt vector [int] to [label].
+
+Example of SETINT instruction:
+
+setint 2 .my_int_handler &my_int_handler
+
+  0x1A JNE [label]
+  
+Jumps to [label] if the comparison result is !0 (not equals).
+
+  0x1B JG [label]
+  
+Jumps to [label] if the comparison result is positive (greater than).
+
+  0x1C JGE [label]
+  
+Jumps to [label] if the comparison result is 0 (equals) or positive (greater
+than).
+
+  0x1D JLE [label]
+  
+Jumps to [label] if the comparison result is 0 (equals) or negative (less
+than).
+
+  0x1E JCZ [label]
+  
+Jumps to [label] if the value of CX register is zero.
+
+  0x1F JL [label]
+  
+Jumps to [label] if the comparison result is negative (less than).
+
+  0x20 PRINTSTR [reg]
+ 
+Prints the contents of string pointed by 16-bit register [reg].
+
+  0x21 JFS [flags] [label]
+  
+Jumps to [label] if flags [flags] are set.
+
+  0x22 JFNS [flags] [label]
+  
+Jumps to [label] if flags [flags] are not set.
+
+  0x23 MEMCPY
+  
+Copies CX bytes in data memory from AX:BX to DX:EX. The value of CX is added
+to BX and EX and CX is zeroed.
+
+  0x24 IN [port]
+  
+Copies value of port [port] to AX. After reading the port contains value -1.
+
+  0x25 OUT [port]
+  
+Copies value of AX to port [port].
+
+  0x26 MEMSET
+  
+Sets CX bytes to the value of DL starting from AX:BX. The value of CX is
+added to BX and CX is zeroed.
+
+  0x27 ZFLAGS
+  
+Sets all VPU flags to zero.
+
+  0x28 PRINTSINT [reg]
+  
+Prints the signed value of register [reg].
+
+  0x29 IDIV [reg0] [reg1]/[imm]
+  
+Divides the value of [reg0] by [reg1] and treats the numbers as signed
+integers. The quotient is returned into [reg0] and the remainder into [reg1].
+
+  0x2A SCONVW [wreg] [breg]
+
+Converts signed 8-bit value of the 8-bit register [breg] to 16-bit and returns
+it to the 16-bit register [wreg].
+
+  0x2B SCONVB [breg] [wreg]
+  
+Converts signed 16-bit value of the 16-bit register [wreg] to 8-bit and returns
+it to the 8-bit register [wreg].
+
+  0x2C GETSTR [reg0] [reg1]
+  
+Gets value of [reg1] characters of user input to the data address pointed by
+[reg0].
+
+  0x2D SYS
+  
+See SYSCALLS.TXT.
+
+  0x2E SCR
+  
+See SCRCALLS.TXT.
+
+  0x2F PSTACK
+  
+Use primary stack.
+
+  0x30 SSTACK
+  
+Use secondary stack.
+
+  0x31 NOP
+
+Do nothing.
+
+  0x32 TEST [reg0] [reg1]/[imm]
+
+Saves the results of AND operation of the operands to the compare register.
+
+  0x33 MEMCHR
+
+AX: Data segment
+BX: Start offset
+CX: Count
+DL: Byte
+
+Increments BX and decrements CX until BX points to an address that
+contains the byte in DL or CX becomes zero.
+
+  0x34 MEMCMP
+
+AX: Data segment 0
+BX: Start offset 0
+CX: Count
+DX: Data segment 1
+EX: start offset 1
+
+Decrements CX and increments BX and EX until they point to different values.

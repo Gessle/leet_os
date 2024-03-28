@@ -1,0 +1,370 @@
+code auto
+data auto
+stack 32
+interrupts 128
+
+setint 18 .sig_handler $sig_handler
+
+jmp main
+
+:sig_handler
+iret
+
+byte prompt_char '>'
+
+str command 512
+; read line from stdin
+; returns line length
+; exits program if EOF
+:read_input_line
+  push bx
+  push cx
+  push dx
+  push ex
+  push fx
+  
+  mov el 0xA  
+  mov bx $command
+  mov cx 1
+  mov dx 0
+  mov fx -1
+  :read_input_line_loop
+  mov ax 0
+  sys
+  cmp ax fx
+  je exit_program
+  mov eh *bx
+  cmp eh el
+  je read_input_line_end
+  inc bx    
+  jmp read_input_line_loop
+  
+  :read_input_line_end
+  mov *bx 0
+  mov ax $command
+  sub bx ax
+  mov ax bx
+
+  pop fx
+  pop ex
+  pop dx
+  pop cx
+  pop bx
+ret
+
+:exit_program
+  mov ax 12
+  mov bx 0
+  sys
+
+; bx = program name + arguments
+:exec_program
+  mov cl 0
+  mov al ' '
+
+  :exec_program_loop2
+  mov ch *bx
+  cmp ch al
+  jne exec_program_loop2_end
+  inc bx
+  jmp exec_program_loop2
+
+  :exec_program_loop2_end
+  push bx
+  :exec_program_loop1
+  inc bx
+  mov ch *bx
+  jcz exec_program_noargs
+  cmp ch al
+  jne exec_program_loop1
+  
+  mov *bx cl
+  inc bx
+  
+  :exec_program_noargs  
+  mov cx bx  
+  pop bx
+  mov ax 30
+  sys
+  
+  ; if still alive...
+  str unknowncommand "Unknown command.\n"
+  mov ax 1
+  mov bx $unknowncommand
+  mov cx 17
+  mov dx 1
+  sys
+  mov ax 12
+  mov bx 1
+  sys
+
+; copy characters from bx to ax until whitespace
+; return end of word
+:copy_word
+  push bx
+  push cx
+  push dx
+  
+  mov ch 0
+  mov dl ' '
+  :copy_word_loop
+  mov cl *bx
+  jcz copy_word_end
+  cmp dl cl
+  je copy_word_end
+  mov *ax cl
+  inc bx
+  inc ax
+  jmp copy_word_loop
+
+  :copy_word_end
+  mov cl 0
+  mov *ax 0
+
+  mov ax bx
+  
+  pop dx
+  pop cx
+  pop bx
+  ret
+  
+; bx = command
+word redirect_file_mode 1
+str output_file_name 13
+str input_file_name 13
+:redirect_stdio_file
+  push ax
+  push bx
+  push cx
+  push dx
+  push ex
+  push fx
+  
+  :redirect_stdio_init
+  mov cx 0
+  mov al '>'
+  mov fl '<'
+  mov ah ' '
+  :redirect_stdio_loop1
+  inc bx    
+  mov cl *bx
+  jcz redirect_stdio_end
+  cmp cl al
+  je redirect_stdout
+  cmp cl fl
+  je redirect_stdin
+  jmp redirect_stdio_loop1  
+
+  :redirect_stdout
+
+  ; null-terminate command
+  mov *bx ch
+  
+  :redirect_stdout_loop2
+  inc bx
+  mov cl *bx
+  cmp cl al
+  je redirect_stdout_append
+  cmp cl ah
+  je redirect_stdout_loop2
+  jmp redirect_stdout_open_file
+  
+  :redirect_stdout_append
+  mov $redirect_file_mode 2
+  jmp redirect_stdout_loop2
+  
+  :redirect_stdout_open_file
+  ; now bx == output file name
+  mov ax $output_file_name
+  call copy_word
+  push ax
+  mov ax 2
+  mov dx $output_file_name
+  mov bx $redirect_file_mode
+  mov cx 0
+  mov ex 0
+  sys
+  
+  ; redirect stdout to the new file descriptor
+  mov bx ax
+  mov ax 32
+  mov cx 1
+  sys
+  ; close the file descriptor
+  mov ax 3
+  sys  
+  pop bx
+  jmp redirect_stdio_init
+  
+  :redirect_stdin
+  ; null-terminate command
+  mov *bx ch  
+  :redirect_stdin_loop2
+  inc bx
+  mov cl *bx
+  cmp cl ah
+  je redirect_stdin_loop2
+
+  ; now bx == input file name
+  mov ax $input_file_name
+  call copy_word
+  push ax
+  mov ax 2
+  mov dx $input_file_name
+  mov bx 0
+  mov cx 0
+  mov ex 0
+  sys
+  ; redirect stdin from the new file descriptor
+  mov bx ax
+  mov ax 32
+  mov cx 0
+  sys
+  ; close the file descriptor
+  mov ax 3
+  sys
+  pop bx
+  jmp redirect_stdio_init  
+  
+  :redirect_stdio_end
+  pop fx
+  pop ex
+  pop dx
+  pop cx
+  pop bx
+  pop ax
+  ret
+
+:wait_for_sigchld
+wait
+
+:main
+
+:get_command
+
+; print prompt and flush stdout
+str prompt "READY.\n"
+mov bx $prompt
+mov ax 1
+mov dx 1
+mov cx 7
+sys
+
+mov ax 1
+mov bx &prompt_char
+mov cx 1
+mov dx 1
+sys
+mov ax 27
+mov bx 1
+sys
+
+call read_input_line
+mov cx ax
+
+; if empty command, repeat
+jcz get_command
+
+word command_len
+mov $command_len ax
+
+; else fork
+push ax
+word fork_return
+mov ax 17
+mov ex &fork_return
+mov dx 18
+sys
+mov bx 0
+cmp ax bx
+; if this process = parent, wait
+word child_pid
+mov $child_pid ax
+jne wait_for_sigchld
+pop ax
+
+:parse_command
+mov bx $command
+
+; get last char
+byte cmd_last_char
+add bx ax
+dec bx
+mov $cmd_last_char *bx
+
+; decrement bx until at beginning of the command or pipe
+mov dx $command
+mov cl '|'
+:command_dec1_loop
+dec bx
+mov ch *bx
+cmp bx dx
+je run_program
+cmp ch cl
+je run_program_pipe
+jmp command_dec1_loop
+
+:run_program
+add bx ax
+mov cl 0
+mov *bx cl
+sub bx ax
+call redirect_stdio_file
+call exec_program
+
+:run_program_pipe
+push bx
+; make pipe
+word pipe_read
+word pipe_write
+mov ax 33
+sys
+mov $pipe_read bx
+mov $pipe_write cx
+;redirect stdin from pipe_read
+mov cx 0
+mov ax 32
+sys
+;make another fork
+mov ax 17
+mov ex &fork_return
+mov dx 0
+sys
+cmp ax dx
+; if this process = parent, parse command after pipe operator
+jne pipe_parent 
+; else redirect stdout to pipe_write
+mov bx $pipe_write
+mov cx 1
+mov ax 32
+sys
+; and close pipe's read head
+mov ax 3
+mov bx $pipe_read
+sys
+; null-terminate command
+pop bx
+mov *bx dl
+; and continue parsing command from the beginning
+mov ax $command
+sub bx ax
+mov ax bx
+mov $command_len ax
+jmp parse_command
+
+:pipe_parent
+; close pipe's write head
+mov ax 3
+mov bx $pipe_write
+sys
+
+pop bx
+inc bx
+mov ax $command
+mov cx $command_len
+add ax cx
+sub ax bx
+
+jmp run_program
+
+jmp main

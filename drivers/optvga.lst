@@ -1,0 +1,1052 @@
+Module: D:\LEETSRC\485\DRIVERS\OPTVGA.C
+GROUP: 'DGROUP' CONST,CONST2,_DATA
+
+Segment: _TEXT BYTE USE16 00000983 bytes
+0000                          _plane_buff:
+0000    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+	--- Above line repeats 18 times ---
+0130    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0140                          _lastvgaptr:
+0140    00 00 00 00                                     ....
+0144                          _lastbit:
+0144    00                                              .
+0145                          _VGA:
+0145    00 00 00 A0                                     ....
+0149                          _ega4_lastoperation:
+0149    FF                                              .
+014A                          _adj_pixels:
+014A    00 00                                           ..
+014C                          _first_adj_px:
+014C    FF FF FF FF                                     ....
+0150                          _lastcolor:
+0150    FF                                              .
+
+Routine Size: 337 bytes,    Routine Base: _TEXT + 0000
+
+0151                          tsr_free_:
+0151    06                        push        es 
+0152    89 D0                     mov         ax,dx 
+0154    40                        inc         ax 
+0155    8E C0                     mov         es,ax 
+0157    50                        push        ax 
+0158    B4 49                     mov         ah,0x49 
+015A    CD 21                     int         0x21 
+015C    58                        pop         ax 
+015D    07                        pop         es 
+015E    C3                        ret         
+
+Routine Size: 14 bytes,    Routine Base: _TEXT + 0151
+
+015F                          update_planes_:
+015F    53                        push        bx 
+0160    51                        push        cx 
+0161    52                        push        dx 
+0162    56                        push        si 
+0163    57                        push        di 
+0164    1E                        push        ds 
+0165    06                        push        es 
+0166    55                        push        bp 
+0167    89 E5                     mov         bp,sp 
+0169    83 EC 06                  sub         sp,0x0006 
+016C    2E A1 00 00               mov         ax,word ptr cs:_first_adj_px 
+0170    2E 8B 16 02 00            mov         dx,word ptr cs:_first_adj_px+0x2 
+0175    B9 03 00                  mov         cx,0x0003 
+0178                          L$1:
+0178    D1 EA                     shr         dx,0x01 
+017A    D1 D8                     rcr         ax,0x01 
+017C    E2 FA                     loop        L$1 
+017E    2E 8B 16 00 00            mov         dx,word ptr cs:_VGA 
+0183    2E 8B 1E 02 00            mov         bx,word ptr cs:_VGA+0x2 
+0188    89 5E FA                  mov         word ptr -0x6[bp],bx 
+018B    01 C2                     add         dx,ax 
+018D    89 56 FC                  mov         word ptr -0x4[bp],dx 
+0190    B1 03                     mov         cl,0x03 
+0192    2E A1 00 00               mov         ax,word ptr cs:_adj_pixels 
+0196    D3 E8                     shr         ax,cl 
+0198    88 46 FE                  mov         byte ptr -0x2[bp],al 
+019B    BB 04 00                  mov         bx,0x0004 
+019E    B0 05                     mov         al,0x05 
+01A0    BA CE 03                  mov         dx,0x03ce 
+01A3    EE                        out         dx,al 
+01A4    30 C0                     xor         al,al 
+01A6    BA CF 03                  mov         dx,0x03cf 
+01A9    EE                        out         dx,al 
+01AA    B0 08                     mov         al,0x08 
+01AC    BA CE 03                  mov         dx,0x03ce 
+01AF    EE                        out         dx,al 
+01B0    B0 FF                     mov         al,0xff 
+01B2    BA CF 03                  mov         dx,0x03cf 
+01B5    EE                        out         dx,al 
+01B6                          L$2:
+01B6    4B                        dec         bx 
+01B7    83 FB FF                  cmp         bx,0xffff 
+01BA    74 38                     je          L$3 
+01BC    89 D9                     mov         cx,bx 
+01BE    B0 02                     mov         al,0x02 
+01C0    BA C4 03                  mov         dx,0x03c4 
+01C3    EE                        out         dx,al 
+01C4    B0 01                     mov         al,0x01 
+01C6    D2 E0                     shl         al,cl 
+01C8    BA C5 03                  mov         dx,0x03c5 
+01CB    EE                        out         dx,al 
+01CC    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+01CF    30 E4                     xor         ah,ah 
+01D1    89 DA                     mov         dx,bx 
+01D3    D1 E2                     shl         dx,0x01 
+01D5    D1 E2                     shl         dx,0x01 
+01D7    01 DA                     add         dx,bx 
+01D9    B1 07                     mov         cl,0x07 
+01DB    D3 E2                     shl         dx,cl 
+01DD    BE 00 00                  mov         si,offset _plane_buff 
+01E0    01 D6                     add         si,dx 
+01E2    89 C1                     mov         cx,ax 
+01E4    BA 00 00                  mov         dx,DGROUP:CONST 
+01E7    8E DA                     mov         ds,dx 
+01E9    8B 7E FC                  mov         di,word ptr -0x4[bp] 
+01EC    8E 46 FA                  mov         es,word ptr -0x6[bp] 
+01EF    FC                        cld         
+01F0    F3 A4                     rep movsb   
+01F2    EB C2                     jmp         L$2 
+01F4                          L$3:
+01F4    B9 40 01                  mov         cx,0x0140 
+01F7    31 C0                     xor         ax,ax 
+01F9    BF 00 00                  mov         di,offset _plane_buff 
+01FC    8C CA                     mov         dx,cs 
+01FE    8E C2                     mov         es,dx 
+0200    FC                        cld         
+0201    F6 C1 01                  test        cl,0x01 
+0204    74 08                     je          L$4 
+0206    49                        dec         cx 
+0207    03 F9                     add         di,cx 
+0209    26 88 05                  mov         byte ptr es:[di],al 
+020C    2B F9                     sub         di,cx 
+020E                          L$4:
+020E    D1 E9                     shr         cx,0x01 
+0210    8A E0                     mov         ah,al 
+0212    F3 AB                     rep stosw   
+0214    2E C6 06 00 00 FF         mov         byte ptr cs:_ega4_lastoperation,0xff 
+021A    89 EC                     mov         sp,bp 
+021C    5D                        pop         bp 
+021D    07                        pop         es 
+021E    1F                        pop         ds 
+021F    5F                        pop         di 
+0220    5E                        pop         si 
+0221                          L$5:
+0221    5A                        pop         dx 
+0222    59                        pop         cx 
+0223    5B                        pop         bx 
+0224    C3                        ret         
+
+Routine Size: 198 bytes,    Routine Base: _TEXT + 015F
+
+0225                          save_pixel_to_plane_:
+0225    53                        push        bx 
+0226    51                        push        cx 
+0227    55                        push        bp 
+0228    89 E5                     mov         bp,sp 
+022A    83 EC 06                  sub         sp,0x0006 
+022D    88 56 FE                  mov         byte ptr -0x2[bp],dl 
+0230    88 C2                     mov         dl,al 
+0232    30 F6                     xor         dh,dh 
+0234    B1 03                     mov         cl,0x03 
+0236    D3 FA                     sar         dx,cl 
+0238    88 56 FC                  mov         byte ptr -0x4[bp],dl 
+023B    88 C1                     mov         cl,al 
+023D    80 E1 07                  and         cl,0x07 
+0240    B8 80 00                  mov         ax,0x0080 
+0243    D3 F8                     sar         ax,cl 
+0245    88 C5                     mov         ch,al 
+0247    BA 04 00                  mov         dx,0x0004 
+024A                          L$6:
+024A    4A                        dec         dx 
+024B    83 FA FF                  cmp         dx,0xffff 
+024E    74 47                     je          L$9 
+0250    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+0253    30 E4                     xor         ah,ah 
+0255    88 D1                     mov         cl,dl 
+0257    D3 F8                     sar         ax,cl 
+0259    89 46 FA                  mov         word ptr -0x6[bp],ax 
+025C    89 D3                     mov         bx,dx 
+025E    89 D0                     mov         ax,dx 
+0260    D1 E0                     shl         ax,0x01 
+0262    D1 E0                     shl         ax,0x01 
+0264    01 C3                     add         bx,ax 
+0266    B1 07                     mov         cl,0x07 
+0268    D3 E3                     shl         bx,cl 
+026A    F6 46 FA 01               test        byte ptr -0x6[bp],0x01 
+026E    74 15                     je          L$8 
+0270    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+0273    30 E4                     xor         ah,ah 
+0275    01 C3                     add         bx,ax 
+0277    2E 8A 87 00 00            mov         al,byte ptr cs:_plane_buff[bx] 
+027C    08 E8                     or          al,ch 
+027E                          L$7:
+027E    2E 88 87 00 00            mov         byte ptr cs:_plane_buff[bx],al 
+0283    EB C5                     jmp         L$6 
+0285                          L$8:
+0285    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+0288    30 E4                     xor         ah,ah 
+028A    01 C3                     add         bx,ax 
+028C    88 E8                     mov         al,ch 
+028E    F6 D0                     not         al 
+0290    2E 22 87 00 00            and         al,byte ptr cs:_plane_buff[bx] 
+0295    EB E7                     jmp         L$7 
+0297                          L$9:
+0297    89 EC                     mov         sp,bp 
+0299    5D                        pop         bp 
+029A    59                        pop         cx 
+029B    5B                        pop         bx 
+029C    C3                        ret         
+
+Routine Size: 120 bytes,    Routine Base: _TEXT + 0225
+
+029D                          flush_pixel_cache_:
+029D    53                        push        bx 
+029E    52                        push        dx 
+029F    1E                        push        ds 
+02A0    2E 80 3E 00 00 00         cmp         byte ptr cs:_ega4_lastoperation,0x00 
+02A6    74 18                     je          L$10 
+02A8    B0 05                     mov         al,0x05 
+02AA    BA CE 03                  mov         dx,0x03ce 
+02AD    EE                        out         dx,al 
+02AE    B0 02                     mov         al,0x02 
+02B0    BA CF 03                  mov         dx,0x03cf 
+02B3    EE                        out         dx,al 
+02B4    B0 08                     mov         al,0x08 
+02B6    BA CE 03                  mov         dx,0x03ce 
+02B9    EE                        out         dx,al 
+02BA    2E C6 06 00 00 00         mov         byte ptr cs:_ega4_lastoperation,0x00 
+02C0                          L$10:
+02C0    2E A0 00 00               mov         al,byte ptr cs:_lastbit 
+02C4    BA CF 03                  mov         dx,0x03cf 
+02C7    EE                        out         dx,al 
+02C8    2E C5 1E 00 00            lds         bx,dword ptr cs:_lastvgaptr 
+02CD    8A 07                     mov         al,byte ptr [bx] 
+02CF    2E A0 00 00               mov         al,byte ptr cs:_lastcolor 
+02D3    88 07                     mov         byte ptr [bx],al 
+02D5    2E C6 06 00 00 FF         mov         byte ptr cs:_lastcolor,0xff 
+02DB    2E C6 06 00 00 00         mov         byte ptr cs:_lastbit,0x00 
+02E1    1F                        pop         ds 
+02E2    5A                        pop         dx 
+02E3    5B                        pop         bx 
+02E4    C3                        ret         
+
+Routine Size: 72 bytes,    Routine Base: _TEXT + 029D
+
+02E5                          flush_adj_pixels_:
+02E5    53                        push        bx 
+02E6    51                        push        cx 
+02E7    52                        push        dx 
+02E8    2E 83 3E 00 00 08         cmp         word ptr cs:_adj_pixels,0x0008 
+02EE    73 60                     jae         L$15 
+02F0                          L$11:
+02F0    2E FF 0E 00 00            dec         word ptr cs:_adj_pixels 
+02F5    2E 83 3E 00 00 FF         cmp         word ptr cs:_adj_pixels,0xffff 
+02FB    74 56                     je          L$16 
+02FD    2E C6 06 00 00 00         mov         byte ptr cs:_lastcolor,0x00 
+0303    BA 04 00                  mov         dx,0x0004 
+0306                          L$12:
+0306    4A                        dec         dx 
+0307    83 FA FF                  cmp         dx,0xffff 
+030A    74 E4                     je          L$11 
+030C    89 D3                     mov         bx,dx 
+030E    D1 E3                     shl         bx,0x01 
+0310    D1 E3                     shl         bx,0x01 
+0312    01 D3                     add         bx,dx 
+0314    B1 07                     mov         cl,0x07 
+0316    D3 E3                     shl         bx,cl 
+0318    2E 8A 9F 00 00            mov         bl,byte ptr cs:_plane_buff[bx] 
+031D    30 FF                     xor         bh,bh 
+031F    2E 8A 0E 00 00            mov         cl,byte ptr cs:_adj_pixels 
+0324    89 D8                     mov         ax,bx 
+0326    D3 E0                     shl         ax,cl 
+0328    A8 80                     test        al,0x80 
+032A    74 04                     je          L$13 
+032C    B3 01                     mov         bl,0x01 
+032E    EB 02                     jmp         L$14 
+0330                          L$13:
+0330    30 DB                     xor         bl,bl 
+0332                          L$14:
+0332    88 D1                     mov         cl,dl 
+0334    88 D8                     mov         al,bl 
+0336    D2 E0                     shl         al,cl 
+0338    2E 08 06 00 00            or          byte ptr cs:_lastcolor,al 
+033D    2E 8A 0E 00 00            mov         cl,byte ptr cs:_adj_pixels 
+0342    B8 80 00                  mov         ax,0x0080 
+0345    D3 F8                     sar         ax,cl 
+0347    2E A2 00 00               mov         byte ptr cs:_lastbit,al 
+034B    E8 00 00                  call        flush_pixel_cache_ 
+034E    EB B6                     jmp         L$12 
+0350                          L$15:
+0350    E8 00 00                  call        update_planes_ 
+0353                          L$16:
+0353    B8 FF FF                  mov         ax,0xffff 
+0356    2E A3 00 00               mov         word ptr cs:_first_adj_px,ax 
+035A    2E A3 02 00               mov         word ptr cs:_first_adj_px+0x2,ax 
+035E    E9 C0 FE                  jmp         L$5 
+
+Routine Size: 124 bytes,    Routine Base: _TEXT + 02E5
+
+0361                          update_screen_:
+0361    2E 83 3E 00 00 00         cmp         word ptr cs:_adj_pixels,0x0000 
+0367    74 04                     je          L$17 
+0369    E8 00 00                  call        flush_adj_pixels_ 
+036C    CB                        retf        
+036D                          L$17:
+036D    E8 00 00                  call        flush_pixel_cache_ 
+0370    CB                        retf        
+
+Routine Size: 16 bytes,    Routine Base: _TEXT + 0361
+
+0371                          put_pixel_:
+0371    52                        push        dx 
+0372    56                        push        si 
+0373    57                        push        di 
+0374    55                        push        bp 
+0375    89 E5                     mov         bp,sp 
+0377    83 EC 0E                  sub         sp,0x000e 
+037A    89 C6                     mov         si,ax 
+037C    89 4E FC                  mov         word ptr -0x4[bp],cx 
+037F    B1 06                     mov         cl,0x06 
+0381    89 DA                     mov         dx,bx 
+0383    D3 E2                     shl         dx,cl 
+0385    B1 04                     mov         cl,0x04 
+0387    89 D8                     mov         ax,bx 
+0389    D3 E0                     shl         ax,cl 
+038B    01 C2                     add         dx,ax 
+038D    B1 03                     mov         cl,0x03 
+038F    89 F0                     mov         ax,si 
+0391    D3 E8                     shr         ax,cl 
+0393    01 C2                     add         dx,ax 
+0395    2E 8B 3E 00 00            mov         di,word ptr cs:_VGA 
+039A    2E A1 02 00               mov         ax,word ptr cs:_VGA+0x2 
+039E    89 46 FA                  mov         word ptr -0x6[bp],ax 
+03A1    01 D7                     add         di,dx 
+03A3    89 F1                     mov         cx,si 
+03A5    80 E1 07                  and         cl,0x07 
+03A8    B8 80 00                  mov         ax,0x0080 
+03AB    D3 F8                     sar         ax,cl 
+03AD    88 46 FE                  mov         byte ptr -0x2[bp],al 
+03B0    2E 83 3E 02 00 FF         cmp         word ptr cs:_first_adj_px+0x2,0xffff 
+03B6    75 08                     jne         L$18 
+03B8    2E 83 3E 00 00 FF         cmp         word ptr cs:_first_adj_px,0xffff 
+03BE    74 4B                     je          L$21 
+03C0                          L$18:
+03C0    2E A1 00 00               mov         ax,word ptr cs:_adj_pixels 
+03C4    31 D2                     xor         dx,dx 
+03C6    2E 8B 0E 00 00            mov         cx,word ptr cs:_first_adj_px 
+03CB    01 C1                     add         cx,ax 
+03CD    89 4E F4                  mov         word ptr -0xc[bp],cx 
+03D0    2E A1 02 00               mov         ax,word ptr cs:_first_adj_px+0x2 
+03D4    11 D0                     adc         ax,dx 
+03D6    89 46 F6                  mov         word ptr -0xa[bp],ax 
+03D9    89 D8                     mov         ax,bx 
+03DB    B9 09 00                  mov         cx,0x0009 
+03DE                          L$19:
+03DE    D1 E0                     shl         ax,0x01 
+03E0    D1 D2                     rcl         dx,0x01 
+03E2    E2 FA                     loop        L$19 
+03E4    89 56 F8                  mov         word ptr -0x8[bp],dx 
+03E7    B1 07                     mov         cl,0x07 
+03E9    89 DA                     mov         dx,bx 
+03EB    D3 E2                     shl         dx,cl 
+03ED    89 56 F2                  mov         word ptr -0xe[bp],dx 
+03F0    31 D2                     xor         dx,dx 
+03F2    03 46 F2                  add         ax,word ptr -0xe[bp] 
+03F5    8B 4E F8                  mov         cx,word ptr -0x8[bp] 
+03F8    11 D1                     adc         cx,dx 
+03FA    01 F0                     add         ax,si 
+03FC    11 CA                     adc         dx,cx 
+03FE    3B 56 F6                  cmp         dx,word ptr -0xa[bp] 
+0401    75 05                     jne         L$20 
+0403    3B 46 F4                  cmp         ax,word ptr -0xc[bp] 
+0406    74 2B                     je          L$22 
+0408                          L$20:
+0408    E8 00 00                  call        flush_adj_pixels_ 
+040B                          L$21:
+040B    2E 8B 16 00 00            mov         dx,word ptr cs:_lastvgaptr 
+0410    2E A1 02 00               mov         ax,word ptr cs:_lastvgaptr+0x2 
+0414    3B 46 FA                  cmp         ax,word ptr -0x6[bp] 
+0417    75 1C                     jne         L$23 
+0419    39 D7                     cmp         di,dx 
+041B    75 18                     jne         L$23 
+041D    2E A0 00 00               mov         al,byte ptr cs:_lastcolor 
+0421    30 E4                     xor         ah,ah 
+0423    3B 46 FC                  cmp         ax,word ptr -0x4[bp] 
+0426    75 0D                     jne         L$23 
+0428    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+042B    2E 08 06 00 00            or          byte ptr cs:_lastbit,al 
+0430    E9 BE 00                  jmp         L$30 
+0433                          L$22:
+0433    EB 50                     jmp         L$26 
+0435                          L$23:
+0435    80 7E FE 80               cmp         byte ptr -0x2[bp],0x80 
+0439    74 03                     je          L$24 
+043B    E9 96 00                  jmp         L$29 
+043E                          L$24:
+043E    2E 83 3E 02 00 FF         cmp         word ptr cs:_first_adj_px+0x2,0xffff 
+0444    75 3F                     jne         L$26 
+0446    2E 83 3E 00 00 FF         cmp         word ptr cs:_first_adj_px,0xffff 
+044C    75 37                     jne         L$26 
+044E    E8 00 00                  call        flush_pixel_cache_ 
+0451    89 D8                     mov         ax,bx 
+0453    31 D2                     xor         dx,dx 
+0455    B9 09 00                  mov         cx,0x0009 
+0458                          L$25:
+0458    D1 E0                     shl         ax,0x01 
+045A    D1 D2                     rcl         dx,0x01 
+045C    E2 FA                     loop        L$25 
+045E    B1 07                     mov         cl,0x07 
+0460    89 DF                     mov         di,bx 
+0462    D3 E7                     shl         di,cl 
+0464    89 F9                     mov         cx,di 
+0466    C7 46 F6 00 00            mov         word ptr -0xa[bp],0x0000 
+046B    01 C1                     add         cx,ax 
+046D    13 56 F6                  adc         dx,word ptr -0xa[bp] 
+0470    31 C0                     xor         ax,ax 
+0472    01 F1                     add         cx,si 
+0474    11 D0                     adc         ax,dx 
+0476    2E 89 0E 00 00            mov         word ptr cs:_first_adj_px,cx 
+047B    2E A3 02 00               mov         word ptr cs:_first_adj_px+0x2,ax 
+047F    2E C6 06 00 00 FF         mov         byte ptr cs:_lastcolor,0xff 
+0485                          L$26:
+0485    2E 81 3E 00 00 80 02      cmp         word ptr cs:_adj_pixels,0x0280 
+048C    75 31                     jne         L$28 
+048E    E8 00 00                  call        flush_adj_pixels_ 
+0491    89 D8                     mov         ax,bx 
+0493    31 D2                     xor         dx,dx 
+0495    B9 09 00                  mov         cx,0x0009 
+0498                          L$27:
+0498    D1 E0                     shl         ax,0x01 
+049A    D1 D2                     rcl         dx,0x01 
+049C    E2 FA                     loop        L$27 
+049E    89 D7                     mov         di,dx 
+04A0    B1 07                     mov         cl,0x07 
+04A2    D3 E3                     shl         bx,cl 
+04A4    31 D2                     xor         dx,dx 
+04A6    01 C3                     add         bx,ax 
+04A8    11 FA                     adc         dx,di 
+04AA    31 C0                     xor         ax,ax 
+04AC    01 DE                     add         si,bx 
+04AE    11 D0                     adc         ax,dx 
+04B0    2E 89 36 00 00            mov         word ptr cs:_first_adj_px,si 
+04B5    2E A3 02 00               mov         word ptr cs:_first_adj_px+0x2,ax 
+04B9    31 C0                     xor         ax,ax 
+04BB    2E A3 00 00               mov         word ptr cs:_adj_pixels,ax 
+04BF                          L$28:
+04BF    8A 56 FC                  mov         dl,byte ptr -0x4[bp] 
+04C2    30 F6                     xor         dh,dh 
+04C4    2E A0 00 00               mov         al,byte ptr cs:_adj_pixels 
+04C8    30 E4                     xor         ah,ah 
+04CA    E8 00 00                  call        save_pixel_to_plane_ 
+04CD    2E FF 06 00 00            inc         word ptr cs:_adj_pixels 
+04D2    EB 1D                     jmp         L$30 
+04D4                          L$29:
+04D4    E8 00 00                  call        flush_pixel_cache_ 
+04D7    2E 89 3E 00 00            mov         word ptr cs:_lastvgaptr,di 
+04DC    8B 46 FA                  mov         ax,word ptr -0x6[bp] 
+04DF    2E A3 02 00               mov         word ptr cs:_lastvgaptr+0x2,ax 
+04E3    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+04E6    2E A2 00 00               mov         byte ptr cs:_lastbit,al 
+04EA    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+04ED    2E A2 00 00               mov         byte ptr cs:_lastcolor,al 
+04F1                          L$30:
+04F1    89 EC                     mov         sp,bp 
+04F3    5D                        pop         bp 
+04F4    5F                        pop         di 
+04F5    5E                        pop         si 
+04F6    5A                        pop         dx 
+04F7    CB                        retf        
+
+Routine Size: 391 bytes,    Routine Base: _TEXT + 0371
+
+04F8                          get_pixel_:
+04F8    51                        push        cx 
+04F9    52                        push        dx 
+04FA    56                        push        si 
+04FB    57                        push        di 
+04FC    1E                        push        ds 
+04FD    55                        push        bp 
+04FE    89 E5                     mov         bp,sp 
+0500    83 EC 04                  sub         sp,0x0004 
+0503    B1 06                     mov         cl,0x06 
+0505    89 DA                     mov         dx,bx 
+0507    D3 E2                     shl         dx,cl 
+0509    B1 04                     mov         cl,0x04 
+050B    D3 E3                     shl         bx,cl 
+050D    01 DA                     add         dx,bx 
+050F    B1 03                     mov         cl,0x03 
+0511    89 C6                     mov         si,ax 
+0513    D3 EE                     shr         si,cl 
+0515    01 D6                     add         si,dx 
+0517    2E 8B 1E 00 00            mov         bx,word ptr cs:_VGA 
+051C    2E 8B 16 02 00            mov         dx,word ptr cs:_VGA+0x2 
+0521    89 56 FC                  mov         word ptr -0x4[bp],dx 
+0524    01 DE                     add         si,bx 
+0526    88 C1                     mov         cl,al 
+0528    80 E1 07                  and         cl,0x07 
+052B    B8 80 00                  mov         ax,0x0080 
+052E    D3 F8                     sar         ax,cl 
+0530    89 46 FE                  mov         word ptr -0x2[bp],ax 
+0533    8A 6E FE                  mov         ch,byte ptr -0x2[bp] 
+0536    BB 04 00                  mov         bx,0x0004 
+0539    2E 80 3E 00 00 FF         cmp         byte ptr cs:_lastcolor,0xff 
+053F    74 1F                     je          L$31 
+0541    2E 8B 3E 00 00            mov         di,word ptr cs:_lastvgaptr 
+0546    2E A1 02 00               mov         ax,word ptr cs:_lastvgaptr+0x2 
+054A    39 C2                     cmp         dx,ax 
+054C    75 12                     jne         L$31 
+054E    39 FE                     cmp         si,di 
+0550    75 0E                     jne         L$31 
+0552    2E A0 00 00               mov         al,byte ptr cs:_lastbit 
+0556    30 E4                     xor         ah,ah 
+0558    88 EA                     mov         dl,ch 
+055A    30 F6                     xor         dh,dh 
+055C    85 D0                     test        ax,dx 
+055E    75 5A                     jne         L$35 
+0560                          L$31:
+0560    0E                        push        cs 
+0561    E8 FD FD                  call        update_screen_ 
+0564    2E 80 3E 00 00 00         cmp         byte ptr cs:_ega4_lastoperation,0x00 
+056A    75 0C                     jne         L$32 
+056C    B0 04                     mov         al,0x04 
+056E    BA CE 03                  mov         dx,0x03ce 
+0571    EE                        out         dx,al 
+0572    2E C6 06 00 00 01         mov         byte ptr cs:_ega4_lastoperation,0x01 
+0578                          L$32:
+0578    30 C9                     xor         cl,cl 
+057A    8E 5E FC                  mov         ds,word ptr -0x4[bp] 
+057D                          L$33:
+057D    4B                        dec         bx 
+057E    83 FB FF                  cmp         bx,0xffff 
+0581    74 19                     je          L$34 
+0583    88 D8                     mov         al,bl 
+0585    BA CF 03                  mov         dx,0x03cf 
+0588    EE                        out         dx,al 
+0589    D0 E1                     shl         cl,0x01 
+058B    8A 04                     mov         al,byte ptr [si] 
+058D    30 E4                     xor         ah,ah 
+058F    88 EA                     mov         dl,ch 
+0591    30 F6                     xor         dh,dh 
+0593    85 D0                     test        ax,dx 
+0595    74 E6                     je          L$33 
+0597    80 C9 01                  or          cl,0x01 
+059A    EB E1                     jmp         L$33 
+059C                          L$34:
+059C    2E 3A 0E 00 00            cmp         cl,byte ptr cs:_lastcolor 
+05A1    75 19                     jne         L$36 
+05A3    2E A1 00 00               mov         ax,word ptr cs:_lastvgaptr 
+05A7    2E 8B 16 02 00            mov         dx,word ptr cs:_lastvgaptr+0x2 
+05AC    3B 56 FC                  cmp         dx,word ptr -0x4[bp] 
+05AF    75 0B                     jne         L$36 
+05B1    39 C6                     cmp         si,ax 
+05B3    75 07                     jne         L$36 
+05B5    2E 08 2E 00 00            or          byte ptr cs:_lastbit,ch 
+05BA                          L$35:
+05BA    EB 19                     jmp         L$37 
+05BC                          L$36:
+05BC    E8 00 00                  call        flush_pixel_cache_ 
+05BF    2E 89 36 00 00            mov         word ptr cs:_lastvgaptr,si 
+05C4    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
+05C7    2E A3 02 00               mov         word ptr cs:_lastvgaptr+0x2,ax 
+05CB    2E 88 2E 00 00            mov         byte ptr cs:_lastbit,ch 
+05D0    2E 88 0E 00 00            mov         byte ptr cs:_lastcolor,cl 
+05D5                          L$37:
+05D5    2E A0 00 00               mov         al,byte ptr cs:_lastcolor 
+05D9    30 E4                     xor         ah,ah 
+05DB    89 EC                     mov         sp,bp 
+05DD    5D                        pop         bp 
+05DE    1F                        pop         ds 
+05DF    5F                        pop         di 
+05E0    5E                        pop         si 
+05E1    5A                        pop         dx 
+05E2    59                        pop         cx 
+05E3    CB                        retf        
+
+Routine Size: 236 bytes,    Routine Base: _TEXT + 04F8
+
+05E4                          vmemcpy_:
+05E4    1E                        push        ds 
+05E5    06                        push        es 
+05E6    55                        push        bp 
+05E7    89 E5                     mov         bp,sp 
+05E9    83 EC 0A                  sub         sp,0x000a 
+05EC    50                        push        ax 
+05ED    53                        push        bx 
+05EE    51                        push        cx 
+05EF    52                        push        dx 
+05F0    56                        push        si 
+05F1    57                        push        di 
+05F2    89 C3                     mov         bx,ax 
+05F4    01 F3                     add         bx,si 
+05F6    B1 03                     mov         cl,0x03 
+05F8    D3 EB                     shr         bx,cl 
+05FA    8B 46 F2                  mov         ax,word ptr -0xe[bp] 
+05FD    01 F8                     add         ax,di 
+05FF    B1 06                     mov         cl,0x06 
+0601    89 C2                     mov         dx,ax 
+0603    D3 E2                     shl         dx,cl 
+0605    B1 04                     mov         cl,0x04 
+0607    D3 E0                     shl         ax,cl 
+0609    01 D0                     add         ax,dx 
+060B    01 C3                     add         bx,ax 
+060D    2E A1 00 00               mov         ax,word ptr cs:_VGA 
+0611    2E 8B 16 02 00            mov         dx,word ptr cs:_VGA+0x2 
+0616    89 56 FA                  mov         word ptr -0x6[bp],dx 
+0619    89 C1                     mov         cx,ax 
+061B    01 D9                     add         cx,bx 
+061D    89 4E F8                  mov         word ptr -0x8[bp],cx 
+0620    B1 06                     mov         cl,0x06 
+0622    8B 76 F2                  mov         si,word ptr -0xe[bp] 
+0625    D3 E6                     shl         si,cl 
+0627    B1 04                     mov         cl,0x04 
+0629    8B 5E F2                  mov         bx,word ptr -0xe[bp] 
+062C    D3 E3                     shl         bx,cl 
+062E    01 F3                     add         bx,si 
+0630    B1 03                     mov         cl,0x03 
+0632    8B 76 F4                  mov         si,word ptr -0xc[bp] 
+0635    D3 EE                     shr         si,cl 
+0637    01 F3                     add         bx,si 
+0639    89 56 F6                  mov         word ptr -0xa[bp],dx 
+063C    01 D8                     add         ax,bx 
+063E    89 46 FC                  mov         word ptr -0x4[bp],ax 
+0641    F6 46 F4 07               test        byte ptr -0xc[bp],0x07 
+0645    74 4E                     je          L$42 
+0647    31 D2                     xor         dx,dx 
+0649                          L$38:
+0649    3B 56 EE                  cmp         dx,word ptr -0x12[bp] 
+064C    73 39                     jae         L$41 
+064E    C7 46 FE 00 00            mov         word ptr -0x2[bp],0x0000 
+0653                          L$39:
+0653    8B 46 F4                  mov         ax,word ptr -0xc[bp] 
+0656    03 46 FE                  add         ax,word ptr -0x2[bp] 
+0659    A8 07                     test        al,0x07 
+065B    74 27                     je          L$40 
+065D    8B 5E F2                  mov         bx,word ptr -0xe[bp] 
+0660    01 D3                     add         bx,dx 
+0662    0E                        push        cs 
+0663    E8 00 00                  call        get_pixel_ 
+0666    8B 5E F2                  mov         bx,word ptr -0xe[bp] 
+0669    03 5E EA                  add         bx,word ptr -0x16[bp] 
+066C    01 D3                     add         bx,dx 
+066E    8B 76 F4                  mov         si,word ptr -0xc[bp] 
+0671    03 76 EC                  add         si,word ptr -0x14[bp] 
+0674    03 76 FE                  add         si,word ptr -0x2[bp] 
+0677    89 C1                     mov         cx,ax 
+0679    89 F0                     mov         ax,si 
+067B    0E                        push        cs 
+067C    E8 00 00                  call        put_pixel_ 
+067F    FF 46 FE                  inc         word ptr -0x2[bp] 
+0682    EB CF                     jmp         L$39 
+0684                          L$40:
+0684    42                        inc         dx 
+0685    EB C2                     jmp         L$38 
+0687                          L$41:
+0687    FF 46 F8                  inc         word ptr -0x8[bp] 
+068A    FF 46 FC                  inc         word ptr -0x4[bp] 
+068D    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
+0690    29 46 F0                  sub         word ptr -0x10[bp],ax 
+0693    EB 05                     jmp         L$43 
+0695                          L$42:
+0695    C7 46 FE 00 00            mov         word ptr -0x2[bp],0x0000 
+069A                          L$43:
+069A    F6 46 F0 07               test        byte ptr -0x10[bp],0x07 
+069E    74 56                     je          L$47 
+06A0    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
+06A3    01 46 F4                  add         word ptr -0xc[bp],ax 
+06A6    31 D2                     xor         dx,dx 
+06A8                          L$44:
+06A8    3B 56 EE                  cmp         dx,word ptr -0x12[bp] 
+06AB    73 49                     jae         L$47 
+06AD    8B 46 F0                  mov         ax,word ptr -0x10[bp] 
+06B0    25 07 00                  and         ax,0x0007 
+06B3    89 46 FE                  mov         word ptr -0x2[bp],ax 
+06B6                          L$45:
+06B6    FF 4E FE                  dec         word ptr -0x2[bp] 
+06B9    83 7E FE FF               cmp         word ptr -0x2[bp],0xffff 
+06BD    74 34                     je          L$46 
+06BF    8B 5E F2                  mov         bx,word ptr -0xe[bp] 
+06C2    01 D3                     add         bx,dx 
+06C4    8B 76 F0                  mov         si,word ptr -0x10[bp] 
+06C7    83 E6 F8                  and         si,0xfff8 
+06CA    8B 46 F4                  mov         ax,word ptr -0xc[bp] 
+06CD    01 F0                     add         ax,si 
+06CF    03 46 FE                  add         ax,word ptr -0x2[bp] 
+06D2    0E                        push        cs 
+06D3    E8 00 00                  call        get_pixel_ 
+06D6    8B 5E F2                  mov         bx,word ptr -0xe[bp] 
+06D9    03 5E EA                  add         bx,word ptr -0x16[bp] 
+06DC    01 D3                     add         bx,dx 
+06DE    8B 4E F4                  mov         cx,word ptr -0xc[bp] 
+06E1    03 4E EC                  add         cx,word ptr -0x14[bp] 
+06E4    01 CE                     add         si,cx 
+06E6    03 76 FE                  add         si,word ptr -0x2[bp] 
+06E9    89 C1                     mov         cx,ax 
+06EB    89 F0                     mov         ax,si 
+06ED    0E                        push        cs 
+06EE    E8 00 00                  call        put_pixel_ 
+06F1    EB C3                     jmp         L$45 
+06F3                          L$46:
+06F3    42                        inc         dx 
+06F4    EB B2                     jmp         L$44 
+06F6                          L$47:
+06F6    0E                        push        cs 
+06F7    E8 67 FC                  call        update_screen_ 
+06FA    B0 05                     mov         al,0x05 
+06FC    BA CE 03                  mov         dx,0x03ce 
+06FF    EE                        out         dx,al 
+0700    B0 02                     mov         al,0x02 
+0702    BA CF 03                  mov         dx,0x03cf 
+0705    EE                        out         dx,al 
+0706    B0 08                     mov         al,0x08 
+0708    BA CE 03                  mov         dx,0x03ce 
+070B    EE                        out         dx,al 
+070C    30 C0                     xor         al,al 
+070E    BA CF 03                  mov         dx,0x03cf 
+0711    EE                        out         dx,al 
+0712    B1 03                     mov         cl,0x03 
+0714    D3 6E F0                  shr         word ptr -0x10[bp],cl 
+0717                          L$48:
+0717    FF 4E EE                  dec         word ptr -0x12[bp] 
+071A    83 7E EE FF               cmp         word ptr -0x12[bp],0xffff 
+071E    74 19                     je          L$49 
+0720    8B 4E F0                  mov         cx,word ptr -0x10[bp] 
+0723    8B 76 FC                  mov         si,word ptr -0x4[bp] 
+0726    8E 5E F6                  mov         ds,word ptr -0xa[bp] 
+0729    C4 7E F8                  les         di,dword ptr -0x8[bp] 
+072C    FC                        cld         
+072D    F3 A4                     rep movsb   
+072F    83 46 F8 50               add         word ptr -0x8[bp],0x0050 
+0733    83 46 FC 50               add         word ptr -0x4[bp],0x0050 
+0737    EB DE                     jmp         L$48 
+0739                          L$49:
+0739    2E C6 06 00 00 FF         mov         byte ptr cs:_ega4_lastoperation,0xff 
+073F    89 EC                     mov         sp,bp 
+0741    5D                        pop         bp 
+0742    07                        pop         es 
+0743    1F                        pop         ds 
+0744    CB                        retf        
+
+Routine Size: 353 bytes,    Routine Base: _TEXT + 05E4
+
+0745                          draw_rectangle_:
+0745    57                        push        di 
+0746    1E                        push        ds 
+0747    06                        push        es 
+0748    55                        push        bp 
+0749    89 E5                     mov         bp,sp 
+074B    83 EC 02                  sub         sp,0x0002 
+074E    50                        push        ax 
+074F    53                        push        bx 
+0750    51                        push        cx 
+0751    52                        push        dx 
+0752    56                        push        si 
+0753    89 D6                     mov         si,dx 
+0755    01 C8                     add         ax,cx 
+0757    89 C3                     mov         bx,ax 
+0759    25 07 00                  and         ax,0x0007 
+075C    29 C3                     sub         bx,ax 
+075E    2B 5E FC                  sub         bx,word ptr -0x4[bp] 
+0761    B1 03                     mov         cl,0x03 
+0763    D3 EB                     shr         bx,cl 
+0765    89 5E FE                  mov         word ptr -0x2[bp],bx 
+0768    B1 06                     mov         cl,0x06 
+076A    8B 5E FA                  mov         bx,word ptr -0x6[bp] 
+076D    D3 E3                     shl         bx,cl 
+076F    B1 04                     mov         cl,0x04 
+0771    8B 46 FA                  mov         ax,word ptr -0x6[bp] 
+0774    D3 E0                     shl         ax,cl 
+0776    01 D8                     add         ax,bx 
+0778    2E C5 1E 00 00            lds         bx,dword ptr cs:_VGA 
+077D    01 C3                     add         bx,ax 
+077F    B1 03                     mov         cl,0x03 
+0781    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
+0784    D3 E8                     shr         ax,cl 
+0786    01 C3                     add         bx,ax 
+0788    0E                        push        cs 
+0789    E8 D5 FB                  call        update_screen_ 
+078C    2E 80 3E 00 00 00         cmp         byte ptr cs:_ega4_lastoperation,0x00 
+0792    74 18                     je          L$50 
+0794    B0 05                     mov         al,0x05 
+0796    BA CE 03                  mov         dx,0x03ce 
+0799    EE                        out         dx,al 
+079A    B0 02                     mov         al,0x02 
+079C    BA CF 03                  mov         dx,0x03cf 
+079F    EE                        out         dx,al 
+07A0    B0 08                     mov         al,0x08 
+07A2    BA CE 03                  mov         dx,0x03ce 
+07A5    EE                        out         dx,al 
+07A6    2E C6 06 00 00 00         mov         byte ptr cs:_ega4_lastoperation,0x00 
+07AC                          L$50:
+07AC    F6 46 FC 07               test        byte ptr -0x4[bp],0x07 
+07B0    74 45                     je          L$53 
+07B2    8B 4E FC                  mov         cx,word ptr -0x4[bp] 
+07B5    80 E1 07                  and         cl,0x07 
+07B8    B8 FF 00                  mov         ax,0x00ff 
+07BB    D3 F8                     sar         ax,cl 
+07BD    BA CF 03                  mov         dx,0x03cf 
+07C0    EE                        out         dx,al 
+07C1                          L$51:
+07C1    4E                        dec         si 
+07C2    83 FE FF                  cmp         si,0xffff 
+07C5    74 0C                     je          L$52 
+07C7    8A 07                     mov         al,byte ptr [bx] 
+07C9    8A 46 F4                  mov         al,byte ptr -0xc[bp] 
+07CC    88 07                     mov         byte ptr [bx],al 
+07CE    83 C3 50                  add         bx,0x0050 
+07D1    EB EE                     jmp         L$51 
+07D3                          L$52:
+07D3    B1 06                     mov         cl,0x06 
+07D5    8B 5E FA                  mov         bx,word ptr -0x6[bp] 
+07D8    D3 E3                     shl         bx,cl 
+07DA    B1 04                     mov         cl,0x04 
+07DC    8B 46 FA                  mov         ax,word ptr -0x6[bp] 
+07DF    D3 E0                     shl         ax,cl 
+07E1    01 D8                     add         ax,bx 
+07E3    2E C5 1E 00 00            lds         bx,dword ptr cs:_VGA 
+07E8    01 C3                     add         bx,ax 
+07EA    B1 03                     mov         cl,0x03 
+07EC    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
+07EF    D3 E8                     shr         ax,cl 
+07F1    01 C3                     add         bx,ax 
+07F3    43                        inc         bx 
+07F4    8B 76 F6                  mov         si,word ptr -0xa[bp] 
+07F7                          L$53:
+07F7    B0 FF                     mov         al,0xff 
+07F9    BA CF 03                  mov         dx,0x03cf 
+07FC    EE                        out         dx,al 
+07FD                          L$54:
+07FD    4E                        dec         si 
+07FE    83 FE FF                  cmp         si,0xffff 
+0801    74 23                     je          L$56 
+0803    8B 4E FE                  mov         cx,word ptr -0x2[bp] 
+0806    8B 46 F4                  mov         ax,word ptr -0xc[bp] 
+0809    89 DF                     mov         di,bx 
+080B    1E                        push        ds 
+080C    07                        pop         es 
+080D    FC                        cld         
+080E    F6 C1 01                  test        cl,0x01 
+0811    74 08                     je          L$55 
+0813    49                        dec         cx 
+0814    03 F9                     add         di,cx 
+0816    26 88 05                  mov         byte ptr es:[di],al 
+0819    2B F9                     sub         di,cx 
+081B                          L$55:
+081B    D1 E9                     shr         cx,0x01 
+081D    8A E0                     mov         ah,al 
+081F    F3 AB                     rep stosw   
+0821    83 C3 50                  add         bx,0x0050 
+0824    EB D7                     jmp         L$54 
+0826                          L$56:
+0826    8B 5E FC                  mov         bx,word ptr -0x4[bp] 
+0829    03 5E F8                  add         bx,word ptr -0x8[bp] 
+082C    F6 C3 07                  test        bl,0x07 
+082F    74 42                     je          L$58 
+0831    89 D9                     mov         cx,bx 
+0833    80 E1 07                  and         cl,0x07 
+0836    B8 FF 00                  mov         ax,0x00ff 
+0839    D3 F8                     sar         ax,cl 
+083B    F7 D0                     not         ax 
+083D    BA CF 03                  mov         dx,0x03cf 
+0840    EE                        out         dx,al 
+0841    B1 06                     mov         cl,0x06 
+0843    8B 46 FA                  mov         ax,word ptr -0x6[bp] 
+0846    D3 E0                     shl         ax,cl 
+0848    B1 04                     mov         cl,0x04 
+084A    8B 56 FA                  mov         dx,word ptr -0x6[bp] 
+084D    D3 E2                     shl         dx,cl 
+084F    01 D0                     add         ax,dx 
+0851    2E C5 0E 00 00            lds         cx,dword ptr cs:_VGA 
+0856    01 C8                     add         ax,cx 
+0858    B1 03                     mov         cl,0x03 
+085A    D3 EB                     shr         bx,cl 
+085C    01 C3                     add         bx,ax 
+085E    8B 76 F6                  mov         si,word ptr -0xa[bp] 
+0861                          L$57:
+0861    4E                        dec         si 
+0862    83 FE FF                  cmp         si,0xffff 
+0865    74 0C                     je          L$58 
+0867    8A 07                     mov         al,byte ptr [bx] 
+0869    8A 46 F4                  mov         al,byte ptr -0xc[bp] 
+086C    88 07                     mov         byte ptr [bx],al 
+086E    83 C3 50                  add         bx,0x0050 
+0871    EB EE                     jmp         L$57 
+0873                          L$58:
+0873    89 EC                     mov         sp,bp 
+0875    5D                        pop         bp 
+0876    07                        pop         es 
+0877    1F                        pop         ds 
+0878    5F                        pop         di 
+0879    CB                        retf        
+
+Routine Size: 309 bytes,    Routine Base: _TEXT + 0745
+
+087A                          fill_screen_:
+087A    53                        push        bx 
+087B    51                        push        cx 
+087C    52                        push        dx 
+087D    57                        push        di 
+087E    06                        push        es 
+087F    89 C3                     mov         bx,ax 
+0881    0E                        push        cs 
+0882    E8 DC FA                  call        update_screen_ 
+0885    B0 05                     mov         al,0x05 
+0887    BA CE 03                  mov         dx,0x03ce 
+088A    EE                        out         dx,al 
+088B    B0 02                     mov         al,0x02 
+088D    BA CF 03                  mov         dx,0x03cf 
+0890    EE                        out         dx,al 
+0891    B0 08                     mov         al,0x08 
+0893    BA CE 03                  mov         dx,0x03ce 
+0896    EE                        out         dx,al 
+0897    B0 FF                     mov         al,0xff 
+0899    BA CF 03                  mov         dx,0x03cf 
+089C    EE                        out         dx,al 
+089D    2E C4 3E 00 00            les         di,dword ptr cs:_VGA 
+08A2    B9 01 96                  mov         cx,0x9601 
+08A5    89 D8                     mov         ax,bx 
+08A7    FC                        cld         
+08A8    F6 C1 01                  test        cl,0x01 
+08AB    74 08                     je          L$59 
+08AD    49                        dec         cx 
+08AE    03 F9                     add         di,cx 
+08B0    26 88 05                  mov         byte ptr es:[di],al 
+08B3    2B F9                     sub         di,cx 
+08B5                          L$59:
+08B5    D1 E9                     shr         cx,0x01 
+08B7    8A E0                     mov         ah,al 
+08B9    F3 AB                     rep stosw   
+08BB    07                        pop         es 
+08BC    5F                        pop         di 
+08BD    5A                        pop         dx 
+08BE    59                        pop         cx 
+08BF    5B                        pop         bx 
+08C0    CB                        retf        
+
+Routine Size: 71 bytes,    Routine Base: _TEXT + 087A
+
+08C1                          set_mode_:
+08C1    50                        push        ax 
+08C2    B8 12 00                  mov         ax,0x0012 
+08C5    CD 10                     int         0x10 
+08C7    58                        pop         ax 
+08C8    CB                        retf        
+
+Routine Size: 8 bytes,    Routine Base: _TEXT + 08C1
+
+08C9                          main_:
+08C9    53                        push        bx 
+08CA    51                        push        cx 
+08CB    56                        push        si 
+08CC    57                        push        di 
+08CD    1E                        push        ds 
+08CE    06                        push        es 
+08CF    55                        push        bp 
+08D0    89 E5                     mov         bp,sp 
+08D2    83 EC 42                  sub         sp,0x0042 
+08D5    50                        push        ax 
+08D6    89 D3                     mov         bx,dx 
+08D8    8C D0                     mov         ax,ss 
+08DA    8E C0                     mov         es,ax 
+08DC    8D 7E E2                  lea         di,-0x1e[bp] 
+08DF    B8 00 00                  mov         ax,DGROUP:CONST 
+08E2    8E D8                     mov         ds,ax 
+08E4    BE 00 00                  mov         si,offset DGROUP:L$66 
+08E7    A5                        movsw       
+08E8    A5                        movsw       
+08E9    A5                        movsw       
+08EA    A5                        movsw       
+08EB    A5                        movsw       
+08EC    A5                        movsw       
+08ED    A5                        movsw       
+08EE    A5                        movsw       
+08EF    B9 12 00                  mov         cx,0x0012 
+08F2    8D 7E BE                  lea         di,-0x42[bp] 
+08F5    BE 10 00                  mov         si,offset DGROUP:L$67 
+08F8    F3 A5                     rep movsw   
+08FA    83 7E BC 02               cmp         word ptr -0x44[bp],0x0002 
+08FE    75 61                     jne         L$62 
+0900    8C 56 F2                  mov         word ptr -0xe[bp],ss 
+0903    8D 46 E2                  lea         ax,-0x1e[bp] 
+0906    89 46 F4                  mov         word ptr -0xc[bp],ax 
+0909    C7 46 F6 01 00            mov         word ptr -0xa[bp],0x0001 
+090E    8C 56 F8                  mov         word ptr -0x8[bp],ss 
+0911    8D 46 BE                  lea         ax,-0x42[bp] 
+0914    89 46 FA                  mov         word ptr -0x6[bp],ax 
+0917    8B 47 02                  mov         ax,word ptr 0x2[bx] 
+091A    BB 10 00                  mov         bx,0x0010 
+091D    31 D2                     xor         dx,dx 
+091F    E8 00 00                  call        strtoul_ 
+0922    30 E4                     xor         ah,ah 
+0924    8D 5E F2                  lea         bx,-0xe[bp] 
+0927    8D 56 F2                  lea         dx,-0xe[bp] 
+092A    E8 00 00                  call        int86_ 
+092D    83 7E F2 00               cmp         word ptr -0xe[bp],0x0000 
+0931    74 30                     je          L$63 
+0933    B8 00 00                  mov         ax,offset DGROUP:L$65 
+0936    E8 00 00                  call        puts_ 
+0939    83 3E 02 00 00            cmp         word ptr ___iob+0x2,0x0000 
+093E    7E 10                     jle         L$60 
+0940    8B 1E 00 00               mov         bx,word ptr ___iob 
+0944    8A 07                     mov         al,byte ptr [bx] 
+0946    30 E4                     xor         ah,ah 
+0948    2D 0D 00                  sub         ax,0x000d 
+094B    3D 0D 00                  cmp         ax,0x000d 
+094E    77 08                     ja          L$61 
+0950                          L$60:
+0950    B8 00 00                  mov         ax,offset ___iob 
+0953    E8 00 00                  call        fgetc_ 
+0956    EB 1E                     jmp         L$64 
+0958                          L$61:
+0958    FF 0E 02 00               dec         word ptr ___iob+0x2 
+095C    43                        inc         bx 
+095D    89 1E 00 00               mov         word ptr ___iob,bx 
+0961                          L$62:
+0961    EB 13                     jmp         L$64 
+0963                          L$63:
+0963    0E                        push        cs 
+0964    E8 5A FF                  call        set_mode_ 
+0967    B1 04                     mov         cl,0x04 
+0969    BA 0F 00                  mov         dx,offset main_+0xf 
+096C    D3 EA                     shr         dx,cl 
+096E    83 C2 10                  add         dx,0x0010 
+0971    31 C0                     xor         ax,ax 
+0973    E8 00 00                  call        _dos_keep_ 
+0976                          L$64:
+0976    B8 01 00                  mov         ax,0x0001 
+0979    89 EC                     mov         sp,bp 
+097B    5D                        pop         bp 
+097C    07                        pop         es 
+097D    1F                        pop         ds 
+097E    5F                        pop         di 
+097F    5E                        pop         si 
+0980    59                        pop         cx 
+0981    5B                        pop         bx 
+0982    C3                        ret         
+
+Routine Size: 186 bytes,    Routine Base: _TEXT + 08C9
+
+No disassembly errors
+
+Segment: CONST WORD USE16 0000003D bytes
+0000                          L$65:
+0000    45 72 72 6F 72 20 77 68 69 6C 65 20 6C 6F 61 64 Error while load
+0010    69 6E 67 20 44 4F 55 42 4C 45 42 55 46 46 45 52 ing DOUBLEBUFFER
+0020    45 44 20 56 47 41 20 6D 6F 64 75 6C 65 2E 20 50 ED VGA module. P
+0030    72 65 73 73 20 61 6E 79 20 6B 65 79 00          ress any key.
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000034 bytes
+0000                          L$66:
+0000    00 00 00 00 FF FF FF FF 00 00 00 00 FF FF FF FF ................
+0010                          L$67:
+0010    00 00 00 00                                     DD	put_pixel_
+0014    00 00 00 00                                     DD	get_pixel_
+0018    00 00 00 00                                     DD	draw_rectangle_
+001C    00 00 00 00                                     DD	fill_screen_
+0020    00 00 00 00                                     DD	update_screen_
+0024    00 00 00 00                                     DD	vmemcpy_
+0028    00 00 00 00                                     DD	set_mode_
+002C    80 02 E0 01 08 00 FF 00                         ........
+

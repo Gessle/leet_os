@@ -1,0 +1,7 @@
+random.c(81): Warning! W112: Pointer truncated
+random.c(81): Note! I2003: source conversion type is 'union REGS __far *'
+random.c(81): Note! I2004: target conversion type is 'union REGS *'
+random.c(81): Warning! W112: Pointer truncated
+random.c(81): Note! I2003: source conversion type is 'union REGS __far *'
+random.c(81): Note! I2004: target conversion type is 'union REGS *'
+random.c(81): Note! I2002: 'int86' defined in: C:\WATCOM\H\i86.h(239)

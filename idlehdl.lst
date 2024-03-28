@@ -1,0 +1,98 @@
+Module: D:\LEETSRC\483\int28hdl\idlehdl.asm
+GROUP: 'DGROUP' _DATA
+
+Segment: idlehdl_TEXT WORD USE16 00000000 bytes
+
+Routine Size: 0 bytes,    Routine Base: idlehdl_TEXT + 0000
+
+No disassembly errors
+
+Segment: _DATA WORD USE16 00000000 bytes
+
+Segment: _TEXT BYTE USE16 0000009C bytes
+0000                          _diskio_in_progress:
+0000    00                                              .
+0001                          L$1:
+0001    00 00                                           ..
+0003                          L$2:
+0003    00 00                                           ..
+0005                          L$3:
+0005    00 00                                           ..
+0007                          L$4:
+0007    00 00                                           ..
+0009                          L$5:
+0009    00 00                                           ..
+000B                          L$6:
+000B    00 00                                           ..
+
+Routine Size: 13 bytes,    Routine Base: _TEXT + 0000
+
+000D                          dosidle_handler_:
+000D    2E 8C 16 09 00            mov         word ptr cs:L$5,ss 
+0012    2E 89 26 0B 00            mov         word ptr cs:L$6,sp 
+0017    2E 8E 16 01 00            mov         ss,word ptr cs:L$1 
+001C    2E 8B 26 03 00            mov         sp,word ptr cs:L$2 
+0021    83 EC 10                  sub         sp,0x0010 
+0024    2E C6 06 00 00 01         mov         byte ptr cs:_diskio_in_progress,0x01 
+002A    50                        push        ax 
+002B    53                        push        bx 
+002C    51                        push        cx 
+002D    52                        push        dx 
+002E    57                        push        di 
+002F    56                        push        si 
+0030    06                        push        es 
+0031    1E                        push        ds 
+0032    55                        push        bp 
+0033    9A 00 00 00 00            call        int28h_hdl_ 
+0038    5D                        pop         bp 
+0039    1F                        pop         ds 
+003A    07                        pop         es 
+003B    5E                        pop         si 
+003C    5F                        pop         di 
+003D    5A                        pop         dx 
+003E    59                        pop         cx 
+003F    5B                        pop         bx 
+0040    58                        pop         ax 
+0041    2E C6 06 00 00 00         mov         byte ptr cs:_diskio_in_progress,0x00 
+0047    2E 8E 16 09 00            mov         ss,word ptr cs:L$5 
+004C    2E 8B 26 0B 00            mov         sp,word ptr cs:L$6 
+0051    EA                                              .
+0052                          _old_dosidle_handler:
+0052    00 00 00 00                                     ....
+
+Routine Size: 73 bytes,    Routine Base: _TEXT + 000D
+
+0056                          int21wrp_:
+0056    2E 8C 16 05 00            mov         word ptr cs:L$3,ss 
+005B    2E 89 26 07 00            mov         word ptr cs:L$4,sp 
+0060    9C                        pushf       
+0061    2E F6 06 00 00 FF         test        byte ptr cs:_diskio_in_progress,0xff 
+0067    75 0C                     jne         L$7 
+0069    2E 8C 16 01 00            mov         word ptr cs:L$1,ss 
+006E    2E 89 26 03 00            mov         word ptr cs:L$2,sp 
+0073    EB 0A                     jmp         L$8 
+0075                          L$7:
+0075    2E 8E 16 09 00            mov         ss,word ptr cs:L$5 
+007A    2E 8B 26 0B 00            mov         sp,word ptr cs:L$6 
+007F                          L$8:
+007F    9D                        popf        
+0080    9C                        pushf       
+0081    9A                                              .
+0082                          _old_int21hdl:
+0082    00 00 00 00                                     ....
+0086    2E 8E 16 05 00            mov         ss,word ptr cs:L$3 
+008B    2E 8B 26 07 00            mov         sp,word ptr cs:L$4 
+0090    55                        push        bp 
+0091    50                        push        ax 
+0092    8B EC                     mov         bp,sp 
+0094    9C                        pushf       
+0095    58                        pop         ax 
+0096    89 46 08                  mov         word ptr 0x8[bp],ax 
+0099    58                        pop         ax 
+009A    5D                        pop         bp 
+009B    CF                        iret        
+
+Routine Size: 70 bytes,    Routine Base: _TEXT + 0056
+
+No disassembly errors
+

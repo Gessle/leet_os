@@ -1,0 +1,5 @@
+SHORTCUT EDITOR
+
+USAGE: $ SCEDITOR FILE.LNK
+
+SCEDITOR.COM is used to edit desktop shortcuts.

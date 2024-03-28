@@ -1,0 +1,23 @@
+    Signals
+
+
+Processes can send and receive signals from themselves, other processes and 
+from the kernel. When a signal is received by a process, it tries to trigger
+an interrupt that has the index number of the signal. If no interrupt handler
+is specified for that interrupt vector, the default action of the signal is
+performed. For example, SIGTERM kills the process if the process does not have
+an interrupt handler for interrupt 15.
+
+Signals can have values only from 1 to 255. The interrupt table itself can be
+2^16 entries long, so interrupts over 255 cannot conflict with any of the
+signals.
+    
+  1. Signal table
+  
+See SIGDEF.C.
+
+
+  2. Non-POSIX signals:
+  
+Signal 128 (SIGHIDECON) hides the console window.
+Signal 129 (SIGSHOWCON) shows the console window.

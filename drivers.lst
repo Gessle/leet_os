@@ -1,0 +1,646 @@
+Module: D:\LEETSRC\489\drvmod\drivers.c
+GROUP: 'DGROUP' CONST,CONST2,_DATA,_BSS
+
+Segment: drivers_TEXT BYTE USE16 000004E9 bytes
+0000                          driver_id_:
+0000    53                        push        bx 
+0001    51                        push        cx 
+0002    56                        push        si 
+0003    57                        push        di 
+0004    55                        push        bp 
+0005    89 E5                     mov         bp,sp 
+0007    50                        push        ax 
+0008    50                        push        ax 
+0009    89 C1                     mov         cx,ax 
+000B    89 56 FE                  mov         word ptr -0x2[bp],dx 
+000E    36 8B 1E 00 00            mov         bx,word ptr ss:_driver_count 
+0013    BA 2E 00                  mov         dx,0x002e 
+0016    89 D8                     mov         ax,bx 
+0018    F7 E2                     mul         dx 
+001A    8E 46 FE                  mov         es,word ptr -0x2[bp] 
+001D    89 C2                     mov         dx,ax 
+001F                          L$1:
+001F    4B                        dec         bx 
+0020    83 EA 2E                  sub         dx,0x002e 
+0023    83 FB FF                  cmp         bx,0xffff 
+0026    74 28                     je          L$4 
+0028    36 A1 00 00               mov         ax,word ptr ss:_drivers 
+002C    36 8B 36 02 00            mov         si,word ptr ss:_drivers+0x2 
+0031    89 CF                     mov         di,cx 
+0033    89 76 FC                  mov         word ptr -0x4[bp],si 
+0036    89 C6                     mov         si,ax 
+0038    8E 5E FC                  mov         ds,word ptr -0x4[bp] 
+003B    01 D6                     add         si,dx 
+003D                          L$2:
+003D    AC                        lodsb       
+003E    26 8A 25                  mov         ah,byte ptr es:[di] 
+0041    2A C4                     sub         al,ah 
+0043    75 05                     jne         L$3 
+0045    47                        inc         di 
+0046    3A C4                     cmp         al,ah 
+0048    75 F3                     jne         L$2 
+004A                          L$3:
+004A    18 E4                     sbb         ah,ah 
+004C    85 C0                     test        ax,ax 
+004E    75 CF                     jne         L$1 
+0050                          L$4:
+0050    89 D8                     mov         ax,bx 
+0052                          L$5:
+0052    89 EC                     mov         sp,bp 
+0054                          L$6:
+0054    5D                        pop         bp 
+0055    5F                        pop         di 
+0056    5E                        pop         si 
+0057    59                        pop         cx 
+0058    5B                        pop         bx 
+0059    CB                        retf        
+
+Routine Size: 90 bytes,    Routine Base: drivers_TEXT + 0000
+
+005A                          dev_cmd_:
+005A    56                        push        si 
+005B    57                        push        di 
+005C    55                        push        bp 
+005D    89 E5                     mov         bp,sp 
+005F    50                        push        ax 
+0060    50                        push        ax 
+0061    89 D7                     mov         di,dx 
+0063    89 DE                     mov         si,bx 
+0065    BA 2E 00                  mov         dx,0x002e 
+0068    F7 EA                     imul        dx 
+006A    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+006F    01 C3                     add         bx,ax 
+0071    89 C2                     mov         dx,ax 
+0073    8B 47 28                  mov         ax,word ptr 0x28[bx] 
+0076    89 46 FC                  mov         word ptr -0x4[bp],ax 
+0079    8B 47 2A                  mov         ax,word ptr 0x2a[bx] 
+007C    85 C0                     test        ax,ax 
+007E    75 06                     jne         L$7 
+0080    83 7E FC 00               cmp         word ptr -0x4[bp],0x0000 
+0084    74 4A                     je          L$11 
+0086                          L$7:
+0086    9A 00 00 00 00            call        reset_dosidle_handler_ 
+008B    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+0090    01 D3                     add         bx,dx 
+0092    8B 47 28                  mov         ax,word ptr 0x28[bx] 
+0095    8B 57 2A                  mov         dx,word ptr 0x2a[bx] 
+0098    36 A3 00 00               mov         word ptr ss:_driver_func_ptr,ax 
+009C    36 89 16 02 00            mov         word ptr ss:_driver_func_ptr+0x2,dx 
+00A1    8B 47 06                  mov         ax,word ptr 0x6[bx] 
+00A4    3D 01 00                  cmp         ax,0x0001 
+00A7    7C 0A                     jl          L$8 
+00A9    16                        push        ss 
+00AA    07                        pop         es 
+00AB    89 F0                     mov         ax,si 
+00AD    89 CA                     mov         dx,cx 
+00AF    89 FB                     mov         bx,di 
+00B1    EB 0B                     jmp         L$9 
+00B3                          L$8:
+00B3    3D FF FF                  cmp         ax,0xffff 
+00B6    75 0E                     jne         L$10 
+00B8    16                        push        ss 
+00B9    07                        pop         es 
+00BA    89 F0                     mov         ax,si 
+00BC    89 CA                     mov         dx,cx 
+00BE                          L$9:
+00BE    26 FF 1E 00 00            call        dword ptr es:_driver_func_ptr 
+00C3    89 46 FE                  mov         word ptr -0x2[bp],ax 
+00C6                          L$10:
+00C6    9A 00 00 00 00            call        set_dosidle_handler_ 
+00CB    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
+00CE    EB 03                     jmp         L$12 
+00D0                          L$11:
+00D0    B8 FF FF                  mov         ax,0xffff 
+00D3                          L$12:
+00D3    89 EC                     mov         sp,bp 
+00D5    5D                        pop         bp 
+00D6    5F                        pop         di 
+00D7    5E                        pop         si 
+00D8    CB                        retf        
+
+Routine Size: 127 bytes,    Routine Base: drivers_TEXT + 005A
+
+00D9                          dev_read_:
+00D9    56                        push        si 
+00DA    57                        push        di 
+00DB    55                        push        bp 
+00DC    89 E5                     mov         bp,sp 
+00DE    50                        push        ax 
+00DF    52                        push        dx 
+00E0    89 DF                     mov         di,bx 
+00E2    89 CE                     mov         si,cx 
+00E4    8B 4E 0A                  mov         cx,word ptr 0xa[bp] 
+00E7    BA 2E 00                  mov         dx,0x002e 
+00EA    F7 EA                     imul        dx 
+00EC    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+00F1    01 C3                     add         bx,ax 
+00F3    89 C2                     mov         dx,ax 
+00F5    8B 47 08                  mov         ax,word ptr 0x8[bx] 
+00F8    8B 5F 0A                  mov         bx,word ptr 0xa[bx] 
+00FB    85 DB                     test        bx,bx 
+00FD    75 04                     jne         L$13 
+00FF    85 C0                     test        ax,ax 
+0101    74 4B                     je          L$19 
+0103                          L$13:
+0103    9A 00 00 00 00            call        reset_dosidle_handler_ 
+0108    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+010D    01 D3                     add         bx,dx 
+010F    8B 57 08                  mov         dx,word ptr 0x8[bx] 
+0112    8B 47 0A                  mov         ax,word ptr 0xa[bx] 
+0115                          L$14:
+0115    36 89 16 00 00            mov         word ptr ss:_driver_func_ptr,dx 
+011A    36 A3 02 00               mov         word ptr ss:_driver_func_ptr+0x2,ax 
+011E    8B 47 06                  mov         ax,word ptr 0x6[bx] 
+0121    3D 01 00                  cmp         ax,0x0001 
+0124    7C 21                     jl          L$18 
+0126    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
+0129                          L$15:
+0129    16                        push        ss 
+012A    07                        pop         es 
+012B    89 FB                     mov         bx,di 
+012D    89 F2                     mov         dx,si 
+012F    26 FF 1E 00 00            call        dword ptr es:_driver_func_ptr 
+0134    89 46 FE                  mov         word ptr -0x2[bp],ax 
+0137                          L$16:
+0137    9A 00 00 00 00            call        set_dosidle_handler_ 
+013C    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
+013F                          L$17:
+013F    89 EC                     mov         sp,bp 
+0141    5D                        pop         bp 
+0142    5F                        pop         di 
+0143    5E                        pop         si 
+0144    CA 02 00                  retf        0x0002 
+0147                          L$18:
+0147    3D FF FF                  cmp         ax,0xffff 
+014A    75 EB                     jne         L$16 
+014C    EB DB                     jmp         L$15 
+014E                          L$19:
+014E    B8 FF FF                  mov         ax,0xffff 
+0151    EB EC                     jmp         L$17 
+
+Routine Size: 122 bytes,    Routine Base: drivers_TEXT + 00D9
+
+0153                          dev_write_:
+0153    56                        push        si 
+0154    57                        push        di 
+0155    55                        push        bp 
+0156    89 E5                     mov         bp,sp 
+0158    50                        push        ax 
+0159    52                        push        dx 
+015A    89 DF                     mov         di,bx 
+015C    89 CE                     mov         si,cx 
+015E    8B 4E 0A                  mov         cx,word ptr 0xa[bp] 
+0161    BA 2E 00                  mov         dx,0x002e 
+0164    F7 EA                     imul        dx 
+0166    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+016B    01 C3                     add         bx,ax 
+016D    89 C2                     mov         dx,ax 
+016F    8B 47 0C                  mov         ax,word ptr 0xc[bx] 
+0172    8B 5F 0E                  mov         bx,word ptr 0xe[bx] 
+0175    85 DB                     test        bx,bx 
+0177    75 04                     jne         L$20 
+0179    85 C0                     test        ax,ax 
+017B    74 D1                     je          L$19 
+017D                          L$20:
+017D    9A 00 00 00 00            call        reset_dosidle_handler_ 
+0182    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+0187    01 D3                     add         bx,dx 
+0189    8B 57 0C                  mov         dx,word ptr 0xc[bx] 
+018C    8B 47 0E                  mov         ax,word ptr 0xe[bx] 
+018F    EB 84                     jmp         L$14 
+
+Routine Size: 62 bytes,    Routine Base: drivers_TEXT + 0153
+
+0191                          dev_open_:
+0191    51                        push        cx 
+0192    56                        push        si 
+0193    57                        push        di 
+0194    55                        push        bp 
+0195    89 E5                     mov         bp,sp 
+0197    50                        push        ax 
+0198    89 D6                     mov         si,dx 
+019A    89 D9                     mov         cx,bx 
+019C    BA 2E 00                  mov         dx,0x002e 
+019F    F7 EA                     imul        dx 
+01A1    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+01A6    01 C3                     add         bx,ax 
+01A8    89 C2                     mov         dx,ax 
+01AA    8B 47 10                  mov         ax,word ptr 0x10[bx] 
+01AD    89 46 FE                  mov         word ptr -0x2[bp],ax 
+01B0    8B 47 12                  mov         ax,word ptr 0x12[bx] 
+01B3    85 C0                     test        ax,ax 
+01B5    75 06                     jne         L$21 
+01B7    83 7E FE 00               cmp         word ptr -0x2[bp],0x0000 
+01BB    74 49                     je          L$27 
+01BD                          L$21:
+01BD    9A 00 00 00 00            call        reset_dosidle_handler_ 
+01C2    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+01C7    01 D3                     add         bx,dx 
+01C9    8B 47 10                  mov         ax,word ptr 0x10[bx] 
+01CC    8B 57 12                  mov         dx,word ptr 0x12[bx] 
+01CF                          L$22:
+01CF    36 A3 00 00               mov         word ptr ss:_driver_func_ptr,ax 
+01D3    36 89 16 02 00            mov         word ptr ss:_driver_func_ptr+0x2,dx 
+01D8    8B 47 06                  mov         ax,word ptr 0x6[bx] 
+01DB    3D 01 00                  cmp         ax,0x0001 
+01DE    7C 1B                     jl          L$26 
+01E0    16                        push        ss 
+01E1    07                        pop         es 
+01E2    89 C8                     mov         ax,cx 
+01E4    89 F3                     mov         bx,si 
+01E6                          L$23:
+01E6    26 FF 1E 00 00            call        dword ptr es:_driver_func_ptr 
+01EB    89 C7                     mov         di,ax 
+01ED                          L$24:
+01ED    9A 00 00 00 00            call        set_dosidle_handler_ 
+01F2    89 F8                     mov         ax,di 
+01F4                          L$25:
+01F4    89 EC                     mov         sp,bp 
+01F6    5D                        pop         bp 
+01F7    5F                        pop         di 
+01F8    5E                        pop         si 
+01F9    59                        pop         cx 
+01FA    CB                        retf        
+01FB                          L$26:
+01FB    3D FF FF                  cmp         ax,0xffff 
+01FE    75 ED                     jne         L$24 
+0200    16                        push        ss 
+0201    07                        pop         es 
+0202    89 C8                     mov         ax,cx 
+0204    EB E0                     jmp         L$23 
+0206                          L$27:
+0206    B8 FF FF                  mov         ax,0xffff 
+0209    EB E9                     jmp         L$25 
+
+Routine Size: 122 bytes,    Routine Base: drivers_TEXT + 0191
+
+020B                          dev_close_:
+020B    53                        push        bx 
+020C    51                        push        cx 
+020D    56                        push        si 
+020E    57                        push        di 
+020F    55                        push        bp 
+0210    31 ED                     xor         bp,bp 
+0212    89 D1                     mov         cx,dx 
+0214    BA 2E 00                  mov         dx,0x002e 
+0217    F7 EA                     imul        dx 
+0219    C5 9E 00 00               lds         bx,dword ptr _drivers[bp] 
+021D    01 C3                     add         bx,ax 
+021F    89 C2                     mov         dx,ax 
+0221    8B 47 16                  mov         ax,word ptr 0x16[bx] 
+0224    8B 7F 14                  mov         di,word ptr 0x14[bx] 
+0227    85 C0                     test        ax,ax 
+0229    75 04                     jne         L$28 
+022B    85 FF                     test        di,di 
+022D    74 3F                     je          L$33 
+022F                          L$28:
+022F    9A 00 00 00 00            call        reset_dosidle_handler_ 
+0234    C5 9E 00 00               lds         bx,dword ptr _drivers[bp] 
+0238    01 D3                     add         bx,dx 
+023A    8B 47 14                  mov         ax,word ptr 0x14[bx] 
+023D    8B 57 16                  mov         dx,word ptr 0x16[bx] 
+0240                          L$29:
+0240    36 A3 00 00               mov         word ptr ss:_driver_func_ptr,ax 
+0244    89 96 02 00               mov         word ptr _driver_func_ptr+0x2[bp],dx 
+0248    8B 47 06                  mov         ax,word ptr 0x6[bx] 
+024B    3D 01 00                  cmp         ax,0x0001 
+024E    7C 15                     jl          L$32 
+0250    16                        push        ss 
+0251    07                        pop         es 
+0252    89 C8                     mov         ax,cx 
+0254                          L$30:
+0254    26 FF 1E 00 00            call        dword ptr es:_driver_func_ptr 
+0259    89 C6                     mov         si,ax 
+025B                          L$31:
+025B    9A 00 00 00 00            call        set_dosidle_handler_ 
+0260    89 F0                     mov         ax,si 
+0262    E9 EF FD                  jmp         L$6 
+0265                          L$32:
+0265    3D FF FF                  cmp         ax,0xffff 
+0268    75 F1                     jne         L$31 
+026A    16                        push        ss 
+026B    07                        pop         es 
+026C    EB E6                     jmp         L$30 
+026E                          L$33:
+026E    B8 FF FF                  mov         ax,0xffff 
+0271    E9 E0 FD                  jmp         L$6 
+
+Routine Size: 105 bytes,    Routine Base: drivers_TEXT + 020B
+
+0274                          dev_lseek_:
+0274    51                        push        cx 
+0275    56                        push        si 
+0276    57                        push        di 
+0277    55                        push        bp 
+0278    89 E5                     mov         bp,sp 
+027A    50                        push        ax 
+027B    89 D6                     mov         si,dx 
+027D    89 D9                     mov         cx,bx 
+027F    BA 2E 00                  mov         dx,0x002e 
+0282    F7 EA                     imul        dx 
+0284    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+0289    01 C3                     add         bx,ax 
+028B    89 C2                     mov         dx,ax 
+028D    8B 47 18                  mov         ax,word ptr 0x18[bx] 
+0290    89 46 FE                  mov         word ptr -0x2[bp],ax 
+0293    8B 47 1A                  mov         ax,word ptr 0x1a[bx] 
+0296    85 C0                     test        ax,ax 
+0298    75 09                     jne         L$34 
+029A    83 7E FE 00               cmp         word ptr -0x2[bp],0x0000 
+029E    75 03                     jne         L$34 
+02A0    E9 63 FF                  jmp         L$27 
+02A3                          L$34:
+02A3    9A 00 00 00 00            call        reset_dosidle_handler_ 
+02A8    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+02AD    01 D3                     add         bx,dx 
+02AF    8B 47 18                  mov         ax,word ptr 0x18[bx] 
+02B2    8B 57 1A                  mov         dx,word ptr 0x1a[bx] 
+02B5    E9 17 FF                  jmp         L$22 
+
+Routine Size: 68 bytes,    Routine Base: drivers_TEXT + 0274
+
+02B8                          dev_fsync_:
+02B8    53                        push        bx 
+02B9    51                        push        cx 
+02BA    56                        push        si 
+02BB    57                        push        di 
+02BC    55                        push        bp 
+02BD    31 ED                     xor         bp,bp 
+02BF    89 D1                     mov         cx,dx 
+02C1    BA 2E 00                  mov         dx,0x002e 
+02C4    F7 EA                     imul        dx 
+02C6    C5 9E 00 00               lds         bx,dword ptr _drivers[bp] 
+02CA    01 C3                     add         bx,ax 
+02CC    89 C2                     mov         dx,ax 
+02CE    8B 47 1E                  mov         ax,word ptr 0x1e[bx] 
+02D1    8B 7F 1C                  mov         di,word ptr 0x1c[bx] 
+02D4    85 C0                     test        ax,ax 
+02D6    75 04                     jne         L$35 
+02D8    85 FF                     test        di,di 
+02DA    74 92                     je          L$33 
+02DC                          L$35:
+02DC    9A 00 00 00 00            call        reset_dosidle_handler_ 
+02E1    C5 9E 00 00               lds         bx,dword ptr _drivers[bp] 
+02E5    01 D3                     add         bx,dx 
+02E7    8B 47 1C                  mov         ax,word ptr 0x1c[bx] 
+02EA    8B 57 1E                  mov         dx,word ptr 0x1e[bx] 
+02ED    E9 50 FF                  jmp         L$29 
+
+Routine Size: 56 bytes,    Routine Base: drivers_TEXT + 02B8
+
+02F0                          dev_geterror_:
+02F0    53                        push        bx 
+02F1    51                        push        cx 
+02F2    56                        push        si 
+02F3    57                        push        di 
+02F4    55                        push        bp 
+02F5    31 ED                     xor         bp,bp 
+02F7    89 D1                     mov         cx,dx 
+02F9    BA 2E 00                  mov         dx,0x002e 
+02FC    F7 EA                     imul        dx 
+02FE    C5 9E 00 00               lds         bx,dword ptr _drivers[bp] 
+0302    01 C3                     add         bx,ax 
+0304    89 C2                     mov         dx,ax 
+0306    8B 47 22                  mov         ax,word ptr 0x22[bx] 
+0309    8B 7F 20                  mov         di,word ptr 0x20[bx] 
+030C    85 C0                     test        ax,ax 
+030E    75 07                     jne         L$36 
+0310    85 FF                     test        di,di 
+0312    75 03                     jne         L$36 
+0314    E9 57 FF                  jmp         L$33 
+0317                          L$36:
+0317    9A 00 00 00 00            call        reset_dosidle_handler_ 
+031C    C5 9E 00 00               lds         bx,dword ptr _drivers[bp] 
+0320    01 D3                     add         bx,dx 
+0322    8B 47 20                  mov         ax,word ptr 0x20[bx] 
+0325    8B 57 22                  mov         dx,word ptr 0x22[bx] 
+0328    E9 15 FF                  jmp         L$29 
+
+Routine Size: 59 bytes,    Routine Base: drivers_TEXT + 02F0
+
+032B                          unload_driver_:
+032B    53                        push        bx 
+032C    51                        push        cx 
+032D    52                        push        dx 
+032E    BA 2E 00                  mov         dx,0x002e 
+0331    F7 EA                     imul        dx 
+0333    36 8B 16 00 00            mov         dx,word ptr ss:_drivers 
+0338    89 C3                     mov         bx,ax 
+033A    36 A1 02 00               mov         ax,word ptr ss:_drivers+0x2 
+033E    01 D3                     add         bx,dx 
+0340    8E D8                     mov         ds,ax 
+0342    8B 57 26                  mov         dx,word ptr 0x26[bx] 
+0345    8B 4F 24                  mov         cx,word ptr 0x24[bx] 
+0348    85 D2                     test        dx,dx 
+034A    75 04                     jne         L$37 
+034C    85 C9                     test        cx,cx 
+034E    74 07                     je          L$38 
+0350                          L$37:
+0350    FF 5F 24                  call        dword ptr 0x24[bx] 
+0353    31 C0                     xor         ax,ax 
+0355    EB 03                     jmp         L$39 
+0357                          L$38:
+0357    B8 01 00                  mov         ax,0x0001 
+035A                          L$39:
+035A    5A                        pop         dx 
+035B    59                        pop         cx 
+035C    5B                        pop         bx 
+035D    CB                        retf        
+
+Routine Size: 51 bytes,    Routine Base: drivers_TEXT + 032B
+
+035E                          unload_drivers_:
+035E    52                        push        dx 
+035F    36 8B 16 00 00            mov         dx,word ptr ss:_driver_count 
+0364                          L$40:
+0364    4A                        dec         dx 
+0365    83 FA FF                  cmp         dx,0xffff 
+0368    74 08                     je          L$41 
+036A    89 D0                     mov         ax,dx 
+036C    0E                        push        cs 
+036D    E8 00 00                  call        unload_driver_ 
+0370    EB F2                     jmp         L$40 
+0372                          L$41:
+0372    5A                        pop         dx 
+0373    CB                        retf        
+
+Routine Size: 22 bytes,    Routine Base: drivers_TEXT + 035E
+
+0374                          unload_module_:
+0374    53                        push        bx 
+0375    51                        push        cx 
+0376    56                        push        si 
+0377    57                        push        di 
+0378    55                        push        bp 
+0379    89 E5                     mov         bp,sp 
+037B    83 EC 06                  sub         sp,0x0006 
+037E    89 C1                     mov         cx,ax 
+0380    89 56 FA                  mov         word ptr -0x6[bp],dx 
+0383    36 8B 1E 00 00            mov         bx,word ptr ss:_driver_count 
+0388    BA 2E 00                  mov         dx,0x002e 
+038B    89 D8                     mov         ax,bx 
+038D    F7 E2                     mul         dx 
+038F    8E 46 FA                  mov         es,word ptr -0x6[bp] 
+0392    89 C2                     mov         dx,ax 
+0394                          L$42:
+0394    4B                        dec         bx 
+0395    83 EA 2E                  sub         dx,0x002e 
+0398    83 FB FF                  cmp         bx,0xffff 
+039B    75 03                     jne         L$43 
+039D    E9 B0 FC                  jmp         L$4 
+03A0                          L$43:
+03A0    36 8B 36 00 00            mov         si,word ptr ss:_drivers 
+03A5    89 CF                     mov         di,cx 
+03A7    36 8E 1E 02 00            mov         ds,word ptr ss:_drivers+0x2 
+03AC    01 D6                     add         si,dx 
+03AE                          L$44:
+03AE    AC                        lodsb       
+03AF    26 8A 25                  mov         ah,byte ptr es:[di] 
+03B2    2A C4                     sub         al,ah 
+03B4    75 05                     jne         L$45 
+03B6    47                        inc         di 
+03B7    3A C4                     cmp         al,ah 
+03B9    75 F3                     jne         L$44 
+03BB                          L$45:
+03BB    18 E4                     sbb         ah,ah 
+03BD    85 C0                     test        ax,ax 
+03BF    75 D3                     jne         L$42 
+03C1    89 D8                     mov         ax,bx 
+03C3    BA 2E 00                  mov         dx,0x002e 
+03C6    0E                        push        cs 
+03C7    E8 00 00                  call        unload_driver_ 
+03CA    89 46 FC                  mov         word ptr -0x4[bp],ax 
+03CD    89 D8                     mov         ax,bx 
+03CF    F7 E2                     mul         dx 
+03D1    36 FF 0E 00 00            dec         word ptr ss:_driver_count 
+03D6    89 C2                     mov         dx,ax 
+03D8    89 46 FE                  mov         word ptr -0x2[bp],ax 
+03DB    83 C2 2E                  add         dx,0x002e 
+03DE                          L$46:
+03DE    36 3B 1E 00 00            cmp         bx,word ptr ss:_driver_count 
+03E3    73 25                     jae         L$47 
+03E5    8B 7E FE                  mov         di,word ptr -0x2[bp] 
+03E8    36 8B 0E 00 00            mov         cx,word ptr ss:_drivers 
+03ED    36 A1 02 00               mov         ax,word ptr ss:_drivers+0x2 
+03F1    43                        inc         bx 
+03F2    83 46 FE 2E               add         word ptr -0x2[bp],0x002e 
+03F6    89 CE                     mov         si,cx 
+03F8    8E C0                     mov         es,ax 
+03FA    8E D8                     mov         ds,ax 
+03FC    01 CF                     add         di,cx 
+03FE    B9 17 00                  mov         cx,0x0017 
+0401    01 D6                     add         si,dx 
+0403    83 C2 2E                  add         dx,0x002e 
+0406    F3 A5                     rep movsw   
+0408    EB D4                     jmp         L$46 
+040A                          L$47:
+040A    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
+040D    E9 42 FC                  jmp         L$5 
+
+Routine Size: 156 bytes,    Routine Base: drivers_TEXT + 0374
+
+0410                          load_driver_:
+0410    56                        push        si 
+0411    57                        push        di 
+0412    55                        push        bp 
+0413    89 E5                     mov         bp,sp 
+0415    83 EC 0E                  sub         sp,0x000e 
+0418    89 C7                     mov         di,ax 
+041A    89 56 FC                  mov         word ptr -0x4[bp],dx 
+041D    89 5E F8                  mov         word ptr -0x8[bp],bx 
+0420    89 4E FA                  mov         word ptr -0x6[bp],cx 
+0423    36 A1 00 00               mov         ax,word ptr ss:_driver_count 
+0427    31 F6                     xor         si,si 
+0429    89 46 FE                  mov         word ptr -0x2[bp],ax 
+042C    B0 00                     mov         al,0x00 
+042E    CD 58                     int         0x58 
+0430    89 46 F6                  mov         word ptr -0xa[bp],ax 
+0433                          L$48:
+0433    46                        inc         si 
+0434    89 F0                     mov         ax,si 
+0436    9A 00 00 00 00            call        _dos_getvect_ 
+043B    85 D2                     test        dx,dx 
+043D    75 04                     jne         L$49 
+043F    85 C0                     test        ax,ax 
+0441    74 07                     je          L$50 
+0443                          L$49:
+0443    85 F6                     test        si,si 
+0445    75 EC                     jne         L$48 
+0447    E9 86 FC                  jmp         L$11 
+044A                          L$50:
+044A    56                        push        si 
+044B    16                        push        ss 
+044C    B8 00 00                  mov         ax,offset DGROUP:L$52 
+044F    50                        push        ax 
+0450    16                        push        ss 
+0451    8D 56 F2                  lea         dx,-0xe[bp] 
+0454    52                        push        dx 
+0455    BB 00 00                  mov         bx,offset driver_installer_ 
+0458    9A 00 00 00 00            call        sprintf_ 
+045D    83 C4 0A                  add         sp,0x000a 
+0460    B9 00 00                  mov         cx,seg driver_installer_ 
+0463    9A 00 00 00 00            call        reset_dosidle_handler_ 
+0468    89 F0                     mov         ax,si 
+046A    9A 00 00 00 00            call        _dos_setvect_ 
+046F    BB 82 00                  mov         bx,0x0082 
+0472    8B 56 FC                  mov         dx,word ptr -0x4[bp] 
+0475    B0 01                     mov         al,0x01 
+0477    CD 58                     int         0x58 
+0479    8C D1                     mov         cx,ss 
+047B    8D 5E F2                  lea         bx,-0xe[bp] 
+047E    89 F8                     mov         ax,di 
+0480    9A 00 00 00 00            call        dosexec_ 
+0485    8A 5E F6                  mov         bl,byte ptr -0xa[bp] 
+0488    30 FF                     xor         bh,bh 
+048A    31 C9                     xor         cx,cx 
+048C    B0 01                     mov         al,0x01 
+048E    CD 58                     int         0x58 
+0490    9A 00 00 00 00            call        set_dosidle_handler_ 
+0495    89 F0                     mov         ax,si 
+0497    31 DB                     xor         bx,bx 
+0499    9A 00 00 00 00            call        _dos_setvect_ 
+049E    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
+04A1    36 3B 06 00 00            cmp         ax,word ptr ss:_driver_count 
+04A6    74 34                     je          L$51 
+04A8    B8 05 00                  mov         ax,0x0005 
+04AB    BA 2E 00                  mov         dx,0x002e 
+04AE    50                        push        ax 
+04AF    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
+04B2    F7 EA                     imul        dx 
+04B4    8B 5E F8                  mov         bx,word ptr -0x8[bp] 
+04B7    8B 4E FA                  mov         cx,word ptr -0x6[bp] 
+04BA    89 C6                     mov         si,ax 
+04BC    36 A1 00 00               mov         ax,word ptr ss:_drivers 
+04C0    36 8B 16 02 00            mov         dx,word ptr ss:_drivers+0x2 
+04C5    01 F0                     add         ax,si 
+04C7    9A 00 00 00 00            call        strncpy_ 
+04CC    36 C5 1E 00 00            lds         bx,dword ptr ss:_drivers 
+04D1    01 F3                     add         bx,si 
+04D3    31 C0                     xor         ax,ax 
+04D5    C6 47 05 00               mov         byte ptr 0x5[bx],0x00 
+04D9    E9 F7 FB                  jmp         L$12 
+04DC                          L$51:
+04DC    9A 00 00 00 00            call        restore_videomode_ 
+04E1    9A 00 00 00 00            call        draw_screen_ 
+04E6    E9 E7 FB                  jmp         L$11 
+
+Routine Size: 217 bytes,    Routine Base: drivers_TEXT + 0410
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000003 bytes
+0000                          L$52:
+0000    25 58 00                                        %X.
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000002 bytes
+0000                          _driver_count:
+0000    00 00                                           ..
+
+Segment: _BSS WORD USE16 00000008 bytes
+0000                          _drivers:
+0004                          _driver_func_ptr:
+
+BSS Size: 8 bytes
+

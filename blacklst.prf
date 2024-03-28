@@ -1,0 +1,6 @@
+get_pixel
+get_pixel_ega4
+put_pixel
+put_pixel_ega4
+windowpos_visible
+put_pixel_shadow

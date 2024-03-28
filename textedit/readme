@@ -1,0 +1,9 @@
+  How to compile
+
+On Linux, BSD or almost any POSIX-compliant system, using gcc:
+$ ./compile.sh
+The resulting binary is named textedit.
+
+On DOS, using Open Watcom C/C++ compiler:
+> COMPILE.BAT
+The resulting binary is named TEXTEDIT.COM.
