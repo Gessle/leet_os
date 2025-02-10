@@ -1,4 +1,5 @@
 #define MAX_PATH 80
+
 static unsigned char vpu_segment_in_use(struct vpu *vpu, unsigned short segment);
 int getchr(void);
 struct int21time *dostime(void);
@@ -20,6 +21,9 @@ static void vpu_kill_clones(struct vpu *);
 void log_error(char *);
 
 void append_path(struct vpu *, char *, char *);
+
+int findfirst(const char * const, unsigned char const, struct find_t * const);
+int findnext(struct find_t *const);
 
 extern int videodriver;
 extern char outofmemory[];

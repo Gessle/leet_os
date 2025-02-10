@@ -9,13 +9,13 @@ static int vpu_instr_memcpy(struct vpu *vpu, unsigned flags)
 
   if(!(slen0 = segment_exists(vpu, vpu->regs[0])) || !(slen1 = segment_exists(vpu, vpu->regs[3])))
   {
-    vpu->flags.dsegv = 1;
-    return 0;
+    goto segv;
   }
   if(slen0 < vpu->regs[1] + vpu->regs[2] - 1 || slen1 < vpu->regs[4] + vpu->regs[2] - 1)
   {
+    segv:
     segfault(vpu);
-    return 0;
+    return 4;
   }
 
   memmove(&vpu->data[vpu->regs[3]][vpu->regs[4]], &vpu->data[vpu->regs[0]][vpu->regs[1]], vpu->regs[2]);
@@ -39,13 +39,14 @@ static int vpu_instr_memset(struct vpu *vpu, unsigned flags)
 
   if(!(slen = segment_exists(vpu, vpu->regs[0])))
   {
-    vpu->flags.dsegv = 1;
-    return 0;
+    goto segv;
   }
 
   if(slen < vpu->regs[1] + vpu->regs[2] - 1)
   {
-    return 0;
+    segv:
+    segfault(vpu);
+    return 4;
   }
 
   copy_byte = vpu->byteregs[6];
@@ -73,13 +74,14 @@ static int vpu_instr_memchr(struct vpu *vpu, unsigned flags)
 
   if(!(slen = segment_exists(vpu, vpu->regs[0])))
   {
-    vpu->flags.dsegv = 1;
-    return 0;
+    goto segv;
   }
 
   if(slen < vpu->regs[1] + vpu->regs[2] - 1)
   {
-    return 0;
+    segv:
+    segfault(vpu);
+    return 4;
   }
 
   needle = vpu->byteregs[6];
@@ -113,13 +115,13 @@ static int vpu_instr_memcmp(struct vpu *vpu, unsigned flags)
 
   if(!(slen0 = segment_exists(vpu, vpu->regs[0])) || !(slen1 = segment_exists(vpu, vpu->regs[3])))
   {
-    vpu->flags.dsegv = 1;
-    return 0;
+    goto segv;
   }
   if(slen0 < vpu->regs[1] + vpu->regs[2] - 1 || slen1 < vpu->regs[4] + vpu->regs[2] - 1)
   {
+    segv:
     segfault(vpu);
-    return 0;
+    return 4;
   }
 
   do

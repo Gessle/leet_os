@@ -124,18 +124,26 @@ New position is returned in AX.
 
 Equivalent to C function call fseek(DX, BX, CX);
 
+  LLSEEK (AX == 0x8008)
+
+DX = file descriptor
+CX = mode
+EX:BX = count (signed long)
+
+New position is returned in BX:AX.
+
 
   MMAP (AX == 9)
   
 BX = data segment to allocate
 CX = Length of data segment
 DX = File descriptor (optional)
-EX = File position added to the current position (optional)
+FX:EX = File position added to the current position (optional)
 
 Allocates a new [CX] bytes long memory segment. Tries to allocate segment [BX],
 and if fails, tries to allocate other segment. The newly allocated segment is
 returned into AX. If [DX] is not 0, contents from file starting from file pos
-[EX] are read into the new segment. -1 (0xFFFF) is returned on error.
+[FX:EX] are read into the new segment. -1 (0xFFFF) is returned on error.
 
 
   MUNMAP (AX == 11)

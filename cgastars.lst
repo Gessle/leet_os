@@ -1,0 +1,400 @@
+Module: D:\LEETSRC\490\CGASTARS.C
+GROUP: 'DGROUP' CONST,CONST2,_DATA,_BSS
+
+Segment: _TEXT BYTE USE16 00000327 bytes
+0000                          abs_:
+0000    85 C0                     test        ax,ax 
+0002    7D 02                     jge         L$1 
+0004    F7 D8                     neg         ax 
+0006                          L$1:
+0006    C3                        ret         
+
+Routine Size: 7 bytes,    Routine Base: _TEXT + 0000
+
+0007                          video_mode_:
+0007    53                        push        bx 
+0008    51                        push        cx 
+0009    52                        push        dx 
+000A    56                        push        si 
+000B    57                        push        di 
+000C    B4 00                     mov         ah,0x00 
+000E    B0 04                     mov         al,0x04 
+0010    CD 10                     int         0x10 
+0012                          L$2:
+0012    5F                        pop         di 
+0013    5E                        pop         si 
+0014                          L$3:
+0014    5A                        pop         dx 
+0015    59                        pop         cx 
+0016    5B                        pop         bx 
+0017    C3                        ret         
+
+Routine Size: 17 bytes,    Routine Base: _TEXT + 0007
+
+0018                          wait_refresh_:
+0018    53                        push        bx 
+0019    51                        push        cx 
+001A    52                        push        dx 
+001B    56                        push        si 
+001C    57                        push        di 
+001D    BA DA 03                  mov         dx,0x03da 
+0020                          L$4:
+0020    EC                        in          al,dx 
+0021    A8 08                     test        al,0x08 
+0023    75 FB                     jne         L$4 
+0025                          L$5:
+0025    EC                        in          al,dx 
+0026    A8 08                     test        al,0x08 
+0028    74 FB                     je          L$5 
+002A    EB E6                     jmp         L$2 
+
+Routine Size: 20 bytes,    Routine Base: _TEXT + 0018
+
+002C                          put_pixel_:
+002C    51                        push        cx 
+002D    55                        push        bp 
+002E    89 E5                     mov         bp,sp 
+0030    50                        push        ax 
+0031    52                        push        dx 
+0032    88 5E FE                  mov         byte ptr -0x2[bp],bl 
+0035    89 C3                     mov         bx,ax 
+0037    30 E7                     xor         bh,ah 
+0039    80 E3 03                  and         bl,0x03 
+003C    D1 E3                     shl         bx,0x01 
+003E    BA C0 00                  mov         dx,0x00c0 
+0041    88 D9                     mov         cl,bl 
+0043    89 C3                     mov         bx,ax 
+0045    D3 FA                     sar         dx,cl 
+0047    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
+004A    89 D1                     mov         cx,dx 
+004C    BA 50 00                  mov         dx,0x0050 
+004F    D1 E8                     shr         ax,0x01 
+0051    F7 E2                     mul         dx 
+0053    D1 EB                     shr         bx,0x01 
+0055    D1 EB                     shr         bx,0x01 
+0057    F6 46 FC 01               test        byte ptr -0x4[bp],0x01 
+005B    75 17                     jne         L$7 
+005D    01 C3                     add         bx,ax 
+005F    8E 46 08                  mov         es,word ptr 0x8[bp] 
+0062    03 5E 06                  add         bx,word ptr 0x6[bp] 
+0065    80 7E FE 00               cmp         byte ptr -0x2[bp],0x00 
+0069    75 1A                     jne         L$8 
+006B                          L$6:
+006B    88 C8                     mov         al,cl 
+006D    F6 D0                     not         al 
+006F    26 20 07                  and         byte ptr es:[bx],al 
+0072    EB 14                     jmp         L$9 
+0074                          L$7:
+0074    80 C4 20                  add         ah,0x20 
+0077    01 C3                     add         bx,ax 
+0079    8E 46 08                  mov         es,word ptr 0x8[bp] 
+007C    03 5E 06                  add         bx,word ptr 0x6[bp] 
+007F    80 7E FE 00               cmp         byte ptr -0x2[bp],0x00 
+0083    74 E6                     je          L$6 
+0085                          L$8:
+0085    26 08 0F                  or          byte ptr es:[bx],cl 
+0088                          L$9:
+0088    89 EC                     mov         sp,bp 
+008A    5D                        pop         bp 
+008B    59                        pop         cx 
+008C    C2 04 00                  ret         0x0004 
+
+Routine Size: 99 bytes,    Routine Base: _TEXT + 002C
+
+008F                          rand_:
+008F    53                        push        bx 
+0090    51                        push        cx 
+0091    52                        push        dx 
+0092    A1 02 00                  mov         ax,word ptr DGROUP:L$40 
+0095    05 0C 00                  add         ax,0x000c 
+0098    01 06 04 00               add         word ptr DGROUP:L$41,ax 
+009C    A1 04 00                  mov         ax,word ptr DGROUP:L$41 
+009F    2D 13 00                  sub         ax,0x0013 
+00A2    FF 06 02 00               inc         word ptr DGROUP:L$40 
+00A6    29 06 06 00               sub         word ptr DGROUP:L$42,ax 
+00AA    A1 02 00                  mov         ax,word ptr DGROUP:L$40 
+00AD    8B 0E 06 00               mov         cx,word ptr DGROUP:L$42 
+00B1    03 06 04 00               add         ax,word ptr DGROUP:L$41 
+00B5    BB 17 00                  mov         bx,0x0017 
+00B8    01 C1                     add         cx,ax 
+00BA    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+00BD    F7 E3                     mul         bx 
+00BF    BB 6F 67                  mov         bx,0x676f 
+00C2    31 D2                     xor         dx,dx 
+00C4    F7 F3                     div         bx 
+00C6    89 D0                     mov         ax,dx 
+00C8    89 16 00 00               mov         word ptr __DOSRAND_SEED,dx 
+00CC    01 C8                     add         ax,cx 
+00CE    E9 43 FF                  jmp         L$3 
+
+Routine Size: 66 bytes,    Routine Base: _TEXT + 008F
+
+00D1                          seed_dosrand_:
+00D1    53                        push        bx 
+00D2    51                        push        cx 
+00D3    52                        push        dx 
+00D4    56                        push        si 
+00D5    57                        push        di 
+00D6    55                        push        bp 
+00D7    89 E5                     mov         bp,sp 
+00D9    83 EC 08                  sub         sp,0x0008 
+00DC    B4 2C                     mov         ah,0x2c 
+00DE    CD 21                     int         0x21 
+00E0    88 AE FC FF               mov         byte ptr -0x4[bp],ch 
+00E4    00 8E F8 FF               add         byte ptr -0x8[bp],cl 
+00E8    00 B6 FA FF               add         byte ptr -0x6[bp],dh 
+00EC    00 96 FE FF               add         byte ptr -0x2[bp],dl 
+00F0    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+00F3    30 E4                     xor         ah,ah 
+00F5    89 C2                     mov         dx,ax 
+00F7    8A 46 F8                  mov         al,byte ptr -0x8[bp] 
+00FA    01 C2                     add         dx,ax 
+00FC    8A 46 FA                  mov         al,byte ptr -0x6[bp] 
+00FF    01 C2                     add         dx,ax 
+0101    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+0104    89 C3                     mov         bx,ax 
+0106    83 C3 0F                  add         bx,0x000f 
+0109    89 D0                     mov         ax,dx 
+010B    F7 EB                     imul        bx 
+010D    A3 00 00                  mov         word ptr __DOSRAND_SEED,ax 
+0110                          L$10:
+0110    89 EC                     mov         sp,bp 
+0112    5D                        pop         bp 
+0113    E9 FC FE                  jmp         L$2 
+
+Routine Size: 69 bytes,    Routine Base: _TEXT + 00D1
+
+0116                          main_:
+0116    53                        push        bx 
+0117    51                        push        cx 
+0118    52                        push        dx 
+0119    56                        push        si 
+011A    57                        push        di 
+011B    55                        push        bp 
+011C    89 E5                     mov         bp,sp 
+011E    81 EC B8 04               sub         sp,0x04b8 
+0122    E8 00 00                  call        seed_dosrand_ 
+0125    B4 0C                     mov         ah,0x0c 
+0127    B0 00                     mov         al,0x00 
+0129    CD 21                     int         0x21 
+012B    E4 60                     in          al,0x60 
+012D    88 86 FE FF               mov         byte ptr -0x2[bp],al 
+0131    88 86 FC FF               mov         byte ptr -0x4[bp],al 
+0135    B4 00                     mov         ah,0x00 
+0137    B0 04                     mov         al,0x04 
+0139    CD 10                     int         0x10 
+013B    C7 46 FA F4 01            mov         word ptr -0x6[bp],0x01f4 
+0140    C7 46 F8 00 00            mov         word ptr -0x8[bp],0x0000 
+0145    BB 64 00                  mov         bx,0x0064 
+0148    BE B0 04                  mov         si,0x04b0 
+014B                          L$11:
+014B    4B                        dec         bx 
+014C    83 EE 0C                  sub         si,0x000c 
+014F    83 FB FF                  cmp         bx,0xffff 
+0152    74 4C                     je          L$13 
+0154    C7 82 48 FB A0 00         mov         word ptr -0x4b8[bp+si],0x00a0 
+015A    B9 A0 00                  mov         cx,0x00a0 
+015D    C7 82 4A FB 64 00         mov         word ptr -0x4b6[bp+si],0x0064 
+0163    31 D2                     xor         dx,dx 
+0165    E8 00 00                  call        rand_ 
+0168    F7 F1                     div         cx 
+016A    B9 64 00                  mov         cx,0x0064 
+016D    89 92 4C FB               mov         word ptr -0x4b4[bp+si],dx 
+0171    31 D2                     xor         dx,dx 
+0173    E8 00 00                  call        rand_ 
+0176    F7 F1                     div         cx 
+0178    89 92 4E FB               mov         word ptr -0x4b2[bp+si],dx 
+017C    E8 00 00                  call        rand_ 
+017F    A8 01                     test        al,0x01 
+0181    74 0A                     je          L$12 
+0183    8B 82 4C FB               mov         ax,word ptr -0x4b4[bp+si] 
+0187    F7 D8                     neg         ax 
+0189    89 82 4C FB               mov         word ptr -0x4b4[bp+si],ax 
+018D                          L$12:
+018D    E8 00 00                  call        rand_ 
+0190    A8 01                     test        al,0x01 
+0192    74 B7                     je          L$11 
+0194    8B 82 4E FB               mov         ax,word ptr -0x4b2[bp+si] 
+0198    F7 D8                     neg         ax 
+019A    89 82 4E FB               mov         word ptr -0x4b2[bp+si],ax 
+019E    EB AB                     jmp         L$11 
+01A0                          L$13:
+01A0    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+01A3    3A 46 FE                  cmp         al,byte ptr -0x2[bp] 
+01A6    74 03                     je          L$14 
+01A8    E9 65 FF                  jmp         L$10 
+01AB                          L$14:
+01AB    FF 4E FA                  dec         word ptr -0x6[bp] 
+01AE    E4 60                     in          al,0x60 
+01B0    88 86 FC FF               mov         byte ptr -0x4[bp],al 
+01B4    B4 0C                     mov         ah,0x0c 
+01B6    B0 00                     mov         al,0x00 
+01B8    CD 21                     int         0x21 
+01BA    83 7E FA FF               cmp         word ptr -0x6[bp],0xffff 
+01BE    75 05                     jne         L$15 
+01C0    C7 46 F8 01 00            mov         word ptr -0x8[bp],0x0001 
+01C5                          L$15:
+01C5    B9 64 00                  mov         cx,0x0064 
+01C8    BE B0 04                  mov         si,0x04b0 
+01CB                          L$16:
+01CB    49                        dec         cx 
+01CC    83 EE 0C                  sub         si,0x000c 
+01CF    83 F9 FF                  cmp         cx,0xffff 
+01D2    74 54                     je          L$20 
+01D4    89 F7                     mov         di,si 
+01D6    8B 82 4C FB               mov         ax,word ptr -0x4b4[bp+si] 
+01DA    8D 9B 50 FB               lea         bx,-0x4b0[bp+di] 
+01DE    85 C0                     test        ax,ax 
+01E0    7D 02                     jge         L$17 
+01E2    F7 D8                     neg         ax 
+01E4                          L$17:
+01E4    01 07                     add         word ptr [bx],ax 
+01E6    89 F7                     mov         di,si 
+01E8    8B 82 4E FB               mov         ax,word ptr -0x4b2[bp+si] 
+01EC    8D 9B 52 FB               lea         bx,-0x4ae[bp+di] 
+01F0    85 C0                     test        ax,ax 
+01F2    7D 02                     jge         L$18 
+01F4    F7 D8                     neg         ax 
+01F6                          L$18:
+01F6    01 07                     add         word ptr [bx],ax 
+01F8    81 BA 50 FB A0 00         cmp         word ptr -0x4b0[bp+si],0x00a0 
+01FE    72 35                     jb          L$23 
+0200    83 7E F8 00               cmp         word ptr -0x8[bp],0x0000 
+0204    74 15                     je          L$19 
+0206    FF 36 02 00               push        word ptr _VGA+0x2 
+020A    8B 92 4A FB               mov         dx,word ptr -0x4b6[bp+si] 
+020E    8B 82 48 FB               mov         ax,word ptr -0x4b8[bp+si] 
+0212    FF 36 00 00               push        word ptr _VGA 
+0216    31 DB                     xor         bx,bx 
+0218    E8 00 00                  call        put_pixel_ 
+021B                          L$19:
+021B    83 BA 4C FB 00            cmp         word ptr -0x4b4[bp+si],0x0000 
+0220    7E 09                     jle         L$21 
+0222    FF 82 48 FB               inc         word ptr -0x4b8[bp+si] 
+0226    EB 07                     jmp         L$22 
+0228                          L$20:
+0228    E9 E4 00                  jmp         L$35 
+022B                          L$21:
+022B    FF 8A 48 FB               dec         word ptr -0x4b8[bp+si] 
+022F                          L$22:
+022F    31 C0                     xor         ax,ax 
+0231    89 82 50 FB               mov         word ptr -0x4b0[bp+si],ax 
+0235                          L$23:
+0235    83 BA 52 FB 64            cmp         word ptr -0x4ae[bp+si],0x0064 
+023A    72 32                     jb          L$27 
+023C    83 7E F8 00               cmp         word ptr -0x8[bp],0x0000 
+0240    74 15                     je          L$24 
+0242    FF 36 02 00               push        word ptr _VGA+0x2 
+0246    8B 92 4A FB               mov         dx,word ptr -0x4b6[bp+si] 
+024A    8B 82 48 FB               mov         ax,word ptr -0x4b8[bp+si] 
+024E    FF 36 00 00               push        word ptr _VGA 
+0252    31 DB                     xor         bx,bx 
+0254    E8 00 00                  call        put_pixel_ 
+0257                          L$24:
+0257    83 BA 4E FB 00            cmp         word ptr -0x4b2[bp+si],0x0000 
+025C    7E 06                     jle         L$25 
+025E    FF 82 4A FB               inc         word ptr -0x4b6[bp+si] 
+0262    EB 04                     jmp         L$26 
+0264                          L$25:
+0264    FF 8A 4A FB               dec         word ptr -0x4b6[bp+si] 
+0268                          L$26:
+0268    31 C0                     xor         ax,ax 
+026A    89 82 52 FB               mov         word ptr -0x4ae[bp+si],ax 
+026E                          L$27:
+026E    81 BA 48 FB 40 01         cmp         word ptr -0x4b8[bp+si],0x0140 
+0274    73 08                     jae         L$28 
+0276    81 BA 4A FB C8 00         cmp         word ptr -0x4b6[bp+si],0x00c8 
+027C    72 4F                     jb          L$32 
+027E                          L$28:
+027E    C7 82 48 FB A0 00         mov         word ptr -0x4b8[bp+si],0x00a0 
+0284    BB A0 00                  mov         bx,0x00a0 
+0287    C7 82 4A FB 64 00         mov         word ptr -0x4b6[bp+si],0x0064 
+028D    31 D2                     xor         dx,dx 
+028F    E8 00 00                  call        rand_ 
+0292    F7 F3                     div         bx 
+0294    BB 64 00                  mov         bx,0x0064 
+0297    89 92 4C FB               mov         word ptr -0x4b4[bp+si],dx 
+029B    31 D2                     xor         dx,dx 
+029D    E8 00 00                  call        rand_ 
+02A0    F7 F3                     div         bx 
+02A2    89 92 4E FB               mov         word ptr -0x4b2[bp+si],dx 
+02A6    E8 00 00                  call        rand_ 
+02A9    A8 01                     test        al,0x01 
+02AB    74 0A                     je          L$29 
+02AD    8B 82 4C FB               mov         ax,word ptr -0x4b4[bp+si] 
+02B1    F7 D8                     neg         ax 
+02B3    89 82 4C FB               mov         word ptr -0x4b4[bp+si],ax 
+02B7                          L$29:
+02B7    E8 00 00                  call        rand_ 
+02BA    A8 01                     test        al,0x01 
+02BC    75 03                     jne         L$31 
+02BE                          L$30:
+02BE    E9 0A FF                  jmp         L$16 
+02C1                          L$31:
+02C1    8B 82 4E FB               mov         ax,word ptr -0x4b2[bp+si] 
+02C5    F7 D8                     neg         ax 
+02C7    89 82 4E FB               mov         word ptr -0x4b2[bp+si],ax 
+02CB    EB F1                     jmp         L$30 
+02CD                          L$32:
+02CD    83 7E F8 00               cmp         word ptr -0x8[bp],0x0000 
+02D1    74 EB                     je          L$30 
+02D3    8B 82 48 FB               mov         ax,word ptr -0x4b8[bp+si] 
+02D7    2D A0 00                  sub         ax,0x00a0 
+02DA    85 C0                     test        ax,ax 
+02DC    7D 02                     jge         L$33 
+02DE    F7 D8                     neg         ax 
+02E0                          L$33:
+02E0    3D 05 00                  cmp         ax,0x0005 
+02E3    76 D9                     jbe         L$30 
+02E5    8B 82 4A FB               mov         ax,word ptr -0x4b6[bp+si] 
+02E9    2D 64 00                  sub         ax,0x0064 
+02EC    85 C0                     test        ax,ax 
+02EE    7D 02                     jge         L$34 
+02F0    F7 D8                     neg         ax 
+02F2                          L$34:
+02F2    3D 05 00                  cmp         ax,0x0005 
+02F5    76 C7                     jbe         L$30 
+02F7    BB 0F 00                  mov         bx,0x000f 
+02FA    FF 36 02 00               push        word ptr _VGA+0x2 
+02FE    8B 92 4A FB               mov         dx,word ptr -0x4b6[bp+si] 
+0302    FF 36 00 00               push        word ptr _VGA 
+0306    8B 82 48 FB               mov         ax,word ptr -0x4b8[bp+si] 
+030A    E8 00 00                  call        put_pixel_ 
+030D    EB AF                     jmp         L$30 
+030F                          L$35:
+030F    83 7E F8 00               cmp         word ptr -0x8[bp],0x0000 
+0313    75 03                     jne         L$37 
+0315                          L$36:
+0315    E9 88 FE                  jmp         L$13 
+0318                          L$37:
+0318    BA DA 03                  mov         dx,0x03da 
+031B                          L$38:
+031B    EC                        in          al,dx 
+031C    A8 08                     test        al,0x08 
+031E    75 FB                     jne         L$38 
+0320                          L$39:
+0320    EC                        in          al,dx 
+0321    A8 08                     test        al,0x08 
+0323    74 FB                     je          L$39 
+0325    EB EE                     jmp         L$36 
+
+Routine Size: 529 bytes,    Routine Base: _TEXT + 0116
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000000 bytes
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000004 bytes
+0000                          _VGA:
+0000    00 00 00 B8                                     ....
+
+Segment: _BSS WORD USE16 00000008 bytes
+0000                          __DOSRAND_SEED:
+0002                          L$40:
+0004                          L$41:
+0006                          L$42:
+
+BSS Size: 8 bytes
+

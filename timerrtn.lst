@@ -1,0 +1,27 @@
+Module: D:\LEETSRC\490\timerrtn.asm
+GROUP: 'DGROUP' _DATA
+
+Segment: timerrtn_TEXT WORD USE16 00000000 bytes
+
+Routine Size: 0 bytes,    Routine Base: timerrtn_TEXT + 0000
+
+No disassembly errors
+
+Segment: _DATA WORD USE16 00000000 bytes
+
+Segment: _TEXT BYTE USE16 0000000C bytes
+0000                          _clock_ticks:
+0000    00 00                                           ..
+
+Routine Size: 2 bytes,    Routine Base: _TEXT + 0000
+
+0002                          timer_rtn_:
+0002    2E FF 06 00 00            inc         word ptr cs:_clock_ticks 
+0007    EA                                              .
+0008                          _old_timer_rtn:
+0008    00 00 00 00                                     ....
+
+Routine Size: 10 bytes,    Routine Base: _TEXT + 0002
+
+No disassembly errors
+

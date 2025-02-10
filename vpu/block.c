@@ -17,8 +17,8 @@ int all_proc_blocking(void)
   unsigned n = vpu_count;
   while(n--)
   {
-    if(!vpus[n]->blocking && !vpus[n]->exiting && !vpus[n]->wait && !vpus[n]->zombie
-        && !process_is_stopped(vpus[n]))
+    if(vpus[n]->signal || (!vpus[n]->blocking && !vpus[n]->exiting && !vpus[n]->wait && !vpus[n]->zombie
+        && !process_is_stopped(vpus[n])))
       return 0;
   }
   return 1;

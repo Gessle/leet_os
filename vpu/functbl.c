@@ -1,3 +1,5 @@
+static int vpu_instr_wait(struct vpu *vpu, unsigned flags);
+
 int (*instruction_func_ptr[])() =
 {
   vpu_instr_wait,
@@ -52,7 +54,18 @@ int (*instruction_func_ptr[])() =
   vpu_instr_nop,
   vpu_instr_test,
   vpu_instr_memchr,
-  vpu_instr_memcmp
+  vpu_instr_memcmp,
+  vpu_instr_xchg,
+  vpu_instr_rol,
+  vpu_instr_ror,
+  vpu_instr_shcr,
+  vpu_instr_shcl,
+  vpu_instr_rcl,
+  vpu_instr_rcr,
+  vpu_instr_mul32,
+  vpu_instr_div32,
+  vpu_instr_adc,
+  vpu_instr_sbb
 };
 
 

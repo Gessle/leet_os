@@ -1,0 +1,602 @@
+Module: D:\LEETSRC\490\MATRIX.C
+GROUP: 'DGROUP' CONST,CONST2,_DATA,_BSS
+
+Segment: _TEXT BYTE USE16 0000052E bytes
+0000                          printchar_:
+0000    55                        push        bp 
+0001    89 E5                     mov         bp,sp 
+0003    50                        push        ax 
+0004    88 D5                     mov         ch,dl 
+0006    88 5E FE                  mov         byte ptr -0x2[bp],bl 
+0009    BB 50 00                  mov         bx,0x0050 
+000C    30 E4                     xor         ah,ah 
+000E    F7 EB                     imul        bx 
+0010    89 C3                     mov         bx,ax 
+0012    88 E8                     mov         al,ch 
+0014    30 E4                     xor         ah,ah 
+0016    01 C3                     add         bx,ax 
+0018    D1 E3                     shl         bx,0x01 
+001A    8E 46 06                  mov         es,word ptr 0x6[bp] 
+001D    03 5E 04                  add         bx,word ptr 0x4[bp] 
+0020    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+0023    26 88 07                  mov         byte ptr es:[bx],al 
+0026    43                        inc         bx 
+0027    26 88 0F                  mov         byte ptr es:[bx],cl 
+002A    89 EC                     mov         sp,bp 
+002C    5D                        pop         bp 
+002D    C2 04 00                  ret         0x0004 
+
+Routine Size: 48 bytes,    Routine Base: _TEXT + 0000
+
+0030                          abs_:
+0030    85 C0                     test        ax,ax 
+0032    7D 02                     jge         L$1 
+0034    F7 D8                     neg         ax 
+0036                          L$1:
+0036    C3                        ret         
+
+Routine Size: 7 bytes,    Routine Base: _TEXT + 0030
+
+0037                          video_mode_:
+0037    53                        push        bx 
+0038    51                        push        cx 
+0039    52                        push        dx 
+003A    56                        push        si 
+003B    57                        push        di 
+003C    55                        push        bp 
+003D    89 E5                     mov         bp,sp 
+003F    50                        push        ax 
+0040    88 46 FE                  mov         byte ptr -0x2[bp],al 
+0043    B4 00                     mov         ah,0x00 
+0045    8A 86 FE FF               mov         al,byte ptr -0x2[bp] 
+0049    CD 10                     int         0x10 
+004B                          L$2:
+004B    89 EC                     mov         sp,bp 
+004D    5D                        pop         bp 
+004E                          L$3:
+004E    5F                        pop         di 
+004F                          L$4:
+004F    5E                        pop         si 
+0050                          L$5:
+0050    5A                        pop         dx 
+0051    59                        pop         cx 
+0052    5B                        pop         bx 
+0053    C3                        ret         
+
+Routine Size: 29 bytes,    Routine Base: _TEXT + 0037
+
+0054                          wait_refresh_:
+0054    53                        push        bx 
+0055    51                        push        cx 
+0056    52                        push        dx 
+0057    56                        push        si 
+0058    57                        push        di 
+0059    52                        push        dx 
+005A    BA DA 03                  mov         dx,0x03da 
+005D                          L$6:
+005D    EC                        in          al,dx 
+005E    A8 08                     test        al,0x08 
+0060    75 FB                     jne         L$6 
+0062                          L$7:
+0062    EC                        in          al,dx 
+0063    A8 08                     test        al,0x08 
+0065    74 FB                     je          L$7 
+0067    5A                        pop         dx 
+0068    EB E4                     jmp         L$3 
+
+Routine Size: 22 bytes,    Routine Base: _TEXT + 0054
+
+006A                          rand_:
+006A    53                        push        bx 
+006B    51                        push        cx 
+006C    52                        push        dx 
+006D    BB 17 00                  mov         bx,0x0017 
+0070    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+0073    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+0077    31 C9                     xor         cx,cx 
+0079    E8 00 00                  call        __U4M 
+007C    BB 6F 67                  mov         bx,0x676f 
+007F    31 C9                     xor         cx,cx 
+0081    E8 00 00                  call        __U4D 
+0084    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+0088    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+008C    89 D8                     mov         ax,bx 
+008E    EB C0                     jmp         L$5 
+
+Routine Size: 38 bytes,    Routine Base: _TEXT + 006A
+
+0090                          seed_dosrand_:
+0090    53                        push        bx 
+0091    51                        push        cx 
+0092    52                        push        dx 
+0093    56                        push        si 
+0094    57                        push        di 
+0095    55                        push        bp 
+0096    89 E5                     mov         bp,sp 
+0098    83 EC 08                  sub         sp,0x0008 
+009B    B4 2C                     mov         ah,0x2c 
+009D    CD 21                     int         0x21 
+009F    88 AE FC FF               mov         byte ptr -0x4[bp],ch 
+00A3    00 8E FA FF               add         byte ptr -0x6[bp],cl 
+00A7    00 B6 F8 FF               add         byte ptr -0x8[bp],dh 
+00AB    00 96 FE FF               add         byte ptr -0x2[bp],dl 
+00AF    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+00B2    30 E4                     xor         ah,ah 
+00B4    89 C2                     mov         dx,ax 
+00B6    8A 46 FA                  mov         al,byte ptr -0x6[bp] 
+00B9    01 C2                     add         dx,ax 
+00BB    8A 46 F8                  mov         al,byte ptr -0x8[bp] 
+00BE    01 C2                     add         dx,ax 
+00C0    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+00C3    89 C3                     mov         bx,ax 
+00C5    83 C3 0F                  add         bx,0x000f 
+00C8    89 D0                     mov         ax,dx 
+00CA    F7 EB                     imul        bx 
+00CC    99                        cwd         
+00CD    A3 00 00                  mov         word ptr __DOSRAND_SEED,ax 
+00D0    89 16 02 00               mov         word ptr __DOSRAND_SEED+0x2,dx 
+00D4    E9 74 FF                  jmp         L$2 
+
+Routine Size: 71 bytes,    Routine Base: _TEXT + 0090
+
+00D7                          scroll_up_:
+00D7    53                        push        bx 
+00D8    89 C3                     mov         bx,ax 
+00DA    8E C2                     mov         es,dx 
+00DC    31 C0                     xor         ax,ax 
+00DE                          L$8:
+00DE    26 8A 97 A0 00            mov         dl,byte ptr es:0xa0[bx] 
+00E3    40                        inc         ax 
+00E4    26 88 17                  mov         byte ptr es:[bx],dl 
+00E7    43                        inc         bx 
+00E8    3D 00 0F                  cmp         ax,0x0f00 
+00EB    72 F1                     jb          L$8 
+00ED    5B                        pop         bx 
+00EE    C3                        ret         
+
+Routine Size: 24 bytes,    Routine Base: _TEXT + 00D7
+
+00EF                          randcolor_:
+00EF    53                        push        bx 
+00F0    51                        push        cx 
+00F1    52                        push        dx 
+00F2    56                        push        si 
+00F3    55                        push        bp 
+00F4    89 E5                     mov         bp,sp 
+00F6    50                        push        ax 
+00F7    BB 17 00                  mov         bx,0x0017 
+00FA    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+00FD    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+0101    31 C9                     xor         cx,cx 
+0103    E8 00 00                  call        __U4M 
+0106    BB 6F 67                  mov         bx,0x676f 
+0109    31 C9                     xor         cx,cx 
+010B    BE 06 00                  mov         si,0x0006 
+010E    E8 00 00                  call        __U4D 
+0111    89 D8                     mov         ax,bx 
+0113    31 D2                     xor         dx,dx 
+0115    F7 F6                     div         si 
+0117    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+011B    89 D6                     mov         si,dx 
+011D    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+0121    8A 84 00 00               mov         al,byte ptr _colors[si] 
+0125    89 CA                     mov         dx,cx 
+0127    88 46 FE                  mov         byte ptr -0x2[bp],al 
+012A    31 C9                     xor         cx,cx 
+012C    89 D8                     mov         ax,bx 
+012E    BB 17 00                  mov         bx,0x0017 
+0131    E8 00 00                  call        __U4M 
+0134    BB 6F 67                  mov         bx,0x676f 
+0137    31 C9                     xor         cx,cx 
+0139    E8 00 00                  call        __U4D 
+013C    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+0140    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+0144    F6 C3 01                  test        bl,0x01 
+0147    74 04                     je          L$9 
+0149    80 66 FE 0F               and         byte ptr -0x2[bp],0x0f 
+014D                          L$9:
+014D    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+0150    89 EC                     mov         sp,bp 
+0152    5D                        pop         bp 
+0153    E9 F9 FE                  jmp         L$4 
+
+Routine Size: 103 bytes,    Routine Base: _TEXT + 00EF
+
+0156                          main_:
+0156    53                        push        bx 
+0157    51                        push        cx 
+0158    52                        push        dx 
+0159    56                        push        si 
+015A    57                        push        di 
+015B    55                        push        bp 
+015C    89 E5                     mov         bp,sp 
+015E    83 EC 46                  sub         sp,0x0046 
+0161    B8 00 B0                  mov         ax,0xb000 
+0164    C7 46 E2 00 80            mov         word ptr -0x1e[bp],0x8000 
+0169    89 46 E8                  mov         word ptr -0x18[bp],ax 
+016C    88 46 F0                  mov         byte ptr -0x10[bp],al 
+016F    E8 00 00                  call        seed_dosrand_ 
+0172    B8 03 00                  mov         ax,0x0003 
+0175    C6 46 F6 00               mov         byte ptr -0xa[bp],0x00 
+0179    E8 00 00                  call        video_mode_ 
+017C    B4 0C                     mov         ah,0x0c 
+017E    B0 00                     mov         al,0x00 
+0180    CD 21                     int         0x21 
+0182    E4 60                     in          al,0x60 
+0184    88 86 EA FF               mov         byte ptr -0x16[bp],al 
+0188    88 86 EC FF               mov         byte ptr -0x14[bp],al 
+018C                          L$10:
+018C    B8 00 B0                  mov         ax,0xb000 
+018F    50                        push        ax 
+0190    B8 00 80                  mov         ax,0x8000 
+0193    BB 17 00                  mov         bx,0x0017 
+0196    50                        push        ax 
+0197    31 C9                     xor         cx,cx 
+0199    E8 00 00                  call        randcolor_ 
+019C    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+01A0    88 46 E4                  mov         byte ptr -0x1c[bp],al 
+01A3    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+01A6    E8 00 00                  call        __U4M 
+01A9    BB 6F 67                  mov         bx,0x676f 
+01AC    31 C9                     xor         cx,cx 
+01AE    E8 00 00                  call        __U4D 
+01B1    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+01B5    89 D8                     mov         ax,bx 
+01B7    31 D2                     xor         dx,dx 
+01B9    BB FF 00                  mov         bx,0x00ff 
+01BC    F7 F3                     div         bx 
+01BE    C6 46 E5 00               mov         byte ptr -0x1b[bp],0x00 
+01C2    89 D0                     mov         ax,dx 
+01C4    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+01C8    8A 46 F6                  mov         al,byte ptr -0xa[bp] 
+01CB    8B 4E E4                  mov         cx,word ptr -0x1c[bp] 
+01CE    30 F4                     xor         ah,dh 
+01D0    88 D3                     mov         bl,dl 
+01D2    89 C2                     mov         dx,ax 
+01D4    31 C0                     xor         ax,ax 
+01D6    FE 46 F6                  inc         byte ptr -0xa[bp] 
+01D9    E8 00 00                  call        printchar_ 
+01DC    80 7E F6 50               cmp         byte ptr -0xa[bp],0x50 
+01E0    72 AA                     jb          L$10 
+01E2    C6 46 F4 01               mov         byte ptr -0xc[bp],0x01 
+01E6    BE FF 00                  mov         si,0x00ff 
+01E9    EB 0C                     jmp         L$12 
+01EB                          L$11:
+01EB    FE 46 F4                  inc         byte ptr -0xc[bp] 
+01EE    80 7E F4 19               cmp         byte ptr -0xc[bp],0x19 
+01F2    72 03                     jb          L$12 
+01F4    E9 92 00                  jmp         L$15 
+01F7                          L$12:
+01F7    C6 46 F2 00               mov         byte ptr -0xe[bp],0x00 
+01FB                          L$13:
+01FB    FF 76 E8                  push        word ptr -0x18[bp] 
+01FE    BB 17 00                  mov         bx,0x0017 
+0201    FF 76 E2                  push        word ptr -0x1e[bp] 
+0204    31 C9                     xor         cx,cx 
+0206    E8 00 00                  call        randcolor_ 
+0209    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+020D    88 46 E4                  mov         byte ptr -0x1c[bp],al 
+0210    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+0213    E8 00 00                  call        __U4M 
+0216    BB 6F 67                  mov         bx,0x676f 
+0219    31 C9                     xor         cx,cx 
+021B    E8 00 00                  call        __U4D 
+021E    89 D8                     mov         ax,bx 
+0220    31 D2                     xor         dx,dx 
+0222    F7 F6                     div         si 
+0224    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+0228    89 D0                     mov         ax,dx 
+022A    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+022E    30 D0                     xor         al,dl 
+0230    88 56 E6                  mov         byte ptr -0x1a[bp],dl 
+0233    88 46 E7                  mov         byte ptr -0x19[bp],al 
+0236    89 CA                     mov         dx,cx 
+0238    89 D8                     mov         ax,bx 
+023A    31 C9                     xor         cx,cx 
+023C    BB 17 00                  mov         bx,0x0017 
+023F    E8 00 00                  call        __U4M 
+0242    BB 6F 67                  mov         bx,0x676f 
+0245    31 C9                     xor         cx,cx 
+0247    E8 00 00                  call        __U4D 
+024A    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+024E    89 D8                     mov         ax,bx 
+0250    31 D2                     xor         dx,dx 
+0252    BB 50 00                  mov         bx,0x0050 
+0255    F7 F3                     div         bx 
+0257    C6 46 E5 00               mov         byte ptr -0x1b[bp],0x00 
+025B    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+025F    8B 4E E4                  mov         cx,word ptr -0x1c[bp] 
+0262    89 D0                     mov         ax,dx 
+0264    88 7E E5                  mov         byte ptr -0x1b[bp],bh 
+0267    30 F4                     xor         ah,dh 
+0269    8A 56 F4                  mov         dl,byte ptr -0xc[bp] 
+026C    8B 5E E6                  mov         bx,word ptr -0x1a[bp] 
+026F    88 56 E4                  mov         byte ptr -0x1c[bp],dl 
+0272    89 C2                     mov         dx,ax 
+0274    8B 46 E4                  mov         ax,word ptr -0x1c[bp] 
+0277    FE 46 F2                  inc         byte ptr -0xe[bp] 
+027A    E8 00 00                  call        printchar_ 
+027D    80 7E F2 50               cmp         byte ptr -0xe[bp],0x50 
+0281    72 03                     jb          L$14 
+0283    E9 65 FF                  jmp         L$11 
+0286                          L$14:
+0286    E9 72 FF                  jmp         L$13 
+0289                          L$15:
+0289    BB 17 00                  mov         bx,0x0017 
+028C    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+028F    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+0293    31 C9                     xor         cx,cx 
+0295    E8 00 00                  call        __U4M 
+0298    BB 6F 67                  mov         bx,0x676f 
+029B    31 C9                     xor         cx,cx 
+029D    E8 00 00                  call        __U4D 
+02A0    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+02A4    89 D8                     mov         ax,bx 
+02A6    31 D2                     xor         dx,dx 
+02A8    BB 03 00                  mov         bx,0x0003 
+02AB    F7 F3                     div         bx 
+02AD    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+02B1    88 56 EE                  mov         byte ptr -0x12[bp],dl 
+02B4                          L$16:
+02B4    FE 4E EE                  dec         byte ptr -0x12[bp] 
+02B7    80 7E EE FF               cmp         byte ptr -0x12[bp],0xff 
+02BB    75 03                     jne         L$17 
+02BD    E9 B6 01                  jmp         L$29 
+02C0                          L$17:
+02C0    C6 46 FA 00               mov         byte ptr -0x6[bp],0x00 
+02C4                          L$18:
+02C4    BB 17 00                  mov         bx,0x0017 
+02C7    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+02CA    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+02CE    31 C9                     xor         cx,cx 
+02D0    E8 00 00                  call        __U4M 
+02D3    BB 6F 67                  mov         bx,0x676f 
+02D6    31 C9                     xor         cx,cx 
+02D8    E8 00 00                  call        __U4D 
+02DB    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+02DF    89 D8                     mov         ax,bx 
+02E1    31 D2                     xor         dx,dx 
+02E3    BB 50 00                  mov         bx,0x0050 
+02E6    F7 F3                     div         bx 
+02E8    8A 5E FA                  mov         bl,byte ptr -0x6[bp] 
+02EB    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+02EF    89 DE                     mov         si,bx 
+02F1    FE 46 FA                  inc         byte ptr -0x6[bp] 
+02F4    88 52 BA                  mov         byte ptr -0x46[bp+si],dl 
+02F7    80 7E FA 28               cmp         byte ptr -0x6[bp],0x28 
+02FB    72 C7                     jb          L$18 
+02FD    BB 17 00                  mov         bx,0x0017 
+0300    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+0303    89 CA                     mov         dx,cx 
+0305    31 C9                     xor         cx,cx 
+0307    E8 00 00                  call        __U4M 
+030A    BB 6F 67                  mov         bx,0x676f 
+030D    31 C9                     xor         cx,cx 
+030F    E8 00 00                  call        __U4D 
+0312    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+0316    89 D8                     mov         ax,bx 
+0318    31 D2                     xor         dx,dx 
+031A    BB 19 00                  mov         bx,0x0019 
+031D    F7 F3                     div         bx 
+031F    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+0323    88 56 FE                  mov         byte ptr -0x2[bp],dl 
+0326                          L$19:
+0326    BB 17 00                  mov         bx,0x0017 
+0329    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+032C    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+0330    31 C9                     xor         cx,cx 
+0332    E8 00 00                  call        __U4M 
+0335    BB 6F 67                  mov         bx,0x676f 
+0338    31 C9                     xor         cx,cx 
+033A    E8 00 00                  call        __U4D 
+033D    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+0341    89 D8                     mov         ax,bx 
+0343    31 D2                     xor         dx,dx 
+0345    BB 05 00                  mov         bx,0x0005 
+0348    F7 F3                     div         bx 
+034A    89 D0                     mov         ax,dx 
+034C    BA 19 00                  mov         dx,0x0019 
+034F    29 C2                     sub         dx,ax 
+0351    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+0354    30 E4                     xor         ah,ah 
+0356    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+035A    39 D0                     cmp         ax,dx 
+035C    72 03                     jb          L$20 
+035E    E9 53 FF                  jmp         L$16 
+0361                          L$20:
+0361    88 7E F8                  mov         byte ptr -0x8[bp],bh 
+0364    EB 0C                     jmp         L$22 
+0366                          L$21:
+0366    FE 46 F8                  inc         byte ptr -0x8[bp] 
+0369    80 7E F8 28               cmp         byte ptr -0x8[bp],0x28 
+036D    72 03                     jb          L$22 
+036F    E9 FE 00                  jmp         L$28 
+0372                          L$22:
+0372    BB 17 00                  mov         bx,0x0017 
+0375    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+0378    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+037C    31 C9                     xor         cx,cx 
+037E    E8 00 00                  call        __U4M 
+0381    BB 6F 67                  mov         bx,0x676f 
+0384    31 C9                     xor         cx,cx 
+0386    E8 00 00                  call        __U4D 
+0389    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+038D    89 D8                     mov         ax,bx 
+038F    31 D2                     xor         dx,dx 
+0391    BB 19 00                  mov         bx,0x0019 
+0394    F7 F3                     div         bx 
+0396    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+039A    3A 56 FE                  cmp         dl,byte ptr -0x2[bp] 
+039D    75 16                     jne         L$23 
+039F    8A 56 F0                  mov         dl,byte ptr -0x10[bp] 
+03A2    E8 00 00                  call        randcolor_ 
+03A5    30 F6                     xor         dh,dh 
+03A7    8B 5E E2                  mov         bx,word ptr -0x1e[bp] 
+03AA    D1 E2                     shl         dx,0x01 
+03AC    8E 46 E8                  mov         es,word ptr -0x18[bp] 
+03AF    01 D3                     add         bx,dx 
+03B1    26 88 47 01               mov         byte ptr es:0x1[bx],al 
+03B5                          L$23:
+03B5    BB 17 00                  mov         bx,0x0017 
+03B8    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+03BB    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+03BF    31 C9                     xor         cx,cx 
+03C1    E8 00 00                  call        __U4M 
+03C4    BB 6F 67                  mov         bx,0x676f 
+03C7    31 C9                     xor         cx,cx 
+03C9    BE 14 00                  mov         si,0x0014 
+03CC    E8 00 00                  call        __U4D 
+03CF    89 D8                     mov         ax,bx 
+03D1    31 D2                     xor         dx,dx 
+03D3    F7 F6                     div         si 
+03D5    C6 46 E5 00               mov         byte ptr -0x1b[bp],0x00 
+03D9    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+03DD    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+03E1    89 D6                     mov         si,dx 
+03E3    FF 76 E8                  push        word ptr -0x18[bp] 
+03E6    8A 42 BA                  mov         al,byte ptr -0x46[bp+si] 
+03E9    FF 76 E2                  push        word ptr -0x1e[bp] 
+03EC    88 46 E4                  mov         byte ptr -0x1c[bp],al 
+03EF    88 46 F0                  mov         byte ptr -0x10[bp],al 
+03F2    8B 46 E4                  mov         ax,word ptr -0x1c[bp] 
+03F5    8B 76 E2                  mov         si,word ptr -0x1e[bp] 
+03F8    D1 E0                     shl         ax,0x01 
+03FA    8E 46 E8                  mov         es,word ptr -0x18[bp] 
+03FD    01 C6                     add         si,ax 
+03FF    89 CA                     mov         dx,cx 
+0401    26 8A 44 01               mov         al,byte ptr es:0x1[si] 
+0405    31 C9                     xor         cx,cx 
+0407    88 46 E6                  mov         byte ptr -0x1a[bp],al 
+040A    89 D8                     mov         ax,bx 
+040C    BB 17 00                  mov         bx,0x0017 
+040F    E8 00 00                  call        __U4M 
+0412    BB 6F 67                  mov         bx,0x676f 
+0415    31 C9                     xor         cx,cx 
+0417    E8 00 00                  call        __U4D 
+041A    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+041E    89 D8                     mov         ax,bx 
+0420    31 D2                     xor         dx,dx 
+0422    BB FF 00                  mov         bx,0x00ff 
+0425    F7 F3                     div         bx 
+0427    C6 46 E7 00               mov         byte ptr -0x19[bp],0x00 
+042B    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+042F    89 D0                     mov         ax,dx 
+0431    8B 4E E6                  mov         cx,word ptr -0x1a[bp] 
+0434    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+0437    88 D3                     mov         bl,dl 
+0439    30 F4                     xor         ah,dh 
+043B    8B 56 E4                  mov         dx,word ptr -0x1c[bp] 
+043E    E8 00 00                  call        printchar_ 
+0441    F6 46 F8 01               test        byte ptr -0x8[bp],0x01 
+0445    74 0F                     je          L$26 
+0447    52                        push        dx 
+0448    BA DA 03                  mov         dx,0x03da 
+044B                          L$24:
+044B    EC                        in          al,dx 
+044C    A8 08                     test        al,0x08 
+044E    75 FB                     jne         L$24 
+0450                          L$25:
+0450    EC                        in          al,dx 
+0451    A8 08                     test        al,0x08 
+0453    74 FB                     je          L$25 
+0455    5A                        pop         dx 
+0456                          L$26:
+0456    E4 60                     in          al,0x60 
+0458    88 86 EC FF               mov         byte ptr -0x14[bp],al 
+045C    B4 0C                     mov         ah,0x0c 
+045E    B0 00                     mov         al,0x00 
+0460    CD 21                     int         0x21 
+0462    8A 46 EC                  mov         al,byte ptr -0x14[bp] 
+0465    3A 46 EA                  cmp         al,byte ptr -0x16[bp] 
+0468    74 03                     je          L$27 
+046A    E9 DE FB                  jmp         L$2 
+046D                          L$27:
+046D    E9 F6 FE                  jmp         L$21 
+0470                          L$28:
+0470    FE 46 FE                  inc         byte ptr -0x2[bp] 
+0473    E9 B0 FE                  jmp         L$19 
+0476                          L$29:
+0476    8B 46 E2                  mov         ax,word ptr -0x1e[bp] 
+0479    8B 56 E8                  mov         dx,word ptr -0x18[bp] 
+047C    C6 46 FC 00               mov         byte ptr -0x4[bp],0x00 
+0480    E8 00 00                  call        scroll_up_ 
+0483                          L$30:
+0483    FF 76 E8                  push        word ptr -0x18[bp] 
+0486    BB 17 00                  mov         bx,0x0017 
+0489    FF 76 E2                  push        word ptr -0x1e[bp] 
+048C    31 C9                     xor         cx,cx 
+048E    E8 00 00                  call        randcolor_ 
+0491    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+0495    88 46 E4                  mov         byte ptr -0x1c[bp],al 
+0498    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+049B    E8 00 00                  call        __U4M 
+049E    BB 6F 67                  mov         bx,0x676f 
+04A1    31 C9                     xor         cx,cx 
+04A3    E8 00 00                  call        __U4D 
+04A6    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+04AA    89 D8                     mov         ax,bx 
+04AC    31 D2                     xor         dx,dx 
+04AE    BB FF 00                  mov         bx,0x00ff 
+04B1    F7 F3                     div         bx 
+04B3    C6 46 E5 00               mov         byte ptr -0x1b[bp],0x00 
+04B7    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+04BB    8B 4E E4                  mov         cx,word ptr -0x1c[bp] 
+04BE    89 D0                     mov         ax,dx 
+04C0    88 7E E7                  mov         byte ptr -0x19[bp],bh 
+04C3    30 F4                     xor         ah,dh 
+04C5    8A 56 FC                  mov         dl,byte ptr -0x4[bp] 
+04C8    89 C3                     mov         bx,ax 
+04CA    88 56 E6                  mov         byte ptr -0x1a[bp],dl 
+04CD    31 C0                     xor         ax,ax 
+04CF    8B 56 E6                  mov         dx,word ptr -0x1a[bp] 
+04D2    E8 00 00                  call        printchar_ 
+04D5    FF 76 E8                  push        word ptr -0x18[bp] 
+04D8    BB 17 00                  mov         bx,0x0017 
+04DB    FF 76 E2                  push        word ptr -0x1e[bp] 
+04DE    31 C9                     xor         cx,cx 
+04E0    E8 00 00                  call        randcolor_ 
+04E3    8B 16 02 00               mov         dx,word ptr __DOSRAND_SEED+0x2 
+04E7    88 46 E4                  mov         byte ptr -0x1c[bp],al 
+04EA    A1 00 00                  mov         ax,word ptr __DOSRAND_SEED 
+04ED    E8 00 00                  call        __U4M 
+04F0    BB 6F 67                  mov         bx,0x676f 
+04F3    31 C9                     xor         cx,cx 
+04F5    E8 00 00                  call        __U4D 
+04F8    89 1E 00 00               mov         word ptr __DOSRAND_SEED,bx 
+04FC    89 D8                     mov         ax,bx 
+04FE    31 D2                     xor         dx,dx 
+0500    BB FF 00                  mov         bx,0x00ff 
+0503    F7 F3                     div         bx 
+0505    C6 46 E5 00               mov         byte ptr -0x1b[bp],0x00 
+0509    89 0E 02 00               mov         word ptr __DOSRAND_SEED+0x2,cx 
+050D    89 D0                     mov         ax,dx 
+050F    8B 4E E4                  mov         cx,word ptr -0x1c[bp] 
+0512    30 F4                     xor         ah,dh 
+0514    8B 56 E6                  mov         dx,word ptr -0x1a[bp] 
+0517    89 C3                     mov         bx,ax 
+0519    B8 18 00                  mov         ax,0x0018 
+051C    FE 46 FC                  inc         byte ptr -0x4[bp] 
+051F    E8 00 00                  call        printchar_ 
+0522    80 7E FC 50               cmp         byte ptr -0x4[bp],0x50 
+0526    72 03                     jb          L$31 
+0528    E9 5E FD                  jmp         L$15 
+052B                          L$31:
+052B    E9 55 FF                  jmp         L$30 
+
+Routine Size: 984 bytes,    Routine Base: _TEXT + 0156
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000000 bytes
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000006 bytes
+0000                          _colors:
+0000    2A 0A 02 20 2A 22                               *.. *"
+
+Segment: _BSS WORD USE16 00000004 bytes
+0000                          __DOSRAND_SEED:
+
+BSS Size: 4 bytes
+

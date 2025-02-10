@@ -1,7 +1,7 @@
-Module: D:\LEETSRC\489\DRIVERS\tcpip.c
+Module: D:\LEETSRC\491\DRIVERS\tcpip.c
 GROUP: 'DGROUP' CONST,CONST2,_DATA
 
-Segment: _TEXT BYTE USE16 000002CA bytes
+Segment: _TEXT BYTE USE16 00000300 bytes
 0000                          _open_sockets:
 0000    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
 	--- Above line repeats 6 times ---
@@ -203,122 +203,150 @@ Segment: _TEXT BYTE USE16 000002CA bytes
 01E0    59                        pop         cx 
 01E1    CB                        retf        
 01E2                          unload_:
-01E2    58                        pop         ax 
-01E3    07                        pop         es 
-01E4    9C                        pushf       
-01E5    06                        push        es 
-01E6    50                        push        ax 
-01E7    FA                        cli         
-01E8    2E 8E 06 00 00            mov         es,word ptr cs:_psp_seg 
-01ED    B4 49                     mov         ah,0x49 
-01EF    2E FF 2E 00 00            jmp         dword ptr cs:_int21hdl 
+01E2    B8 1A 00                  mov         ax,0x001a 
+01E5    CD 61                     int         0x61 
+01E7    58                        pop         ax 
+01E8    07                        pop         es 
+01E9    9C                        pushf       
+01EA    06                        push        es 
+01EB    50                        push        ax 
+01EC    FA                        cli         
+01ED    2E 8E 06 00 00            mov         es,word ptr cs:_psp_seg 
+01F2    B4 49                     mov         ah,0x49 
+01F4    2E FF 2E 00 00            jmp         dword ptr cs:_int21hdl 
 
-Routine Size: 500 bytes,    Routine Base: _TEXT + 0000
+Routine Size: 505 bytes,    Routine Base: _TEXT + 0000
 
-01F4                          main_:
-01F4    53                        push        bx 
-01F5    51                        push        cx 
-01F6    56                        push        si 
-01F7    57                        push        di 
-01F8    1E                        push        ds 
-01F9    06                        push        es 
-01FA    55                        push        bp 
-01FB    89 E5                     mov         bp,sp 
-01FD    83 EC 3E                  sub         sp,0x003e 
-0200    50                        push        ax 
-0201    89 D3                     mov         bx,dx 
-0203    B9 18 00                  mov         cx,0x0018 
-0206    8C D0                     mov         ax,ss 
-0208    8E C0                     mov         es,ax 
-020A    8D 7E C2                  lea         di,-0x3e[bp] 
-020D    B8 00 00                  mov         ax,DGROUP:CONST 
-0210    8E D8                     mov         ds,ax 
-0212    BE 00 00                  mov         si,offset DGROUP:L$27 
-0215    F3 A5                     rep movsw   
-0217    83 7E C0 02               cmp         word ptr -0x40[bp],0x0002 
-021B    75 36                     jne         L$19 
-021D    B8 61 00                  mov         ax,0x0061 
-0220    E8 00 00                  call        _dos_getvect_ 
-0223    85 D2                     test        dx,dx 
-0225    75 0A                     jne         L$18 
-0227    85 C0                     test        ax,ax 
-0229    75 06                     jne         L$18 
-022B    B8 02 00                  mov         ax,0x0002 
-022E    E9 8F 00                  jmp         L$25 
-0231                          L$18:
-0231    8C 56 F2                  mov         word ptr -0xe[bp],ss 
-0234    8D 46 C2                  lea         ax,-0x3e[bp] 
-0237    89 46 F4                  mov         word ptr -0xc[bp],ax 
-023A    C7 46 F6 00 00            mov         word ptr -0xa[bp],0x0000 
-023F    8B 47 02                  mov         ax,word ptr 0x2[bx] 
-0242    BB 10 00                  mov         bx,0x0010 
-0245    31 D2                     xor         dx,dx 
-0247    E8 00 00                  call        strtoul_ 
-024A    3C 61                     cmp         al,0x61 
-024C    75 07                     jne         L$20 
-024E    B8 03 00                  mov         ax,0x0003 
-0251    EB 6D                     jmp         L$25 
-0253                          L$19:
-0253    EB 68                     jmp         L$24 
-0255                          L$20:
-0255    30 E4                     xor         ah,ah 
-0257    8D 5E F2                  lea         bx,-0xe[bp] 
-025A    8D 56 F2                  lea         dx,-0xe[bp] 
-025D    E8 00 00                  call        int86_ 
-0260    83 7E F2 00               cmp         word ptr -0xe[bp],0x0000 
-0264    74 30                     je          L$23 
-0266    B8 00 00                  mov         ax,offset DGROUP:L$26 
-0269    E8 00 00                  call        puts_ 
-026C    83 3E 02 00 00            cmp         word ptr ___iob+0x2,0x0000 
-0271    7E 10                     jle         L$21 
-0273    8B 1E 00 00               mov         bx,word ptr ___iob 
-0277    8A 07                     mov         al,byte ptr [bx] 
-0279    30 E4                     xor         ah,ah 
-027B    2D 0D 00                  sub         ax,0x000d 
-027E    3D 0D 00                  cmp         ax,0x000d 
-0281    77 08                     ja          L$22 
-0283                          L$21:
-0283    B8 00 00                  mov         ax,offset ___iob 
-0286    E8 00 00                  call        fgetc_ 
-0289    EB 32                     jmp         L$24 
-028B                          L$22:
-028B    FF 0E 02 00               dec         word ptr ___iob+0x2 
-028F    43                        inc         bx 
-0290    89 1E 00 00               mov         word ptr ___iob,bx 
-0294    EB 27                     jmp         L$24 
-0296                          L$23:
-0296    B4 51                     mov         ah,0x51 
-0298    CD 21                     int         0x21 
-029A    2E 89 1E 00 00            mov         word ptr cs:_psp_seg,bx 
-029F    B8 21 00                  mov         ax,0x0021 
-02A2    E8 00 00                  call        _dos_getvect_ 
-02A5    2E A3 00 00               mov         word ptr cs:_int21hdl,ax 
-02A9    2E 89 16 02 00            mov         word ptr cs:_int21hdl+0x2,dx 
-02AE    B1 04                     mov         cl,0x04 
-02B0    BA 0F 00                  mov         dx,offset main_+0xf 
-02B3    D3 EA                     shr         dx,cl 
-02B5    83 C2 10                  add         dx,0x0010 
-02B8    31 C0                     xor         ax,ax 
-02BA    E8 00 00                  call        _dos_keep_ 
-02BD                          L$24:
-02BD    B8 01 00                  mov         ax,0x0001 
-02C0                          L$25:
-02C0    89 EC                     mov         sp,bp 
-02C2    5D                        pop         bp 
-02C3    07                        pop         es 
-02C4    1F                        pop         ds 
-02C5    5F                        pop         di 
-02C6    5E                        pop         si 
-02C7    59                        pop         cx 
-02C8    5B                        pop         bx 
-02C9    C3                        ret         
+01F9                          main_:
+01F9    53                        push        bx 
+01FA    51                        push        cx 
+01FB    56                        push        si 
+01FC    57                        push        di 
+01FD    1E                        push        ds 
+01FE    06                        push        es 
+01FF    55                        push        bp 
+0200    89 E5                     mov         bp,sp 
+0202    83 EC 3E                  sub         sp,0x003e 
+0205    50                        push        ax 
+0206    52                        push        dx 
+0207    B9 18 00                  mov         cx,0x0018 
+020A    8C D0                     mov         ax,ss 
+020C    8E C0                     mov         es,ax 
+020E    8D 7E C2                  lea         di,-0x3e[bp] 
+0211    B8 00 00                  mov         ax,DGROUP:CONST 
+0214    8E D8                     mov         ds,ax 
+0216    BE 00 00                  mov         si,offset DGROUP:L$30 
+0219    F3 A5                     rep movsw   
+021B    B4 51                     mov         ah,0x51 
+021D    CD 21                     int         0x21 
+021F    31 F6                     xor         si,si 
+0221    8E DB                     mov         ds,bx 
+0223    83 7E C0 02               cmp         word ptr -0x40[bp],0x0002 
+0227    75 3E                     jne         L$19 
+0229    B8 61 00                  mov         ax,0x0061 
+022C    E8 00 00                  call        _dos_getvect_ 
+022F    85 D2                     test        dx,dx 
+0231    75 0A                     jne         L$18 
+0233    85 C0                     test        ax,ax 
+0235    75 06                     jne         L$18 
+0237    B8 02 00                  mov         ax,0x0002 
+023A    E9 B9 00                  jmp         L$28 
+023D                          L$18:
+023D    8C 56 F2                  mov         word ptr -0xe[bp],ss 
+0240    8D 46 C2                  lea         ax,-0x3e[bp] 
+0243    89 46 F4                  mov         word ptr -0xc[bp],ax 
+0246    89 76 F6                  mov         word ptr -0xa[bp],si 
+0249    B8 00 00                  mov         ax,DGROUP:CONST 
+024C    8E C0                     mov         es,ax 
+024E    8B 5E BE                  mov         bx,word ptr -0x42[bp] 
+0251    26 8B 47 02               mov         ax,word ptr es:0x2[bx] 
+0255    BB 10 00                  mov         bx,0x0010 
+0258    31 D2                     xor         dx,dx 
+025A    E8 00 00                  call        strtoul_ 
+025D    3C 61                     cmp         al,0x61 
+025F    75 09                     jne         L$20 
+0261    B8 03 00                  mov         ax,0x0003 
+0264    E9 8F 00                  jmp         L$28 
+0267                          L$19:
+0267    E9 89 00                  jmp         L$27 
+026A                          L$20:
+026A    30 E4                     xor         ah,ah 
+026C    8D 5E F2                  lea         bx,-0xe[bp] 
+026F    8D 56 F2                  lea         dx,-0xe[bp] 
+0272    E8 00 00                  call        int86_ 
+0275    83 7E F2 00               cmp         word ptr -0xe[bp],0x0000 
+0279    74 34                     je          L$23 
+027B    B8 00 00                  mov         ax,offset DGROUP:L$29 
+027E    E8 00 00                  call        puts_ 
+0281    8C C0                     mov         ax,es 
+0283    8E D8                     mov         ds,ax 
+0285    83 3E 02 00 00            cmp         word ptr ___iob+0x2,0x0000 
+028A    7E 10                     jle         L$21 
+028C    8B 1E 00 00               mov         bx,word ptr ___iob 
+0290    8A 07                     mov         al,byte ptr [bx] 
+0292    30 E4                     xor         ah,ah 
+0294    2D 0D 00                  sub         ax,0x000d 
+0297    3D 0D 00                  cmp         ax,0x000d 
+029A    77 08                     ja          L$22 
+029C                          L$21:
+029C    B8 00 00                  mov         ax,offset ___iob 
+029F    E8 00 00                  call        fgetc_ 
+02A2    EB 4F                     jmp         L$27 
+02A4                          L$22:
+02A4    FF 0E 02 00               dec         word ptr ___iob+0x2 
+02A8    43                        inc         bx 
+02A9    89 1E 00 00               mov         word ptr ___iob,bx 
+02AD    EB 44                     jmp         L$27 
+02AF                          L$23:
+02AF    31 D2                     xor         dx,dx 
+02B1                          L$24:
+02B1    89 D3                     mov         bx,dx 
+02B3    B4 3E                     mov         ah,0x3e 
+02B5    CD 21                     int         0x21 
+02B7    72 02                     jb          L$25 
+02B9    33 C0                     xor         ax,ax 
+02BB                          L$25:
+02BB    85 C0                     test        ax,ax 
+02BD    75 03                     jne         L$26 
+02BF    42                        inc         dx 
+02C0    EB EF                     jmp         L$24 
+02C2                          L$26:
+02C2    8B 5C 2C                  mov         bx,word ptr 0x2c[si] 
+02C5    B4 49                     mov         ah,0x49 
+02C7    8E C3                     mov         es,bx 
+02C9    CD 21                     int         0x21 
+02CB    2E 8C 1E 00 00            mov         word ptr cs:_psp_seg,ds 
+02D0    B8 21 00                  mov         ax,0x0021 
+02D3    E8 00 00                  call        _dos_getvect_ 
+02D6    2E A3 00 00               mov         word ptr cs:_int21hdl,ax 
+02DA    2E 89 16 02 00            mov         word ptr cs:_int21hdl+0x2,dx 
+02DF    B8 19 00                  mov         ax,0x0019 
+02E2    CD 61                     int         0x61 
+02E4    B1 04                     mov         cl,0x04 
+02E6    BA 0F 00                  mov         dx,offset main_+0xf 
+02E9    D3 EA                     shr         dx,cl 
+02EB    83 C2 10                  add         dx,0x0010 
+02EE    31 C0                     xor         ax,ax 
+02F0    E8 00 00                  call        _dos_keep_ 
+02F3                          L$27:
+02F3    B8 01 00                  mov         ax,0x0001 
+02F6                          L$28:
+02F6    89 EC                     mov         sp,bp 
+02F8    5D                        pop         bp 
+02F9    07                        pop         es 
+02FA    1F                        pop         ds 
+02FB    5F                        pop         di 
+02FC    5E                        pop         si 
+02FD    59                        pop         cx 
+02FE    5B                        pop         bx 
+02FF    C3                        ret         
 
-Routine Size: 214 bytes,    Routine Base: _TEXT + 01F4
+Routine Size: 263 bytes,    Routine Base: _TEXT + 01F9
 
 No disassembly errors
 
 Segment: CONST WORD USE16 00000030 bytes
-0000                          L$26:
+0000                          L$29:
 0000    45 72 72 6F 72 20 77 68 69 6C 65 20 6C 6F 61 64 Error while load
 0010    69 6E 67 20 54 43 50 49 50 20 6D 6F 64 75 6C 65 ing TCPIP module
 0020    2E 20 50 72 65 73 73 20 61 6E 79 20 6B 65 79 00 . Press any key.
@@ -326,7 +354,7 @@ Segment: CONST WORD USE16 00000030 bytes
 Segment: CONST2 WORD USE16 00000000 bytes
 
 Segment: _DATA WORD USE16 00000030 bytes
-0000                          L$27:
+0000                          L$30:
 0000    00 00 00 00                                     DD	tcp_cmd_
 0004    00 00 00 00                                     DD	socket_read_
 0008    00 00 00 00                                     DD	socket_write_

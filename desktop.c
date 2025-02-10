@@ -438,11 +438,12 @@ static void draw_desktop(void)
 {
   unsigned int x=0;
   unsigned int y=0;
+  void *rw = running_window;
+  running_window = (void*)-1;
 
   if(!wallpaper_struct.bitmap)
   {
-    if(!draw_window_box/* || draw_window_box->fullscreen || draw_window_box->maximized*/)
-//      call_fill_screen(_DESKTOP_BGCOLOR, FP_SEG(&fill_screen_color));
+    if(!draw_window_box)
       fill_screen(_DESKTOP_BGCOLOR);
     else
     {
@@ -454,7 +455,8 @@ static void draw_desktop(void)
 
   draw_desktop_icons();
 
-  draw_menubar();
+//  draw_menubar();
+  running_window = rw;
 }
 
 static void draw_windows(void)
@@ -471,6 +473,7 @@ static void draw_windows(void)
       else
         draw_window(windows[window_visibility_order[n]], 0, 0);
   }
+  draw_menubar();
 }
 
 void draw_screen(void)
@@ -497,6 +500,7 @@ int set_active_window(int window, unsigned draw)
 {
   int n = window;
   int prev_active_window = active_window;
+  void *rw;
 
   if(window>=0)
   {
@@ -510,7 +514,6 @@ int set_active_window(int window, unsigned draw)
       if(window == n)
       {
         active_window = -1;
-//        return active_window;
         goto end;
       }
     }
@@ -537,7 +540,12 @@ int set_active_window(int window, unsigned draw)
     // draw the new active window
 //    if(window_visibility_order[n-1] != active_window && draw)
     if(draw)
+    {
+      rw = running_window;
+      running_window = 0;
       draw_window(windows[active_window], 1, 0);
+      running_window = rw;
+    }
   }
   else
     active_window=window;

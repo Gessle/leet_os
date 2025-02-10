@@ -25,8 +25,6 @@ static void element_active(struct prog_window *window, int element)
     window_drawelement(window, n);  
   window->active_element = element;  
   end:
-//  if(window->window_grid[element]->type == 2)
-//    edit_textbox(window, element);
   if(element >= 0)
     window_drawelement(window, element);
 }
@@ -34,54 +32,60 @@ static void element_active(struct prog_window *window, int element)
 inline void window_drawelement_text(struct prog_window *window, unsigned element)
 {
   struct xpm_bitmap image;
+  struct window_element *elem = window->window_grid[element];
     
-  if(!window->window_grid[element]->ctype)
-    gprint_text(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
-      window->window_grid[element]->text, window->window_grid[element]->color, _FONT_HEIGHT, window->x+window->width, window->window_grid[element]->monospace);
+  if(!elem->ctype)
+    gprint_text(window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y,
+      elem->text, elem->color, _FONT_HEIGHT, window->x+window->width,
+                elem->monospace);
   else
   {
-    if(load_xpm_bitmap(window->window_grid[element]->text, &image))
+    if(load_xpm_bitmap(elem->text, &image))
     {
-      gprint_text(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
-        "Error", window->window_grid[element]->color, _FONT_HEIGHT, window->x+window->width, 0);
+      gprint_text(window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y,
+        "Error", elem->color, _FONT_HEIGHT, window->x+window->width, 0);
       return;
     }
-    if(window->window_grid[element]->width && window->window_grid[element]->height)
-      draw_xpm_bitmap(&image, window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
-        window->x+window->window_grid[element]->x+window->window_grid[element]->width, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y+window->window_grid[element]->height);
+    if(elem->width && elem->height)
+      draw_xpm_bitmap(&image, window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y,
+        window->x+elem->x+elem->width, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y+elem->height);
     else
-      draw_xpm_bitmap(&image, window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
-        window->x+window->window_grid[element]->x+image.width, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y+image.height);
+      draw_xpm_bitmap(&image, window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y,
+        window->x+elem->x+image.width, window->y+_FONT_HEIGHT+2+elem->y+image.height);
     free(image.bitmap);        
   }
 }
 
 inline void window_drawelement_button(struct prog_window *window, unsigned element)
 {
-  draw_borders(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
-    window->window_grid[element]->width, window->window_grid[element]->height, 0);
-  gprint_text(window->x+10+window->window_grid[element]->x, window->y+1+_FONT_HEIGHT+2+window->window_grid[element]->y,
-    window->window_grid[element]->text, window->window_grid[element]->color, _FONT_HEIGHT, window->x+10+window->window_grid[element]->x+window->window_grid[element]->width, window->window_grid[element]->monospace);            
+  struct window_element *elem = window->window_grid[element];
+  draw_borders(window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y,
+    elem->width, elem->height, 0);
+  gprint_text(window->x+10+elem->x, window->y+1+_FONT_HEIGHT+2+elem->y,
+    elem->text, elem->color, _FONT_HEIGHT, window->x+10+elem->x+elem->width,
+    elem->monospace);            
 }
 
 inline void window_drawelement_textbox(struct prog_window *window, unsigned element)
 {
-  draw_borders(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
-    window->window_grid[element]->width, window->window_grid[element]->height, 1);
+  struct window_element *elem = window->window_grid[element];
+
+  draw_borders(window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y,
+    elem->width, elem->height, 1);
   if(window->active_element != element)      
-    draw_rectangle(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
-      window->window_grid[element]->width, window->window_grid[element]->height, _TEXTBOX_BGCOLOR);
+    draw_rectangle(window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y,
+      elem->width, elem->height, _TEXTBOX_BGCOLOR);
 /*  else
   {
     element_active(window, element);
     return;
   }*/
   else
-    draw_rectangle(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
-      window->window_grid[element]->width, window->window_grid[element]->height, _TEXTBOX_ABGCOLOR);
-  if(window->window_grid[element]->text)
-    gprint_text(window->x+window->window_grid[element]->x+2, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y+2,
-      window->window_grid[element]->text, _TEXTBOX_TEXTCOLOR, _FONT_HEIGHT, window->x+window->window_grid[element]->x+window->window_grid[element]->width, window->window_grid[element]->monospace);            
+    draw_rectangle(window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y,
+      elem->width, elem->height, _TEXTBOX_ABGCOLOR);
+  if(elem->text)
+    gprint_text(window->x+elem->x+2, window->y+_FONT_HEIGHT+2+elem->y+2,
+      elem->text, _TEXTBOX_TEXTCOLOR, _FONT_HEIGHT, window->x+elem->x+elem->width, elem->monospace);            
 }
 
 static void draw_label(unsigned x, unsigned y, unsigned width,
@@ -109,7 +113,7 @@ inline void window_drawelement_list(struct prog_window *window, unsigned element
   
   draw_borders(element_x, element_y, element_width, win_element->height, 1);
 //  draw_rectangle(element_x, element_y, element_width, win_element->height, _TEXTBOX_BGCOLOR);
-  if(window->window_grid[element]->items)
+  if(win_element->items)
   {
     for(n=win_element->scroll_y;
       n < win_element->c
@@ -126,7 +130,7 @@ inline void window_drawelement_list(struct prog_window *window, unsigned element
         bg_color = _TEXTBOX_BGCOLOR;
         text_color = _TEXTBOX_TEXTCOLOR;
       }
-      if(window->window_grid[element]->items[n])
+      if(win_element->items[n])
         if(strlen(win_element->items[n]) >= win_element->scroll_x)
           textptr = &win_element->items[n][scroll_x];
         else
@@ -402,11 +406,11 @@ inline void window_drawelement_scrollbar(struct prog_window *window, unsigned el
      // update scrollbar state if it is in a program window
       if(window->function_pointer == vpuwindow_program)
       {        
-        if(window->window_grid[element]->ctype >= 2)
+        if(scrollbar->ctype >= 2)
         {
-          window->window_grid[element]->scroll_x = *(unsigned int*)window->window_grid[element]->connect_value;
-          if(window->window_grid[element]->scroll_x > window->window_grid[element]->c)
-            window->window_grid[element]->scroll_x = window->window_grid[element]->c;          
+          scrollbar->scroll_x = *(unsigned int*)scrollbar->connect_value;
+          if(scrollbar->scroll_x > scrollbar->c)
+            scrollbar->scroll_x = scrollbar->c;          
         }
         else
         {
@@ -429,35 +433,35 @@ inline void window_drawelement_scrollbar(struct prog_window *window, unsigned el
         }
       }
       // if vertical
-      if(!(window->window_grid[element]->ctype & 1))
+      if(!(scrollbar->ctype & 1))
       {
-        draw_borders(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
+        draw_borders(window->x+scrollbar->x, window->y+_FONT_HEIGHT+2+scrollbar->y,
           12, 12, 0);
-        draw_rectangle(window->x+window->window_grid[element]->x-1, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y+13,
-          14, window->window_grid[element]->width, _SCROLLBAR_BGCOLOR);
-        draw_borders(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y+14
-        +window->window_grid[element]->width,
+        draw_rectangle(window->x+scrollbar->x-1, window->y+_FONT_HEIGHT+2+scrollbar->y+13,
+          14, scrollbar->width, _SCROLLBAR_BGCOLOR);
+        draw_borders(window->x+scrollbar->x, window->y+_FONT_HEIGHT+2+scrollbar->y+14
+        +scrollbar->width,
           12, 12, 0);
         // and draw the anchor
-        if(window->window_grid[element]->c)
-          draw_rectangle(window->x+window->window_grid[element]->x,
-            window->y+_FONT_HEIGHT+2+window->window_grid[element]->y+13
-            + (unsigned long)window->window_grid[element]->scroll_x * (window->window_grid[element]->width-12) / window->window_grid[element]->c, 12, 12,
+        if(scrollbar->c)
+          draw_rectangle(window->x+scrollbar->x,
+            window->y+_FONT_HEIGHT+2+scrollbar->y+13
+            + (unsigned long)scrollbar->scroll_x * (scrollbar->width-12) / scrollbar->c, 12, 12,
             _WINDOW_BGCOLOR);
       }
       // if horizontal
       else
       {
-        draw_rectangle(window->x+window->window_grid[element]->x+13, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y-1,
-          window->window_grid[element]->width, 14, _SCROLLBAR_BGCOLOR);                    
-        if(window->window_grid[element]->c)
-          draw_rectangle(window->x+window->window_grid[element]->x+13
-          + (unsigned long)window->window_grid[element]->scroll_x * (window->window_grid[element]->width-12) / window->window_grid[element]->c,
-            window->y+_FONT_HEIGHT+2+window->window_grid[element]->y, 12, 12,
+        draw_rectangle(window->x+scrollbar->x+13, window->y+_FONT_HEIGHT+2+scrollbar->y-1,
+          scrollbar->width, 14, _SCROLLBAR_BGCOLOR);                    
+        if(scrollbar->c)
+          draw_rectangle(window->x+scrollbar->x+13
+          + (unsigned long)scrollbar->scroll_x * (scrollbar->width-12) / scrollbar->c,
+            window->y+_FONT_HEIGHT+2+scrollbar->y, 12, 12,
             _WINDOW_BGCOLOR);
-        draw_borders(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
+        draw_borders(window->x+scrollbar->x, window->y+_FONT_HEIGHT+2+scrollbar->y,
           12, 12, 0);
-        draw_borders(window->x+window->window_grid[element]->x+14+window->window_grid[element]->width, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y,
+        draw_borders(window->x+scrollbar->x+14+scrollbar->width, window->y+_FONT_HEIGHT+2+scrollbar->y,
           12, 12, 0);
       }
 }
@@ -466,8 +470,9 @@ inline void window_drawelement_scrollbar(struct prog_window *window, unsigned el
 
 inline void window_drawelement_checkbox(struct prog_window *window, unsigned element)
 {
-  int x = window->x+window->window_grid[element]->x;
-  int y = window->y+window->window_grid[element]->y+_FONT_HEIGHT+2;
+  struct window_element *elem = window->window_grid[element];
+  int x = window->x+elem->x;
+  int y = window->y+elem->y+_FONT_HEIGHT+2;
   
   draw_borders(x, y,
     CHECKBOX_SIZE, CHECKBOX_SIZE, 1);
@@ -475,18 +480,19 @@ inline void window_drawelement_checkbox(struct prog_window *window, unsigned ele
   draw_rectangle(x, y,
     CHECKBOX_SIZE, CHECKBOX_SIZE, _TEXTBOX_BGCOLOR);
 
-  if(window->window_grid[element]->selectc)
+  if(elem->selectc)
     draw_rectangle(x+1, y+1,
       CHECKBOX_SIZE-2, CHECKBOX_SIZE-2, _TEXTBOX_TEXTCOLOR);  
 
   gprint_text(x+CHECKBOX_SIZE+3, y,
-    window->window_grid[element]->text, window->window_grid[element]->color, _FONT_HEIGHT, window->x+window->width, window->window_grid[element]->monospace);  
+    elem->text, elem->color, _FONT_HEIGHT, window->x+window->width, elem->monospace);  
 }
 
 inline void window_drawelement_radiobutton(struct prog_window *window, unsigned element)
 {
-  int x = (CHECKBOX_SIZE>>1)+window->x+window->window_grid[element]->x;
-  int y = (CHECKBOX_SIZE>>1)+window->y+window->window_grid[element]->y+_FONT_HEIGHT+2;
+  struct window_element *elem = window->window_grid[element];
+  int x = (CHECKBOX_SIZE>>1)+window->x+elem->x;
+  int y = (CHECKBOX_SIZE>>1)+window->y+elem->y+_FONT_HEIGHT+2;
   
   draw_circle_border(x, y,
     CHECKBOX_SIZE>>1, 1);
@@ -494,7 +500,7 @@ inline void window_drawelement_radiobutton(struct prog_window *window, unsigned 
   draw_filled_circle(x, y,
     CHECKBOX_SIZE>>1, _TEXTBOX_BGCOLOR);
 
-  if(window->window_grid[element]->selectc)
+  if(elem->selectc)
     draw_filled_circle(x, y,
       (CHECKBOX_SIZE-2)>>1, _TEXTBOX_TEXTCOLOR);
 
@@ -502,15 +508,14 @@ inline void window_drawelement_radiobutton(struct prog_window *window, unsigned 
   y -= CHECKBOX_SIZE>>1;
 
   gprint_text(x, y,
-    window->window_grid[element]->text, window->window_grid[element]->color, _FONT_HEIGHT, window->x+window->width, window->window_grid[element]->monospace);  
+    elem->text, elem->color, _FONT_HEIGHT, window->x+window->width, elem->monospace);  
 }
 
 void window_drawelement(struct prog_window *window, unsigned int element)
 {
-//  unsigned int n;
-//  struct xpm_bitmap image;
+  struct window_element *elem = window->window_grid[element];
     
-  switch(window->window_grid[element]->type)
+  switch(elem->type)
   {
     // only text or image
     case 0:
@@ -522,8 +527,8 @@ void window_drawelement(struct prog_window *window, unsigned int element)
     return;
     // icon
     case 5:
-      draw_borders(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y, _WINDOW_ICONS_MARGIN-2, 39, 0);
-      draw_icon(window->x+window->window_grid[element]->x, window->y+_FONT_HEIGHT+2+window->window_grid[element]->y, window->window_grid[element]->bitmap, window->window_grid[element]->text, _WINDOW_BASICTEXTCOLOR);
+      draw_borders(window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y, _WINDOW_ICONS_MARGIN-2, 39, 0);
+      draw_icon(window->x+elem->x, window->y+_FONT_HEIGHT+2+elem->y, elem->bitmap, elem->text, _WINDOW_BASICTEXTCOLOR);
     return;
     // textbox
     case 2:
@@ -581,11 +586,11 @@ void draw_window(struct prog_window *window, unsigned active, unsigned update)
 
   if(!update || update == 2)
   {
-    if(window->maximized && windows[active_window] != window)
+/*    if(window->maximized && windows[active_window] != window)
     {
       scrrow++;
       goto notitlebar;
-    }
+    }*/
     // draw title bar
     if(active)
     {
@@ -618,7 +623,8 @@ void draw_window(struct prog_window *window, unsigned active, unsigned update)
 
     draw_window_box = ptr;
 
-    notitlebar:if(update)
+    //notitlebar:
+    if(update)
       return;    
   }
 
@@ -676,9 +682,11 @@ static void maximize_window(struct prog_window *window)
   window->h2 = window->height;
 
   window->x=0;
-  window->y=0;
+  window->y=_FONT_HEIGHT+2;
   window->width=_RES_X;
-  window->height=_RES_Y-2-_FONT_HEIGHT;
+  window->height=_RES_Y-((2+_FONT_HEIGHT)<<1);
+
+  screen_redraw = 1;
 
 //  draw_screen();
 //  draw_window(window, 1, 0);
@@ -763,16 +771,14 @@ void del_window(struct prog_window *window)
   {
     if(_VIDEO_MODE != video)
       restore_videomode();
-    screen_redraw = 1;
   }
-  else
-  {
-    // hide window and draw screen
-    window->hidden = 1;
+  // hide window and draw screen
+  else if(!window->fullscreen && !window->maximized)
     draw_window_box = window;
-    draw_screen();
-    draw_window_box = 0;
-  }
+  window->hidden = 1;
+//  window->fullscreen = window->maximized = 0;
+  draw_screen();
+  draw_window_box = 0;
     
   // free all mallocs
   free(window->hitbox);
@@ -787,6 +793,7 @@ void del_window(struct prog_window *window)
   free(window->title);
 
   free(window);
+
 
   // clean some memory
   if(--window_count)

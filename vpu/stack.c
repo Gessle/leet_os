@@ -1,6 +1,6 @@
 static int vpu_instr_push(struct vpu *vpu, unsigned flags)
 {
-  unsigned char reg = vpu->code[vpu->code_segment][vpu->ip++];
+  unsigned char reg = vpu_next_code_byte(vpu);
   unsigned short *nongpregs[4];
   nongpregs[0] = &vpu->code_segment;
   nongpregs[1] = &vpu->ip;
@@ -11,7 +11,7 @@ static int vpu_instr_push(struct vpu *vpu, unsigned flags)
   {
     putstr(stackoverflowerror);
     send_vpu_signal(vpu, SIGSEGV);    
-    return 0;
+    return 4;
   }
   else
   {
@@ -25,7 +25,7 @@ static int vpu_instr_push(struct vpu *vpu, unsigned flags)
 
 static int vpu_instr_pop(struct vpu *vpu, unsigned flags)
 {
-  unsigned char reg = vpu->code[vpu->code_segment][vpu->ip++];
+  unsigned char reg = vpu_next_code_byte(vpu);
   unsigned short *nongpregs[4];
   nongpregs[0] = &vpu->code_segment;
   nongpregs[1] = &vpu->ip;
@@ -36,7 +36,7 @@ static int vpu_instr_pop(struct vpu *vpu, unsigned flags)
   {
     putstr(stackunderflowerror);
     send_vpu_signal(vpu, SIGSEGV);        
-    return 0;
+    return 4;
   }
   else
   {

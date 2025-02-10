@@ -2,7 +2,7 @@ static int con_stdout_write(unsigned char c);
 
 static int vpu_instr_printstr(struct vpu *vpu, unsigned flags)
 {
-  unsigned short data_pointer = vpu->regs[vpu->code[vpu->code_segment][vpu->ip++] & 0x07];
+  unsigned short data_pointer = vpu->regs[vpu_next_code_byte(vpu) & 0x07];
 
   if(debug)
   {
@@ -17,7 +17,7 @@ static int vpu_instr_printstr(struct vpu *vpu, unsigned flags)
       sprintf(message, "  Pointer value is too big!");
       output_debug_info(message);
     }
-    return 0;
+    return 4;
   }
 
   while(memory_allowed(vpu, data_pointer) && vpu->data[vpu->data_segment][data_pointer])

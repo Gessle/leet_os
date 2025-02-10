@@ -231,6 +231,7 @@ void *run_program(char *dir, char *program, char *args, unsigned getkey, unsigne
       dir[strlen(dir)] == '\\';
     }
   }
+  restore_cpu_clock();
   video_mode(0x03);
 //  reset_int23();    
   reset_keyboard_handler();

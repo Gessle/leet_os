@@ -1,7 +1,7 @@
-tcpip.c(257): Warning! W112: Pointer truncated
-tcpip.c(257): Note! I2003: source conversion type is 'union REGS __far *'
-tcpip.c(257): Note! I2004: target conversion type is 'union REGS *'
-tcpip.c(257): Warning! W112: Pointer truncated
-tcpip.c(257): Note! I2003: source conversion type is 'union REGS __far *'
-tcpip.c(257): Note! I2004: target conversion type is 'union REGS *'
-tcpip.c(257): Note! I2002: 'int86' defined in: C:\WATCOM\H\i86.h(239)
+tcpip.c(269): Warning! W112: Pointer truncated
+tcpip.c(269): Note! I2003: source conversion type is 'union REGS __far *'
+tcpip.c(269): Note! I2004: target conversion type is 'union REGS *'
+tcpip.c(269): Warning! W112: Pointer truncated
+tcpip.c(269): Note! I2003: source conversion type is 'union REGS __far *'
+tcpip.c(269): Note! I2004: target conversion type is 'union REGS *'
+tcpip.c(269): Note! I2002: 'int86' defined in: C:\WATCOM\H\i86.h(239)

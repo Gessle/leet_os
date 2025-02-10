@@ -190,17 +190,11 @@ unsigned my_psp(void);
 #pragma aux my_psp = \
   "mov ah, 0x51" \
   "int 0x21" \
-  value [bx] modify [ax bx];
+  value [bx] modify [ax];
 
 #pragma aux unload aborts;
 static void __far unload(void)
 {
-/*  __asm
-  {
-    mov es, cs:psp_seg
-    mov ah, 0x49
-    int 0x21
-  }*/
   __asm
   {
     mov ax, 26 ; disable idle handler
@@ -218,6 +212,22 @@ static void __far unload(void)
     jmp dword ptr cs:[int21hdl]
   }
 }
+
+int dos_close(unsigned handle);
+#pragma aux dos_close = \
+  "mov ah, 0x3E" \
+  "int 0x21" \
+  "jc end" \
+  "xor ax, ax" \
+  "end:" \
+  parm [bx] value [ax];
+
+void dos_free(unsigned seg);
+#pragma aux dos_free = \
+  "mov ah, 0x49" \
+  "mov es, bx" \
+  "int 0x21" \
+  parm [bx] modify [es ax];
 
 // Main function: Install the driver. Above functions are kept in memory.
 int main(int argc, char **argv)
@@ -241,6 +251,8 @@ int main(int argc, char **argv)
     (void __far *)0x7FFF // count of devices.
   };
   union REGS regs;
+  unsigned n;
+  unsigned char __far *psp_ptr;
   
   if(argc != 2)
     return 1;
@@ -262,7 +274,14 @@ int main(int argc, char **argv)
   }
   else
   {
-    psp_seg = my_psp();
+    for(n=0;!dos_close(n);n++);
+
+    psp_ptr = MK_FP(my_psp(), 0);
+    n = *(unsigned __far*)&psp_ptr[0x2C];
+    dos_free(n);
+
+    psp_seg = FP_SEG(psp_ptr);
+
     int21hdl = _dos_getvect(0x21);
     set_idle_int();
     _dos_keep(0, ((_FP_OFF( main ) + 0xF) >> 4) + 0x10 ); // exit and leave functions before main() in memory    

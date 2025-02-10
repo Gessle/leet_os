@@ -1,5 +1,8 @@
 extern struct mouse_status *mouse;
 
+extern void __far (*update_screen)(void);
+void __far sync_pixels_ega4(void);
+
 void hide_mouse_cursor(void);
 
 void hide_mouse_if_in_box(int x, int y, unsigned width, unsigned height)
@@ -14,7 +17,8 @@ void hide_mouse_if_in_box(int x, int y, unsigned width, unsigned height)
 
 unsigned char _VIDEO_MODE;
 
-int ega4_lastoperation = -1;
+//int ega4_lastoperation = -1;
+extern unsigned char __based(__segname("main_TEXT")) ega4_lastoperation;
 
 void dummy_read(unsigned char byte);
 #pragma aux dummy_read = \
@@ -129,7 +133,8 @@ void _far put_pixel_ega2(unsigned int x, unsigned int y, unsigned color)
 /*
 Puts a pixel to the screen in mode 0x10 or 0x12
 */
-void _far put_pixel_ega4(unsigned int x, unsigned int y, unsigned color)
+void _far put_pixel_ega4(unsigned int x, unsigned int y, unsigned color);
+/*
 {
 //  unsigned char __far *dptr=&VGA[y*80+(x>>3)];
   unsigned char __far *dptr = &VGA[mul_80(y)+(x>>3)];
@@ -150,7 +155,7 @@ void _far put_pixel_ega4(unsigned int x, unsigned int y, unsigned color)
   *dptr = color;
 
  
-}
+}*/
 
 void put_pixel_raw(unsigned x, unsigned y, unsigned color)
 {
@@ -188,18 +193,18 @@ void put_pixel_shadow(unsigned int x, unsigned int y, unsigned int color, unsign
 /*
 Reads a pixel from the screen in mode 0x10 or 0x12
 */
-unsigned _far get_pixel_ega4(unsigned int x, unsigned int y)
-{
+unsigned _far get_pixel_ega4(unsigned int x, unsigned int y);
+/*{
 //  unsigned char __far *dptr=&VGA[y*80+(x>>3)];
   unsigned char __far *dptr = &VGA[mul_80(y) + (x>>3)];
   unsigned char set_bit = 0x80 >> (x&7);
   unsigned char retval=0;
   register unsigned int n = 0x04;
 
-  if(!ega4_lastoperation)
+//  if(!ega4_lastoperation)
   {
     outbyte(0x03CE, 0x04);
-    ega4_lastoperation=1;    
+    ega4_lastoperation=2;    
   }
 
   while(n--)
@@ -211,7 +216,7 @@ unsigned _far get_pixel_ega4(unsigned int x, unsigned int y)
 
   return retval;
   
-}
+}*/
 
 /*
 Reads a pixel from the screen in mode 0x06
@@ -245,17 +250,15 @@ Reads a pixel from the screen in mode 0x0F or 0x11
 */
 unsigned _far get_pixel_ega2(unsigned int x, unsigned int y)
 {
-//  unsigned char __far *dptr=&VGA[y*80+(x>>3)];
   unsigned char __far *dptr = &VGA[mul_80(y) + (x>>3)];
   unsigned char set_bit = 0x80 >> (x&7);
   unsigned char get_bits = 0;
 
   if(*dptr & set_bit)
-    get_bits = 0x01;
-
+    return 0x01;
+  else return 0;
  
 
-  return get_bits;
 }
 
 /*
@@ -538,7 +541,7 @@ void _far draw_rectangle_ega4(int x0, int y0, unsigned int width, unsigned int h
   unsigned char __far *vgap = VGA + mul_80(y0) + (x0>>3);
 
 
-    
+  sync_pixels_ega4();    
   
 
   if(ega4_lastoperation)
@@ -696,11 +699,12 @@ void draw_rectangle(int x0, int y0, unsigned int width, unsigned int height, uns
   }
   
   
-//  todo: fiksumpi näkyvyystarkistus
+//  todo: fiksumpi n„kyvyystarkistus
   if(!screen_redraw && running_window && windows[active_window] != running_window)
   {
     if(running_window != (void*)-1 && (running_window->minimized || running_window->hidden
-       || windows[active_window]->fullscreen || windows[active_window]->maximized)) return;
+       || (!windows[active_window]->hidden
+       && (windows[active_window]->fullscreen || windows[active_window]->maximized)))) return;
 
 //    hide_mouse_if_in_box(x0, y0, width, height);
 
@@ -739,6 +743,8 @@ void _far fill_screen_ega4(unsigned color)
 {
 //  unsigned char __far *vgap = VGA + ((_RES_X)>>3) * (_RES_Y);
   unsigned int cnt = ((_RES_X)>>3) * (_RES_Y)+1;
+
+  sync_pixels_ega4();
   
   outbyte(0x03CE, 0x05);
   outbyte(0x03CF, 0x02);
@@ -895,6 +901,7 @@ void video_mode(unsigned char mode)
      get_pixel_screen = get_pixel_13h;
      draw_rectangle_screen = draw_rectangle_px;
      fill_screen_color = fill_screen_px;
+     update_screen = 0;
     return;
     case 0x06:
       VGA=(unsigned char __far *)0xB8000000L;
@@ -902,6 +909,7 @@ void video_mode(unsigned char mode)
       get_pixel_screen = get_pixel_cga;
       draw_rectangle_screen = draw_rectangle_cga;
       fill_screen_color = fill_screen_cga;
+      update_screen = 0;
       VPUCON_LINES = 15; // korjaa bugi konsolin skrollauksessa ennen tämän muuttamista
     return;
     case 0x0F:    case 0x10:
@@ -922,12 +930,14 @@ void video_mode(unsigned char mode)
     get_pixel_screen = get_pixel_ega2;
     draw_rectangle_screen = draw_rectangle_ega2;
     fill_screen_color = fill_screen_ega2;
+    update_screen = 0;
   return;
   ega4:
     put_pixel_screen = put_pixel_ega4;
     get_pixel_screen = get_pixel_ega4;
     draw_rectangle_screen = draw_rectangle_ega4;
     fill_screen_color = fill_screen_ega4;
+    update_screen = sync_pixels_ega4;
 }
 
 void restore_videomode(void)

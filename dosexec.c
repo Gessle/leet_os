@@ -41,7 +41,7 @@ unsigned dosexec(char __far *path, char __far *arg)
   parameter_block[0] = 0; // parent environment
   *(char __far**)&parameter_block[1] = dos_args;
 
-  _heapshrink();
+  _bheapshrink(_NULLSEG);
 
   return dos_run_program(path, parameter_block);
 }

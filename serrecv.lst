@@ -1,0 +1,245 @@
+Module: D:\LEETSRC\490\vpu\serrecv.c
+GROUP: 'DGROUP' CONST,CONST2,_DATA
+
+Segment: serrecv_TEXT BYTE USE16 00000205 bytes
+0000                          serial_send_:
+0000    53                        push        bx 
+0001    51                        push        cx 
+0002    56                        push        si 
+0003    88 C7                     mov         bh,al 
+0005    88 D3                     mov         bl,dl 
+0007                          L$1:
+0007    B8 00 00                  mov         ax,DGROUP:CONST 
+000A    0F B6 CF                  movzx       cx,bh 
+000D    8E D8                     mov         ds,ax 
+000F    01 C9                     add         cx,cx 
+0011    C5 36 00 00               lds         si,dword ptr _serialbase 
+0015    01 CE                     add         si,cx 
+0017    8B 14                     mov         dx,word ptr [si] 
+0019    83 C2 05                  add         dx,0x0005 
+001C    EC                        in          al,dx 
+001D    A8 20                     test        al,0x20 
+001F    74 E6                     je          L$1 
+0021    B8 00 00                  mov         ax,DGROUP:CONST 
+0024    8E D8                     mov         ds,ax 
+0026    C5 36 00 00               lds         si,dword ptr _serialbase 
+002A    01 CE                     add         si,cx 
+002C    0F B6 C3                  movzx       ax,bl 
+002F    8B 14                     mov         dx,word ptr [si] 
+0031    EE                        out         dx,al 
+0032    B8 00 00                  mov         ax,DGROUP:CONST 
+0035    8E D8                     mov         ds,ax 
+0037    C5 36 00 00               lds         si,dword ptr _serialbase 
+003B    01 CE                     add         si,cx 
+003D    8B 14                     mov         dx,word ptr [si] 
+003F    83 C2 05                  add         dx,0x0005 
+0042    EC                        in          al,dx 
+0043    A8 02                     test        al,0x02 
+0045    0F 95 C0                  setne       al 
+0048    30 E4                     xor         ah,ah 
+004A    5E                        pop         si 
+004B    59                        pop         cx 
+004C    5B                        pop         bx 
+004D    C3                        ret         
+004E                          serial_flow_control_recv_:
+004E    53                        push        bx 
+004F    51                        push        cx 
+0050    52                        push        dx 
+0051    56                        push        si 
+0052    88 C1                     mov         cl,al 
+0054    0F B6 C1                  movzx       ax,cl 
+0057    BA 00 00                  mov         dx,seg _serport_buffer 
+005A    89 C3                     mov         bx,ax 
+005C    8E DA                     mov         ds,dx 
+005E    C1 E3 02                  shl         bx,0x02 
+0061    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+0065    8B 94 04 01               mov         dx,word ptr 0x104[si] 
+0069    80 E2 03                  and         dl,0x03 
+006C    F6 C2 01                  test        dl,0x01 
+006F    74 18                     je          L$2 
+0071    BA 13 00                  mov         dx,0x0013 
+0074    E8 00 00                  call        serial_send_ 
+0077    85 C0                     test        ax,ax 
+0079    75 0E                     jne         L$2 
+007B    B8 00 00                  mov         ax,seg _serport_buffer 
+007E    8E D8                     mov         ds,ax 
+0080    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+0084    80 8C 04 01 08            or          byte ptr 0x104[si],0x08 
+0089                          L$2:
+0089    0F B6 C1                  movzx       ax,cl 
+008C    BA 00 00                  mov         dx,seg _serport_buffer 
+008F    89 C3                     mov         bx,ax 
+0091    8E DA                     mov         ds,dx 
+0093    C1 E3 02                  shl         bx,0x02 
+0096    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+009A    8B 94 04 01               mov         dx,word ptr 0x104[si] 
+009E    80 E2 03                  and         dl,0x03 
+00A1    F6 C2 02                  test        dl,0x02 
+00A4    74 18                     je          L$3 
+00A6    89 C3                     mov         bx,ax 
+00A8    01 C3                     add         bx,ax 
+00AA    B8 00 00                  mov         ax,DGROUP:CONST 
+00AD    8E D8                     mov         ds,ax 
+00AF    C5 16 00 00               lds         dx,dword ptr _serialbase 
+00B3    01 D3                     add         bx,dx 
+00B5    8B 17                     mov         dx,word ptr [bx] 
+00B7    B8 08 00                  mov         ax,0x0008 
+00BA    83 C2 04                  add         dx,0x0004 
+00BD    EE                        out         dx,al 
+00BE                          L$3:
+00BE    5E                        pop         si 
+00BF    5A                        pop         dx 
+00C0    59                        pop         cx 
+00C1    5B                        pop         bx 
+00C2    C3                        ret         
+
+Routine Size: 195 bytes,    Routine Base: serrecv_TEXT + 0000
+
+00C3                          serial_int_handler_:
+00C3    60                        pusha       
+00C4    1E                        push        ds 
+00C5    06                        push        es 
+00C6    0F A0                     push        fs 
+00C8    0F A8                     push        gs 
+00CA    89 E5                     mov         bp,sp 
+00CC    50                        push        ax 
+00CD    FC                        cld         
+00CE    30 C9                     xor         cl,cl 
+00D0    30 ED                     xor         ch,ch 
+00D2                          L$4:
+00D2    BA 00 00                  mov         dx,DGROUP:CONST 
+00D5    0F B6 F9                  movzx       di,cl 
+00D8    8E DA                     mov         ds,dx 
+00DA    89 FE                     mov         si,di 
+00DC    8B 1E 00 00               mov         bx,word ptr _serialbase 
+00E0    01 FE                     add         si,di 
+00E2    8E 1E 02 00               mov         ds,word ptr _serialbase+0x2 
+00E6    01 F3                     add         bx,si 
+00E8    8B 17                     mov         dx,word ptr [bx] 
+00EA    42                        inc         dx 
+00EB    42                        inc         dx 
+00EC    EC                        in          al,dx 
+00ED    A8 01                     test        al,0x01 
+00EF    0F 85 E4 00               jne         L$11 
+00F3    BA 00 00                  mov         dx,DGROUP:CONST 
+00F6    8E DA                     mov         ds,dx 
+00F8    C5 1E 00 00               lds         bx,dword ptr _serialbase 
+00FC    01 F3                     add         bx,si 
+00FE    8B 17                     mov         dx,word ptr [bx] 
+0100    83 C2 05                  add         dx,0x0005 
+0103    EC                        in          al,dx 
+0104    89 FB                     mov         bx,di 
+0106    88 C2                     mov         dl,al 
+0108    C1 E3 02                  shl         bx,0x02 
+010B    A8 8C                     test        al,0x8c 
+010D    74 30                     je          L$6 
+010F    A8 04                     test        al,0x04 
+0111    74 0E                     je          L$5 
+0113    BE 00 00                  mov         si,seg _serport_buffer 
+0116    8E DE                     mov         ds,si 
+0118    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+011C    80 8C 02 01 01            or          byte ptr 0x102[si],0x01 
+0121                          L$5:
+0121    F6 C2 08                  test        dl,0x08 
+0124    0F 84 AF 00               je          L$11 
+0128    0F B6 F1                  movzx       si,cl 
+012B    BA 00 00                  mov         dx,seg _serport_buffer 
+012E    C1 E6 02                  shl         si,0x02 
+0131    8E DA                     mov         ds,dx 
+0133    C5 9C 00 00               lds         bx,dword ptr _serport_buffer[si] 
+0137    80 8F 02 01 02            or          byte ptr 0x102[bx],0x02 
+013C    E9 98 00                  jmp         L$11 
+013F                          L$6:
+013F    A8 01                     test        al,0x01 
+0141    0F 84 92 00               je          L$11 
+0145    BA 00 00                  mov         dx,DGROUP:CONST 
+0148    8E DA                     mov         ds,dx 
+014A    C5 16 00 00               lds         dx,dword ptr _serialbase 
+014E    01 D6                     add         si,dx 
+0150    8B 14                     mov         dx,word ptr [si] 
+0152    EC                        in          al,dx 
+0153    BA 00 00                  mov         dx,seg _serport_buffer 
+0156    8E DA                     mov         ds,dx 
+0158    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+015C    8B 9C 04 01               mov         bx,word ptr 0x104[si] 
+0160    89 DA                     mov         dx,bx 
+0162    80 E2 03                  and         dl,0x03 
+0165    88 46 FE                  mov         byte ptr -0x2[bp],al 
+0168    F6 C2 01                  test        dl,0x01 
+016B    74 16                     je          L$9 
+016D    3C 13                     cmp         al,0x13 
+016F    75 09                     jne         L$8 
+0171    80 CB 04                  or          bl,0x04 
+0174                          L$7:
+0174    89 9C 04 01               mov         word ptr 0x104[si],bx 
+0178    EB 5D                     jmp         L$11 
+017A                          L$8:
+017A    3C 11                     cmp         al,0x11 
+017C    75 05                     jne         L$9 
+017E    80 E3 FB                  and         bl,0xfb 
+0181    EB F1                     jmp         L$7 
+0183                          L$9:
+0183    0F B6 D1                  movzx       dx,cl 
+0186    BE 00 00                  mov         si,seg _serport_buffer 
+0189    89 D3                     mov         bx,dx 
+018B    8E DE                     mov         ds,si 
+018D    C1 E3 02                  shl         bx,0x02 
+0190    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+0194    8A 84 00 01               mov         al,byte ptr 0x100[si] 
+0198    FE 84 00 01               inc         byte ptr 0x100[si] 
+019C    BF 00 00                  mov         di,seg _serport_buffer 
+019F    8E DF                     mov         ds,di 
+01A1    0F B6 F0                  movzx       si,al 
+01A4    C5 BF 00 00               lds         di,dword ptr _serport_buffer[bx] 
+01A8    01 FE                     add         si,di 
+01AA    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+01AD    88 04                     mov         byte ptr [si],al 
+01AF    BE 00 00                  mov         si,seg _serport_buffer 
+01B2    8E DE                     mov         ds,si 
+01B4    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+01B8    8A 84 00 01               mov         al,byte ptr 0x100[si] 
+01BC    2A 84 01 01               sub         al,byte ptr 0x101[si] 
+01C0    28 C5                     sub         ch,al 
+01C2    80 FD 80                  cmp         ch,0x80 
+01C5    73 10                     jae         L$11 
+01C7    84 ED                     test        ch,ch 
+01C9    75 07                     jne         L$10 
+01CB    80 8C 02 01 04            or          byte ptr 0x102[si],0x04 
+01D0    EB 05                     jmp         L$11 
+01D2                          L$10:
+01D2    89 D0                     mov         ax,dx 
+01D4    E8 00 00                  call        serial_flow_control_recv_ 
+01D7                          L$11:
+01D7    FE C1                     inc         cl 
+01D9    80 F9 04                  cmp         cl,0x04 
+01DC    73 17                     jae         L$12 
+01DE    BB 00 00                  mov         bx,DGROUP:CONST 
+01E1    0F B6 D1                  movzx       dx,cl 
+01E4    8E DB                     mov         ds,bx 
+01E6    01 D2                     add         dx,dx 
+01E8    C5 1E 00 00               lds         bx,dword ptr _serialbase 
+01EC    01 D3                     add         bx,dx 
+01EE    83 3F 00                  cmp         word ptr [bx],0x0000 
+01F1    0F 85 DD FE               jne         L$4 
+01F5                          L$12:
+01F5    B8 20 00                  mov         ax,0x0020 
+01F8    89 C2                     mov         dx,ax 
+01FA    EE                        out         dx,al 
+01FB    89 EC                     mov         sp,bp 
+01FD    0F A9                     pop         gs 
+01FF    0F A1                     pop         fs 
+0201    07                        pop         es 
+0202    1F                        pop         ds 
+0203    61                        popa        
+0204    CF                        iret        
+
+Routine Size: 322 bytes,    Routine Base: serrecv_TEXT + 00C3
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000000 bytes
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000000 bytes
+

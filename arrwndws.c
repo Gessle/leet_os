@@ -6,6 +6,8 @@ static void tile_windows(void)
   unsigned n, m = 0;
   unsigned toobig_stack_x = 0;
   unsigned toobig_stack_y = 0;
+  unsigned screenview_top = _FONT_HEIGHT+2;
+  unsigned screenview_height = _RES_Y - screenview_top;
 
   for(n=window_count;n--;)
     if(windows[n]->hidden || windows[n]->function_pointer == &clock_program || windows[n]->fullscreen)
@@ -20,34 +22,36 @@ static void tile_windows(void)
   if(window_count_l % window_cols)
     window_rows++;
 
-  for(n=window_count;n--;)
+  for(n=window_count;n-->m;)
   {
+    
     while(windows[n-m]->hidden || windows[n-m]->function_pointer == &clock_program || windows[n-m]->fullscreen)
     {
       if(windows[n-m]->fullscreen)
         minimize_window(windows[n-m]);      
       m++;
+      if(n<m) return;
     }
-    if(n-m > window_count)
-      goto end;
+//    if(n<m)
+//      break;
       
     windows[n-m]->maximized = 0;
     windows[n-m]->minimized = 0;
     set_window_resized(windows[n-m]);
     if(windows[n-m]->resizable)
     {
-      if((windows[n-m]->height = _RES_Y / window_rows - (_FONT_HEIGHT+2)) < 120)
+      if((windows[n-m]->height = (screenview_height) / window_rows - (_FONT_HEIGHT+2)) < 120)
         windows[n-m]->height = 120;
       if((windows[n-m]->width = _RES_X / window_cols) < 120)
         windows[n-m]->width = 120;
     }
-    windows[n-m]->y = 0;
+    windows[n-m]->y = screenview_top;
     windows[n-m]->x = (n - (window_count - window_count_l)) * (_RES_X / window_cols);
     while(windows[n-m]->x > _RES_X - windows[n-m]->width)
     {
       if((windows[n-m]->x -= _RES_X) < 0)
         windows[n-m]->x = 0;
-      windows[n-m]->y += _RES_Y / window_rows;
+      windows[n-m]->y += screenview_height / window_rows;
     }
     if(windows[n-m]->x >= _RES_X || windows[n-m]->y >= _RES_Y)
     {
@@ -56,8 +60,6 @@ static void tile_windows(void)
     }      
     set_active_window(n-m, 0); 
   }
-  end: ;
-//  draw_screen();
 }
 
 static void cascade_windows(void)
@@ -84,5 +86,4 @@ static void cascade_windows(void)
     set_active_window(n, 0);      
   }  
   while(++n < window_count);   
-//  draw_screen();
 }

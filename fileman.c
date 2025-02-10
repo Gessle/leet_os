@@ -50,7 +50,7 @@ struct filename_clipboard filename_clipboard;
 static unsigned long getfileinfo(char *path, struct fattrib __near *attrib)
 {
   struct find_t fileinfo;
-  if(_dos_findfirst(path, 0xFF, &fileinfo))
+  if(findfirst(path, 0xFF, &fileinfo))
     return -1;
   if(attrib)
   {
@@ -188,7 +188,7 @@ static int get_dir_contents(char *directory, char *filenames, char **retval, uns
 
   sprintf(filepath, "%s%s", directory, filenames);
 
-  rc = _dos_findfirst(filepath, _A_SUBDIR, &fileinfo);
+  rc = findfirst(filepath, _A_SUBDIR, &fileinfo);
   while(!rc)
   {
     c++;
@@ -205,7 +205,7 @@ static int get_dir_contents(char *directory, char *filenames, char **retval, uns
       else
         strcpy(np, fip);
     }    
-    rc = _dos_findnext(&fileinfo);     
+    rc = findnext(&fileinfo);     
   }
   
   if((int)c-(int)scroll < 0) return 0;

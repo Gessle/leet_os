@@ -1,0 +1,121 @@
+Module: D:\LEETSRC\490\xpmparse\2XPM2.C
+GROUP: 'DGROUP' CONST,CONST2,_DATA
+
+Segment: _TEXT BYTE USE16 000000C8 bytes
+0000                          main_:
+0000    52                        push        dx 
+0001    56                        push        si 
+0002    57                        push        di 
+0003    55                        push        bp 
+0004    89 E5                     mov         bp,sp 
+0006    83 EC 08                  sub         sp,0x0008 
+0009    89 DE                     mov         si,bx 
+000B    89 4E FC                  mov         word ptr -0x4[bp],cx 
+000E    C7 46 FE 00 00            mov         word ptr -0x2[bp],0x0000 
+0013    3D 03 00                  cmp         ax,0x0003 
+0016    75 48                     jne         L$2 
+0018    BB 00 00                  mov         bx,offset DGROUP:L$10 
+001B    8E D9                     mov         ds,cx 
+001D    8C D1                     mov         cx,ss 
+001F    8B 44 04                  mov         ax,word ptr 0x4[si] 
+0022    8B 54 06                  mov         dx,word ptr 0x6[si] 
+0025    E8 00 00                  call        fopen_ 
+0028    89 C7                     mov         di,ax 
+002A    89 56 F8                  mov         word ptr -0x8[bp],dx 
+002D    85 D2                     test        dx,dx 
+002F    75 0A                     jne         L$1 
+0031    85 C0                     test        ax,ax 
+0033    75 06                     jne         L$1 
+0035    B8 01 00                  mov         ax,0x0001 
+0038    E9 86 00                  jmp         L$9 
+003B                          L$1:
+003B    8E 5E FC                  mov         ds,word ptr -0x4[bp] 
+003E    BB 02 00                  mov         bx,offset DGROUP:L$11 
+0041    8C D1                     mov         cx,ss 
+0043    8B 44 08                  mov         ax,word ptr 0x8[si] 
+0046    8B 54 0A                  mov         dx,word ptr 0xa[si] 
+0049    E8 00 00                  call        fopen_ 
+004C    89 D1                     mov         cx,dx 
+004E    89 C6                     mov         si,ax 
+0050    89 56 FA                  mov         word ptr -0x6[bp],dx 
+0053    85 D2                     test        dx,dx 
+0055    75 13                     jne         L$3 
+0057    85 C0                     test        ax,ax 
+0059    75 0F                     jne         L$3 
+005B    B8 02 00                  mov         ax,0x0002 
+005E    EB 61                     jmp         L$9 
+0060                          L$2:
+0060    B8 04 00                  mov         ax,offset DGROUP:L$12 
+0063    8C D2                     mov         dx,ss 
+0065    E8 00 00                  call        puts_ 
+0068    EB 55                     jmp         L$8 
+006A                          L$3:
+006A    89 C3                     mov         bx,ax 
+006C    8C D2                     mov         dx,ss 
+006E    B8 5A 00                  mov         ax,offset DGROUP:L$13 
+0071    E8 00 00                  call        fputs_ 
+0074                          L$4:
+0074    8E 5E F8                  mov         ds,word ptr -0x8[bp] 
+0077    F6 45 0A 10               test        byte ptr 0xa[di],0x10 
+007B    75 32                     jne         L$7 
+007D    89 F8                     mov         ax,di 
+007F    8C DA                     mov         dx,ds 
+0081    E8 00 00                  call        fgetc_ 
+0084    3D 22 00                  cmp         ax,0x0022 
+0087    75 16                     jne         L$6 
+0089    83 7E FE 00               cmp         word ptr -0x2[bp],0x0000 
+008D    74 0B                     je          L$5 
+008F    8B 4E FA                  mov         cx,word ptr -0x6[bp] 
+0092    B8 0A 00                  mov         ax,0x000a 
+0095    89 F3                     mov         bx,si 
+0097    E8 00 00                  call        fputc_ 
+009A                          L$5:
+009A    F7 56 FE                  not         word ptr -0x2[bp] 
+009D    EB D5                     jmp         L$4 
+009F                          L$6:
+009F    83 7E FE 00               cmp         word ptr -0x2[bp],0x0000 
+00A3    74 CF                     je          L$4 
+00A5    8B 4E FA                  mov         cx,word ptr -0x6[bp] 
+00A8    89 F3                     mov         bx,si 
+00AA    E8 00 00                  call        fputc_ 
+00AD    EB C5                     jmp         L$4 
+00AF                          L$7:
+00AF    8B 56 FA                  mov         dx,word ptr -0x6[bp] 
+00B2    89 F0                     mov         ax,si 
+00B4    E8 00 00                  call        fclose_ 
+00B7    8B 56 F8                  mov         dx,word ptr -0x8[bp] 
+00BA    89 F8                     mov         ax,di 
+00BC    E8 00 00                  call        fclose_ 
+00BF                          L$8:
+00BF    31 C0                     xor         ax,ax 
+00C1                          L$9:
+00C1    89 EC                     mov         sp,bp 
+00C3    5D                        pop         bp 
+00C4    5F                        pop         di 
+00C5    5E                        pop         si 
+00C6    5A                        pop         dx 
+00C7    C3                        ret         
+
+Routine Size: 200 bytes,    Routine Base: _TEXT + 0000
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000062 bytes
+0000                          L$10:
+0000    72 00                                           r.
+0002                          L$11:
+0002    77 00                                           w.
+0004                          L$12:
+0004    54 68 69 73 20 70 72 6F 67 72 61 6D 20 63 6F 6E This program con
+0014    76 65 72 74 73 20 58 50 4D 33 20 69 6D 61 67 65 verts XPM3 image
+0024    73 20 74 6F 20 58 50 4D 32 20 69 6D 61 67 65 73 s to XPM2 images
+0034    2E 0A 55 73 61 67 65 3A 20 24 20 32 58 50 4D 32 ..Usage: $ 2XPM2
+0044    20 5B 53 52 43 46 49 4C 45 5D 20 5B 44 45 53 54  [SRCFILE] [DEST
+0054    46 49 4C 45 5D 00                               FILE].
+005A                          L$13:
+005A    21 20 58 50 4D 32 0A 00                         ! XPM2..
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000000 bytes
+

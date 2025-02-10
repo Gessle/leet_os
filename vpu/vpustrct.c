@@ -4,7 +4,7 @@
 #define MAX_DIRS 10
 #define MAX_WINDOWS 5
 #define WINKEYPOLLRATE 5000
-#define DEFAULT_PRIORITY 1000
+#define DEFAULT_PRIORITY 100
 
 typedef unsigned long posixtime;
 

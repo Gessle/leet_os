@@ -228,13 +228,11 @@ int load_xpm_bitmap(char *filename, struct xpm_bitmap *retval)
   return 0;
 }
 
-inline unsigned char bitmap_color(struct xpm_bitmap *bitmap, unsigned long offset)
+/*inline unsigned char bitmap_color(unsigned char byte, char offset)
 {
-  unsigned char retval = bitmap->bitmap[offset>>1];
-  if(offset&0x1)
-    return retval & 0x0F;
-  return retval >> 4;
-}
+  return offset & 1 ? byte >> 4 : byte & 0xF;
+}*/
+#define bitmap_color(byte, offset) (offset&1?byte&0xF:byte>>4)
 
 void draw_xpm_bitmap(struct xpm_bitmap *bitmap, unsigned x0, unsigned y0, unsigned x1, unsigned y1)
 {
@@ -245,35 +243,39 @@ void draw_xpm_bitmap(struct xpm_bitmap *bitmap, unsigned x0, unsigned y0, unsign
   int vscale = 0;
   unsigned h = y1-y0;
   unsigned w = x1-x0;
+  unsigned char *bitmapptr = bitmap->bitmap;
+  unsigned width = bitmap->width;
+  unsigned height = bitmap->height;
 
   for(;scr_row<y1;scr_row++)
   {
-    vscale += h - bitmap->height;        
-    while(vscale >= (signed)bitmap->height)
+    vscale += h - height;        
+    while(vscale >= (signed)height)
     {
       vscale -= h;
-      bytedata -= bitmap->width;
+      bytedata -= width;
     }
-    while(vscale <= (signed)-bitmap->height)
+    while(vscale <= (signed)-height)
     {
       vscale += h;
-      bytedata += bitmap->width;
+      bytedata += width;
     }
     
     for(scr_col=x0;scr_col<x1;scr_col++)
     {
-      hscale += w - bitmap->width;       
-      while(hscale >= (signed)bitmap->width)
+      hscale += w - width;       
+      while(hscale >= (signed)width)
       {
         hscale -= w;
         bytedata--;
       }
-      while(hscale <= (signed)-bitmap->width)
+      while(hscale <= (signed)-width)
       {
         hscale += w;
         bytedata++;
       }
-      put_pixel(scr_col, scr_row, bitmap_color(bitmap, bytedata++));     
+      put_pixel(scr_col, scr_row, bitmap_color(bitmapptr[bytedata>>1], bytedata));     
+      bytedata++;
     }
   }
 }

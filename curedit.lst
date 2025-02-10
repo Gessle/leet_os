@@ -1,0 +1,923 @@
+Module: D:\LEETSRC\490\CUREDIT.C
+GROUP: 'DGROUP' CONST,CONST2,_DATA,_BSS
+
+Segment: _TEXT BYTE USE16 00000699 bytes
+0000                          put_pixel_:
+0000    51                        push        cx 
+0001    55                        push        bp 
+0002    89 E5                     mov         bp,sp 
+0004    53                        push        bx 
+0005    88 D7                     mov         bh,dl 
+0007    B1 06                     mov         cl,0x06 
+0009    30 DB                     xor         bl,bl 
+000B    D3 E2                     shl         dx,cl 
+000D    01 DA                     add         dx,bx 
+000F    8B 1E 00 00               mov         bx,word ptr _VGA 
+0013    01 D0                     add         ax,dx 
+0015    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+0019    01 C3                     add         bx,ax 
+001B    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+001E    26 88 07                  mov         byte ptr es:[bx],al 
+0021    89 EC                     mov         sp,bp 
+0023    5D                        pop         bp 
+0024    59                        pop         cx 
+0025    C3                        ret         
+
+Routine Size: 38 bytes,    Routine Base: _TEXT + 0000
+
+0026                          get_pixel_:
+0026    53                        push        bx 
+0027    51                        push        cx 
+0028    89 C3                     mov         bx,ax 
+002A    88 D4                     mov         ah,dl 
+002C    B1 06                     mov         cl,0x06 
+002E    30 C0                     xor         al,al 
+0030    D3 E2                     shl         dx,cl 
+0032    01 D0                     add         ax,dx 
+0034    01 D8                     add         ax,bx 
+0036    C4 1E 00 00               les         bx,dword ptr _VGA 
+003A    01 C3                     add         bx,ax 
+003C    26 8A 07                  mov         al,byte ptr es:[bx] 
+003F    59                        pop         cx 
+0040                          L$1:
+0040    5B                        pop         bx 
+0041    C3                        ret         
+
+Routine Size: 28 bytes,    Routine Base: _TEXT + 0026
+
+0042                          clear_screen_:
+0042    53                        push        bx 
+0043                          L$2:
+0043    48                        dec         ax 
+0044    3D FF FF                  cmp         ax,0xffff 
+0047    74 F7                     je          L$1 
+0049    C4 1E 00 00               les         bx,dword ptr _VGA 
+004D    01 C3                     add         bx,ax 
+004F    26 C6 07 00               mov         byte ptr es:[bx],0x00 
+0053    EB EE                     jmp         L$2 
+
+Routine Size: 19 bytes,    Routine Base: _TEXT + 0042
+
+0055                          draw_icon_:
+0055    56                        push        si 
+0056    57                        push        di 
+0057    55                        push        bp 
+0058    89 E5                     mov         bp,sp 
+005A    83 EC 26                  sub         sp,0x0026 
+005D    50                        push        ax 
+005E    52                        push        dx 
+005F    88 DA                     mov         dl,bl 
+0061    89 CB                     mov         bx,cx 
+0063    C7 46 EC 0C 00            mov         word ptr -0x14[bp],0x000c 
+0068    B1 06                     mov         cl,0x06 
+006A    8A 66 D6                  mov         ah,byte ptr -0x2a[bp] 
+006D    8B 76 D6                  mov         si,word ptr -0x2a[bp] 
+0070    30 C0                     xor         al,al 
+0072    D3 E6                     shl         si,cl 
+0074    89 46 F6                  mov         word ptr -0xa[bp],ax 
+0077                          L$3:
+0077    FF 4E EC                  dec         word ptr -0x14[bp] 
+007A    83 7E EC FF               cmp         word ptr -0x14[bp],0xffff 
+007E    75 03                     jne         L$4 
+0080    E9 9D 01                  jmp         L$16 
+0083                          L$4:
+0083    8B 4E F6                  mov         cx,word ptr -0xa[bp] 
+0086    C7 46 F8 01 00            mov         word ptr -0x8[bp],0x0001 
+008B    01 F1                     add         cx,si 
+008D    8B 46 D8                  mov         ax,word ptr -0x28[bp] 
+0090    89 4E FC                  mov         word ptr -0x4[bp],cx 
+0093    89 4E F0                  mov         word ptr -0x10[bp],cx 
+0096    89 4E EA                  mov         word ptr -0x16[bp],cx 
+0099    89 4E F4                  mov         word ptr -0xc[bp],cx 
+009C    89 4E F2                  mov         word ptr -0xe[bp],cx 
+009F    89 4E FE                  mov         word ptr -0x2[bp],cx 
+00A2    89 4E DE                  mov         word ptr -0x22[bp],cx 
+00A5                          L$5:
+00A5    FF 4E F8                  dec         word ptr -0x8[bp] 
+00A8    83 7E F8 FF               cmp         word ptr -0x8[bp],0xffff 
+00AC    75 03                     jne         L$6 
+00AE    E9 63 01                  jmp         L$15 
+00B1                          L$6:
+00B1    F6 07 80                  test        byte ptr [bx],0x80 
+00B4    74 26                     je          L$7 
+00B6    C6 46 FB 00               mov         byte ptr -0x5[bp],0x00 
+00BA    88 56 FA                  mov         byte ptr -0x6[bp],dl 
+00BD    8B 7E FA                  mov         di,word ptr -0x6[bp] 
+00C0    89 7E DC                  mov         word ptr -0x24[bp],di 
+00C3    8B 7E DE                  mov         di,word ptr -0x22[bp] 
+00C6    01 C7                     add         di,ax 
+00C8    89 7E FA                  mov         word ptr -0x6[bp],di 
+00CB    8B 3E 00 00               mov         di,word ptr _VGA 
+00CF    8A 76 DC                  mov         dh,byte ptr -0x24[bp] 
+00D2    03 7E FA                  add         di,word ptr -0x6[bp] 
+00D5    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+00D9    26 88 35                  mov         byte ptr es:[di],dh 
+00DC                          L$7:
+00DC    40                        inc         ax 
+00DD    F6 07 40                  test        byte ptr [bx],0x40 
+00E0    74 26                     je          L$8 
+00E2    C6 46 FB 00               mov         byte ptr -0x5[bp],0x00 
+00E6    88 56 FA                  mov         byte ptr -0x6[bp],dl 
+00E9    8B 7E FA                  mov         di,word ptr -0x6[bp] 
+00EC    89 7E E0                  mov         word ptr -0x20[bp],di 
+00EF    8B 7E FE                  mov         di,word ptr -0x2[bp] 
+00F2    01 C7                     add         di,ax 
+00F4    89 7E FA                  mov         word ptr -0x6[bp],di 
+00F7    8B 3E 00 00               mov         di,word ptr _VGA 
+00FB    8A 76 E0                  mov         dh,byte ptr -0x20[bp] 
+00FE    03 7E FA                  add         di,word ptr -0x6[bp] 
+0101    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+0105    26 88 35                  mov         byte ptr es:[di],dh 
+0108                          L$8:
+0108    40                        inc         ax 
+0109    F6 07 20                  test        byte ptr [bx],0x20 
+010C    74 26                     je          L$9 
+010E    C6 46 FB 00               mov         byte ptr -0x5[bp],0x00 
+0112    88 56 FA                  mov         byte ptr -0x6[bp],dl 
+0115    8B 7E FA                  mov         di,word ptr -0x6[bp] 
+0118    89 7E E6                  mov         word ptr -0x1a[bp],di 
+011B    8B 7E F2                  mov         di,word ptr -0xe[bp] 
+011E    01 C7                     add         di,ax 
+0120    89 7E FA                  mov         word ptr -0x6[bp],di 
+0123    8B 3E 00 00               mov         di,word ptr _VGA 
+0127    8A 76 E6                  mov         dh,byte ptr -0x1a[bp] 
+012A    03 7E FA                  add         di,word ptr -0x6[bp] 
+012D    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+0131    26 88 35                  mov         byte ptr es:[di],dh 
+0134                          L$9:
+0134    40                        inc         ax 
+0135    F6 07 10                  test        byte ptr [bx],0x10 
+0138    74 26                     je          L$10 
+013A    C6 46 FB 00               mov         byte ptr -0x5[bp],0x00 
+013E    88 56 FA                  mov         byte ptr -0x6[bp],dl 
+0141    8B 7E FA                  mov         di,word ptr -0x6[bp] 
+0144    89 7E E4                  mov         word ptr -0x1c[bp],di 
+0147    8B 7E F4                  mov         di,word ptr -0xc[bp] 
+014A    01 C7                     add         di,ax 
+014C    89 7E FA                  mov         word ptr -0x6[bp],di 
+014F    8B 3E 00 00               mov         di,word ptr _VGA 
+0153    8A 76 E4                  mov         dh,byte ptr -0x1c[bp] 
+0156    03 7E FA                  add         di,word ptr -0x6[bp] 
+0159    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+015D    26 88 35                  mov         byte ptr es:[di],dh 
+0160                          L$10:
+0160    40                        inc         ax 
+0161    F6 07 08                  test        byte ptr [bx],0x08 
+0164    74 26                     je          L$11 
+0166    C6 46 FB 00               mov         byte ptr -0x5[bp],0x00 
+016A    88 56 FA                  mov         byte ptr -0x6[bp],dl 
+016D    8B 7E FA                  mov         di,word ptr -0x6[bp] 
+0170    89 7E E2                  mov         word ptr -0x1e[bp],di 
+0173    8B 7E EA                  mov         di,word ptr -0x16[bp] 
+0176    01 C7                     add         di,ax 
+0178    89 7E FA                  mov         word ptr -0x6[bp],di 
+017B    8B 3E 00 00               mov         di,word ptr _VGA 
+017F    8A 76 E2                  mov         dh,byte ptr -0x1e[bp] 
+0182    03 7E FA                  add         di,word ptr -0x6[bp] 
+0185    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+0189    26 88 35                  mov         byte ptr es:[di],dh 
+018C                          L$11:
+018C    40                        inc         ax 
+018D    F6 07 04                  test        byte ptr [bx],0x04 
+0190    74 26                     je          L$12 
+0192    C6 46 FB 00               mov         byte ptr -0x5[bp],0x00 
+0196    88 56 FA                  mov         byte ptr -0x6[bp],dl 
+0199    8B 7E FA                  mov         di,word ptr -0x6[bp] 
+019C    89 7E DA                  mov         word ptr -0x26[bp],di 
+019F    8B 7E F0                  mov         di,word ptr -0x10[bp] 
+01A2    01 C7                     add         di,ax 
+01A4    89 7E FA                  mov         word ptr -0x6[bp],di 
+01A7    8B 3E 00 00               mov         di,word ptr _VGA 
+01AB    8A 76 DA                  mov         dh,byte ptr -0x26[bp] 
+01AE    03 7E FA                  add         di,word ptr -0x6[bp] 
+01B1    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+01B5    26 88 35                  mov         byte ptr es:[di],dh 
+01B8                          L$12:
+01B8    40                        inc         ax 
+01B9    F6 07 02                  test        byte ptr [bx],0x02 
+01BC    74 26                     je          L$13 
+01BE    C6 46 FB 00               mov         byte ptr -0x5[bp],0x00 
+01C2    88 56 FA                  mov         byte ptr -0x6[bp],dl 
+01C5    8B 7E FA                  mov         di,word ptr -0x6[bp] 
+01C8    89 7E E8                  mov         word ptr -0x18[bp],di 
+01CB    8B 7E FC                  mov         di,word ptr -0x4[bp] 
+01CE    01 C7                     add         di,ax 
+01D0    89 7E FA                  mov         word ptr -0x6[bp],di 
+01D3    8B 3E 00 00               mov         di,word ptr _VGA 
+01D7    8A 76 E8                  mov         dh,byte ptr -0x18[bp] 
+01DA    03 7E FA                  add         di,word ptr -0x6[bp] 
+01DD    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+01E1    26 88 35                  mov         byte ptr es:[di],dh 
+01E4                          L$13:
+01E4    40                        inc         ax 
+01E5    F6 07 01                  test        byte ptr [bx],0x01 
+01E8    74 25                     je          L$14 
+01EA    C6 46 FB 00               mov         byte ptr -0x5[bp],0x00 
+01EE    88 56 FA                  mov         byte ptr -0x6[bp],dl 
+01F1    8B 7E FA                  mov         di,word ptr -0x6[bp] 
+01F4    89 7E EE                  mov         word ptr -0x12[bp],di 
+01F7    89 CF                     mov         di,cx 
+01F9    01 C7                     add         di,ax 
+01FB    89 7E FA                  mov         word ptr -0x6[bp],di 
+01FE    8B 3E 00 00               mov         di,word ptr _VGA 
+0202    8A 76 EE                  mov         dh,byte ptr -0x12[bp] 
+0205    03 7E FA                  add         di,word ptr -0x6[bp] 
+0208    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+020C    26 88 35                  mov         byte ptr es:[di],dh 
+020F                          L$14:
+020F    40                        inc         ax 
+0210    43                        inc         bx 
+0211    E9 91 FE                  jmp         L$5 
+0214                          L$15:
+0214    FE 46 F7                  inc         byte ptr -0x9[bp] 
+0217    FF 46 D6                  inc         word ptr -0x2a[bp] 
+021A    83 C6 40                  add         si,0x0040 
+021D    E9 57 FE                  jmp         L$3 
+0220                          L$16:
+0220    89 EC                     mov         sp,bp 
+0222    5D                        pop         bp 
+0223    5F                        pop         di 
+0224    5E                        pop         si 
+0225    C3                        ret         
+
+Routine Size: 465 bytes,    Routine Base: _TEXT + 0055
+
+0226                          load_icon_:
+0226    53                        push        bx 
+0227    51                        push        cx 
+0228    52                        push        dx 
+0229    56                        push        si 
+022A    57                        push        di 
+022B    89 C6                     mov         si,ax 
+022D    B8 0C 00                  mov         ax,0x000c 
+0230    BA 00 00                  mov         dx,offset DGROUP:L$60 
+0233    E8 00 00                  call        malloc_ 
+0236    89 C7                     mov         di,ax 
+0238    89 F0                     mov         ax,si 
+023A    E8 00 00                  call        fopen_ 
+023D    89 C6                     mov         si,ax 
+023F    85 C0                     test        ax,ax 
+0241    74 14                     je          L$17 
+0243    BB 0C 00                  mov         bx,0x000c 
+0246    BA 01 00                  mov         dx,0x0001 
+0249    89 C1                     mov         cx,ax 
+024B    89 F8                     mov         ax,di 
+024D    E8 00 00                  call        fread_ 
+0250    89 F0                     mov         ax,si 
+0252    E8 00 00                  call        fclose_ 
+0255    89 F8                     mov         ax,di 
+0257                          L$17:
+0257    5F                        pop         di 
+0258    5E                        pop         si 
+0259    5A                        pop         dx 
+025A    59                        pop         cx 
+025B    5B                        pop         bx 
+025C    C3                        ret         
+
+Routine Size: 55 bytes,    Routine Base: _TEXT + 0226
+
+025D                          draw_bg_:
+025D    53                        push        bx 
+025E    51                        push        cx 
+025F    52                        push        dx 
+0260    56                        push        si 
+0261    57                        push        di 
+0262    55                        push        bp 
+0263    89 E5                     mov         bp,sp 
+0265    50                        push        ax 
+0266    50                        push        ax 
+0267    BB 0C 00                  mov         bx,0x000c 
+026A    BE 00 08                  mov         si,0x0800 
+026D    C7 46 FE 00 20            mov         word ptr -0x2[bp],0x2000 
+0272                          L$18:
+0272    81 6E FE 00 01            sub         word ptr -0x2[bp],0x0100 
+0277    4B                        dec         bx 
+0278    83 EE 40                  sub         si,0x0040 
+027B    83 FB FF                  cmp         bx,0xffff 
+027E    74 25                     je          L$20 
+0280    8B 56 FE                  mov         dx,word ptr -0x2[bp] 
+0283    01 F2                     add         dx,si 
+0285    B8 08 00                  mov         ax,0x0008 
+0288    83 C2 1C                  add         dx,0x001c 
+028B                          L$19:
+028B    48                        dec         ax 
+028C    4A                        dec         dx 
+028D    3D FF FF                  cmp         ax,0xffff 
+0290    74 E0                     je          L$18 
+0292    C7 46 FC 14 00            mov         word ptr -0x4[bp],0x0014 
+0297    C4 3E 00 00               les         di,dword ptr _VGA 
+029B    01 D7                     add         di,dx 
+029D    8A 4E FC                  mov         cl,byte ptr -0x4[bp] 
+02A0    26 88 0D                  mov         byte ptr es:[di],cl 
+02A3    EB E6                     jmp         L$19 
+02A5                          L$20:
+02A5    89 EC                     mov         sp,bp 
+02A7    5D                        pop         bp 
+02A8    EB AD                     jmp         L$17 
+
+Routine Size: 77 bytes,    Routine Base: _TEXT + 025D
+
+02AA                          togglecolor_:
+02AA    8A 07                     mov         al,byte ptr [bx] 
+02AC    3C 14                     cmp         al,0x14 
+02AE    75 04                     jne         L$21 
+02B0    C6 07 0F                  mov         byte ptr [bx],0x0f 
+02B3    C3                        ret         
+02B4                          L$21:
+02B4    3C 0F                     cmp         al,0x0f 
+02B6    75 03                     jne         L$22 
+02B8    C6 07 14                  mov         byte ptr [bx],0x14 
+02BB                          L$22:
+02BB    C3                        ret         
+
+Routine Size: 18 bytes,    Routine Base: _TEXT + 02AA
+
+02BC                          main_:
+02BC    53                        push        bx 
+02BD    51                        push        cx 
+02BE    56                        push        si 
+02BF    57                        push        di 
+02C0    55                        push        bp 
+02C1    89 E5                     mov         bp,sp 
+02C3    83 EC 2C                  sub         sp,0x002c 
+02C6    89 C3                     mov         bx,ax 
+02C8    89 D6                     mov         si,dx 
+02CA    30 C0                     xor         al,al 
+02CC    88 46 FE                  mov         byte ptr -0x2[bp],al 
+02CF    88 46 FC                  mov         byte ptr -0x4[bp],al 
+02D2    B8 13 00                  mov         ax,0x0013 
+02D5    B4 00                     mov         ah,0x00 
+02D7    CD 10                     int         0x10 
+02D9    83 FB 02                  cmp         bx,0x0002 
+02DC    75 48                     jne         L$25 
+02DE    B8 00 FA                  mov         ax,0xfa00 
+02E1    E8 00 00                  call        clear_screen_ 
+02E4    E8 00 00                  call        draw_bg_ 
+02E7    8B 44 02                  mov         ax,word ptr 0x2[si] 
+02EA    E8 00 00                  call        load_icon_ 
+02ED    89 46 F2                  mov         word ptr -0xe[bp],ax 
+02F0    85 C0                     test        ax,ax 
+02F2    74 0D                     je          L$23 
+02F4    BB 0F 00                  mov         bx,0x000f 
+02F7    BA 14 00                  mov         dx,0x0014 
+02FA    89 C1                     mov         cx,ax 
+02FC    89 D0                     mov         ax,dx 
+02FE    E8 00 00                  call        draw_icon_ 
+0301                          L$23:
+0301    C4 1E 00 00               les         bx,dword ptr _VGA 
+0305    81 C3 14 19               add         bx,0x1914 
+0309    26 8A 07                  mov         al,byte ptr es:[bx] 
+030C    88 46 FA                  mov         byte ptr -0x6[bp],al 
+030F                          L$24:
+030F    E8 00 00                  call        getch_ 
+0312    3D 1B 00                  cmp         ax,0x001b 
+0315    72 12                     jb          L$26 
+0317    76 35                     jbe         L$28 
+0319    3D 73 00                  cmp         ax,0x0073 
+031C    74 33                     je          L$29 
+031E    3D 20 00                  cmp         ax,0x0020 
+0321    75 EC                     jne         L$24 
+0323    E9 CE 01                  jmp         L$42 
+0326                          L$25:
+0326    E9 61 03                  jmp         L$59 
+0329                          L$26:
+0329    85 C0                     test        ax,ax 
+032B    75 E2                     jne         L$24 
+032D    E8 00 00                  call        getch_ 
+0330    89 C1                     mov         cx,ax 
+0332    3D 4B 00                  cmp         ax,0x004b 
+0335    72 0F                     jb          L$27 
+0337    76 20                     jbe         L$32 
+0339    3D 50 00                  cmp         ax,0x0050 
+033C    74 16                     je          L$30 
+033E    3D 4D 00                  cmp         ax,0x004d 
+0341    74 14                     je          L$31 
+0343    E9 7C 01                  jmp         L$41 
+0346                          L$27:
+0346    3D 48 00                  cmp         ax,0x0048 
+0349    74 74                     je          L$34 
+034B    E9 74 01                  jmp         L$41 
+034E                          L$28:
+034E    E9 33 03                  jmp         L$58 
+0351                          L$29:
+0351    E9 B1 01                  jmp         L$43 
+0354                          L$30:
+0354    E9 02 01                  jmp         L$38 
+0357                          L$31:
+0357    EB 68                     jmp         L$35 
+0359                          L$32:
+0359    8A 4E FA                  mov         cl,byte ptr -0x6[bp] 
+035C    8A 56 FE                  mov         dl,byte ptr -0x2[bp] 
+035F    30 E5                     xor         ch,ah 
+0361    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+0364    30 F6                     xor         dh,dh 
+0366    30 E4                     xor         ah,ah 
+0368    89 D3                     mov         bx,dx 
+036A    89 C2                     mov         dx,ax 
+036C    83 C2 14                  add         dx,0x0014 
+036F    89 4E D4                  mov         word ptr -0x2c[bp],cx 
+0372    88 D4                     mov         ah,dl 
+0374    B1 06                     mov         cl,0x06 
+0376    30 C0                     xor         al,al 
+0378    D3 E2                     shl         dx,cl 
+037A    83 C3 14                  add         bx,0x0014 
+037D    01 C2                     add         dx,ax 
+037F    01 DA                     add         dx,bx 
+0381    C4 1E 00 00               les         bx,dword ptr _VGA 
+0385    01 D3                     add         bx,dx 
+0387    8A 46 D4                  mov         al,byte ptr -0x2c[bp] 
+038A    26 88 07                  mov         byte ptr es:[bx],al 
+038D    80 7E FE 00               cmp         byte ptr -0x2[bp],0x00 
+0391    74 03                     je          L$33 
+0393    FE 4E FE                  dec         byte ptr -0x2[bp] 
+0396                          L$33:
+0396    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+0399    8A 56 FC                  mov         dl,byte ptr -0x4[bp] 
+039C    30 E4                     xor         ah,ah 
+039E    30 F6                     xor         dh,dh 
+03A0    89 C3                     mov         bx,ax 
+03A2    89 D0                     mov         ax,dx 
+03A4    05 14 00                  add         ax,0x0014 
+03A7    88 C6                     mov         dh,al 
+03A9    B1 06                     mov         cl,0x06 
+03AB    30 D2                     xor         dl,dl 
+03AD    D3 E0                     shl         ax,cl 
+03AF    83 C3 14                  add         bx,0x0014 
+03B2    01 C2                     add         dx,ax 
+03B4    01 DA                     add         dx,bx 
+03B6    C4 1E 00 00               les         bx,dword ptr _VGA 
+03BA    01 D3                     add         bx,dx 
+03BC    E9 FD 00                  jmp         L$40 
+03BF                          L$34:
+03BF    EB 3B                     jmp         L$36 
+03C1                          L$35:
+03C1    8A 56 FE                  mov         dl,byte ptr -0x2[bp] 
+03C4    30 F6                     xor         dh,dh 
+03C6    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+03C9    89 D3                     mov         bx,dx 
+03CB    89 C2                     mov         dx,ax 
+03CD    8A 4E FA                  mov         cl,byte ptr -0x6[bp] 
+03D0    83 C2 14                  add         dx,0x0014 
+03D3    89 4E D8                  mov         word ptr -0x28[bp],cx 
+03D6    88 D4                     mov         ah,dl 
+03D8    B1 06                     mov         cl,0x06 
+03DA    30 C0                     xor         al,al 
+03DC    D3 E2                     shl         dx,cl 
+03DE    83 C3 14                  add         bx,0x0014 
+03E1    01 C2                     add         dx,ax 
+03E3    01 DA                     add         dx,bx 
+03E5    C4 1E 00 00               les         bx,dword ptr _VGA 
+03E9    01 D3                     add         bx,dx 
+03EB    8A 46 D8                  mov         al,byte ptr -0x28[bp] 
+03EE    26 88 07                  mov         byte ptr es:[bx],al 
+03F1    80 7E FE 07               cmp         byte ptr -0x2[bp],0x07 
+03F5    73 9F                     jae         L$33 
+03F7    FE 46 FE                  inc         byte ptr -0x2[bp] 
+03FA    EB 9A                     jmp         L$33 
+03FC                          L$36:
+03FC    8A 4E FA                  mov         cl,byte ptr -0x6[bp] 
+03FF    8A 56 FC                  mov         dl,byte ptr -0x4[bp] 
+0402    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+0405    30 F6                     xor         dh,dh 
+0407    89 C3                     mov         bx,ax 
+0409    83 C2 14                  add         dx,0x0014 
+040C    89 4E DA                  mov         word ptr -0x26[bp],cx 
+040F    88 D4                     mov         ah,dl 
+0411    B1 06                     mov         cl,0x06 
+0413    30 C0                     xor         al,al 
+0415    D3 E2                     shl         dx,cl 
+0417    83 C3 14                  add         bx,0x0014 
+041A    01 C2                     add         dx,ax 
+041C    01 DA                     add         dx,bx 
+041E    C4 1E 00 00               les         bx,dword ptr _VGA 
+0422    01 D3                     add         bx,dx 
+0424    8A 46 DA                  mov         al,byte ptr -0x26[bp] 
+0427    26 88 07                  mov         byte ptr es:[bx],al 
+042A    80 7E FC 00               cmp         byte ptr -0x4[bp],0x00 
+042E    74 03                     je          L$37 
+0430    FE 4E FC                  dec         byte ptr -0x4[bp] 
+0433                          L$37:
+0433    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+0436    8A 56 FE                  mov         dl,byte ptr -0x2[bp] 
+0439    30 E4                     xor         ah,ah 
+043B    30 F6                     xor         dh,dh 
+043D    05 14 00                  add         ax,0x0014 
+0440    89 D3                     mov         bx,dx 
+0442    88 C6                     mov         dh,al 
+0444    B1 06                     mov         cl,0x06 
+0446    30 D2                     xor         dl,dl 
+0448    D3 E0                     shl         ax,cl 
+044A    83 C3 14                  add         bx,0x0014 
+044D    01 D0                     add         ax,dx 
+044F    01 D8                     add         ax,bx 
+0451    C4 1E 00 00               les         bx,dword ptr _VGA 
+0455    01 C3                     add         bx,ax 
+0457    EB 63                     jmp         L$40 
+0459                          L$38:
+0459    8A 46 FA                  mov         al,byte ptr -0x6[bp] 
+045C    8A 56 FE                  mov         dl,byte ptr -0x2[bp] 
+045F    8A 5E FC                  mov         bl,byte ptr -0x4[bp] 
+0462    30 F6                     xor         dh,dh 
+0464    30 FF                     xor         bh,bh 
+0466    89 D7                     mov         di,dx 
+0468    8D 57 14                  lea         dx,0x14[bx] 
+046B    89 46 E4                  mov         word ptr -0x1c[bp],ax 
+046E    88 D4                     mov         ah,dl 
+0470    B1 06                     mov         cl,0x06 
+0472    30 C0                     xor         al,al 
+0474    D3 E2                     shl         dx,cl 
+0476    83 C7 14                  add         di,0x0014 
+0479    01 C2                     add         dx,ax 
+047B    8B 1E 00 00               mov         bx,word ptr _VGA 
+047F    01 FA                     add         dx,di 
+0481    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+0485    01 D3                     add         bx,dx 
+0487    8A 46 E4                  mov         al,byte ptr -0x1c[bp] 
+048A    26 88 07                  mov         byte ptr es:[bx],al 
+048D    80 7E FC 0B               cmp         byte ptr -0x4[bp],0x0b 
+0491    73 03                     jae         L$39 
+0493    FE 46 FC                  inc         byte ptr -0x4[bp] 
+0496                          L$39:
+0496    8A 56 FE                  mov         dl,byte ptr -0x2[bp] 
+0499    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+049C    30 F6                     xor         dh,dh 
+049E    30 E4                     xor         ah,ah 
+04A0    89 D3                     mov         bx,dx 
+04A2    89 C2                     mov         dx,ax 
+04A4    83 C2 14                  add         dx,0x0014 
+04A7    88 D4                     mov         ah,dl 
+04A9    B1 06                     mov         cl,0x06 
+04AB    30 C0                     xor         al,al 
+04AD    D3 E2                     shl         dx,cl 
+04AF    83 C3 14                  add         bx,0x0014 
+04B2    01 C2                     add         dx,ax 
+04B4    01 DA                     add         dx,bx 
+04B6    C4 1E 00 00               les         bx,dword ptr _VGA 
+04BA    01 D3                     add         bx,dx 
+04BC                          L$40:
+04BC    26 8A 07                  mov         al,byte ptr es:[bx] 
+04BF    88 46 FA                  mov         byte ptr -0x6[bp],al 
+04C2                          L$41:
+04C2    8A 56 FC                  mov         dl,byte ptr -0x4[bp] 
+04C5    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+04C8    30 F6                     xor         dh,dh 
+04CA    30 E4                     xor         ah,ah 
+04CC    83 C2 14                  add         dx,0x0014 
+04CF    89 C3                     mov         bx,ax 
+04D1    88 D4                     mov         ah,dl 
+04D3    B1 06                     mov         cl,0x06 
+04D5    30 C0                     xor         al,al 
+04D7    D3 E2                     shl         dx,cl 
+04D9    83 C3 14                  add         bx,0x0014 
+04DC    01 C2                     add         dx,ax 
+04DE    C7 46 DC 02 00            mov         word ptr -0x24[bp],0x0002 
+04E3    01 DA                     add         dx,bx 
+04E5    C4 1E 00 00               les         bx,dword ptr _VGA 
+04E9    01 D3                     add         bx,dx 
+04EB    8A 46 DC                  mov         al,byte ptr -0x24[bp] 
+04EE    26 88 07                  mov         byte ptr es:[bx],al 
+04F1    E9 1B FE                  jmp         L$24 
+04F4                          L$42:
+04F4    8A 56 FC                  mov         dl,byte ptr -0x4[bp] 
+04F7    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+04FA    8D 5E FA                  lea         bx,-0x6[bp] 
+04FD    30 F6                     xor         dh,dh 
+04FF    E8 00 00                  call        togglecolor_ 
+0502    E9 0A FE                  jmp         L$24 
+0505                          L$43:
+0505    8A 4E FA                  mov         cl,byte ptr -0x6[bp] 
+0508    8A 56 FC                  mov         dl,byte ptr -0x4[bp] 
+050B    8A 46 FE                  mov         al,byte ptr -0x2[bp] 
+050E    C7 46 EE 0C 00            mov         word ptr -0x12[bp],0x000c 
+0513    30 F6                     xor         dh,dh 
+0515    89 C3                     mov         bx,ax 
+0517    89 D0                     mov         ax,dx 
+0519    30 ED                     xor         ch,ch 
+051B    05 14 00                  add         ax,0x0014 
+051E    89 4E D6                  mov         word ptr -0x2a[bp],cx 
+0521    88 C6                     mov         dh,al 
+0523    B1 06                     mov         cl,0x06 
+0525    30 D2                     xor         dl,dl 
+0527    D3 E0                     shl         ax,cl 
+0529    83 C3 14                  add         bx,0x0014 
+052C    01 C2                     add         dx,ax 
+052E    8A 46 D6                  mov         al,byte ptr -0x2a[bp] 
+0531    01 DA                     add         dx,bx 
+0533    C4 1E 00 00               les         bx,dword ptr _VGA 
+0537    01 D3                     add         bx,dx 
+0539    C7 46 EC 00 05            mov         word ptr -0x14[bp],0x0500 
+053E    26 88 07                  mov         byte ptr es:[bx],al 
+0541    BA 03 00                  mov         dx,offset DGROUP:L$61 
+0544    8B 44 02                  mov         ax,word ptr 0x2[si] 
+0547    C7 46 F4 00 14            mov         word ptr -0xc[bp],0x1400 
+054C    E8 00 00                  call        fopen_ 
+054F    89 C6                     mov         si,ax 
+0551                          L$44:
+0551    FF 4E EE                  dec         word ptr -0x12[bp] 
+0554    83 7E EE FF               cmp         word ptr -0x12[bp],0xffff 
+0558    75 03                     jne         L$45 
+055A    E9 22 01                  jmp         L$57 
+055D                          L$45:
+055D    C7 46 F8 01 00            mov         word ptr -0x8[bp],0x0001 
+0562    8B 5E F4                  mov         bx,word ptr -0xc[bp] 
+0565    B9 14 00                  mov         cx,0x0014 
+0568    03 5E EC                  add         bx,word ptr -0x14[bp] 
+056B    30 C0                     xor         al,al 
+056D    89 5E DE                  mov         word ptr -0x22[bp],bx 
+0570    89 5E F6                  mov         word ptr -0xa[bp],bx 
+0573    89 5E E6                  mov         word ptr -0x1a[bp],bx 
+0576    89 5E EA                  mov         word ptr -0x16[bp],bx 
+0579    89 5E E8                  mov         word ptr -0x18[bp],bx 
+057C    89 5E E0                  mov         word ptr -0x20[bp],bx 
+057F    89 5E E2                  mov         word ptr -0x1e[bp],bx 
+0582                          L$46:
+0582    FF 4E F8                  dec         word ptr -0x8[bp] 
+0585    83 7E F8 FF               cmp         word ptr -0x8[bp],0xffff 
+0589    75 03                     jne         L$47 
+058B    E9 E7 00                  jmp         L$56 
+058E                          L$47:
+058E    8B 7E E2                  mov         di,word ptr -0x1e[bp] 
+0591    89 CA                     mov         dx,cx 
+0593    01 D7                     add         di,dx 
+0595    8B 16 00 00               mov         dx,word ptr _VGA 
+0599    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+059D    01 D7                     add         di,dx 
+059F    26 8A 25                  mov         ah,byte ptr es:[di] 
+05A2    41                        inc         cx 
+05A3    80 FC 0F                  cmp         ah,0x0f 
+05A6    75 02                     jne         L$48 
+05A8    0C 80                     or          al,0x80 
+05AA                          L$48:
+05AA    8B 7E E0                  mov         di,word ptr -0x20[bp] 
+05AD    89 CA                     mov         dx,cx 
+05AF    01 D7                     add         di,dx 
+05B1    89 7E F0                  mov         word ptr -0x10[bp],di 
+05B4    C4 3E 00 00               les         di,dword ptr _VGA 
+05B8    03 7E F0                  add         di,word ptr -0x10[bp] 
+05BB    26 8A 25                  mov         ah,byte ptr es:[di] 
+05BE    41                        inc         cx 
+05BF    80 FC 0F                  cmp         ah,0x0f 
+05C2    75 02                     jne         L$49 
+05C4    0C 40                     or          al,0x40 
+05C6                          L$49:
+05C6    8B 3E 00 00               mov         di,word ptr _VGA 
+05CA    89 CA                     mov         dx,cx 
+05CC    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+05D0    03 56 E8                  add         dx,word ptr -0x18[bp] 
+05D3    01 D7                     add         di,dx 
+05D5    26 8A 25                  mov         ah,byte ptr es:[di] 
+05D8    41                        inc         cx 
+05D9    80 FC 0F                  cmp         ah,0x0f 
+05DC    75 02                     jne         L$50 
+05DE    0C 20                     or          al,0x20 
+05E0                          L$50:
+05E0    8B 3E 00 00               mov         di,word ptr _VGA 
+05E4    89 CA                     mov         dx,cx 
+05E6    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+05EA    03 56 EA                  add         dx,word ptr -0x16[bp] 
+05ED    01 D7                     add         di,dx 
+05EF    26 8A 25                  mov         ah,byte ptr es:[di] 
+05F2    41                        inc         cx 
+05F3    80 FC 0F                  cmp         ah,0x0f 
+05F6    75 02                     jne         L$51 
+05F8    0C 10                     or          al,0x10 
+05FA                          L$51:
+05FA    8B 7E E6                  mov         di,word ptr -0x1a[bp] 
+05FD    89 CA                     mov         dx,cx 
+05FF    01 D7                     add         di,dx 
+0601    8B 16 00 00               mov         dx,word ptr _VGA 
+0605    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+0609    01 D7                     add         di,dx 
+060B    26 8A 25                  mov         ah,byte ptr es:[di] 
+060E    41                        inc         cx 
+060F    80 FC 0F                  cmp         ah,0x0f 
+0612    75 02                     jne         L$52 
+0614    0C 08                     or          al,0x08 
+0616                          L$52:
+0616    8B 7E F6                  mov         di,word ptr -0xa[bp] 
+0619    89 CA                     mov         dx,cx 
+061B    01 D7                     add         di,dx 
+061D    89 7E F0                  mov         word ptr -0x10[bp],di 
+0620    C4 3E 00 00               les         di,dword ptr _VGA 
+0624    03 7E F0                  add         di,word ptr -0x10[bp] 
+0627    26 8A 25                  mov         ah,byte ptr es:[di] 
+062A    41                        inc         cx 
+062B    80 FC 0F                  cmp         ah,0x0f 
+062E    75 02                     jne         L$53 
+0630    0C 04                     or          al,0x04 
+0632                          L$53:
+0632    8B 7E DE                  mov         di,word ptr -0x22[bp] 
+0635    89 CA                     mov         dx,cx 
+0637    01 D7                     add         di,dx 
+0639    8B 16 00 00               mov         dx,word ptr _VGA 
+063D    8E 06 02 00               mov         es,word ptr _VGA+0x2 
+0641    01 D7                     add         di,dx 
+0643    26 8A 25                  mov         ah,byte ptr es:[di] 
+0646    41                        inc         cx 
+0647    80 FC 0F                  cmp         ah,0x0f 
+064A    75 02                     jne         L$54 
+064C    0C 02                     or          al,0x02 
+064E                          L$54:
+064E    89 CA                     mov         dx,cx 
+0650    89 DF                     mov         di,bx 
+0652    01 D7                     add         di,dx 
+0654    89 7E F0                  mov         word ptr -0x10[bp],di 
+0657    C4 3E 00 00               les         di,dword ptr _VGA 
+065B    03 7E F0                  add         di,word ptr -0x10[bp] 
+065E    26 8A 25                  mov         ah,byte ptr es:[di] 
+0661    41                        inc         cx 
+0662    80 FC 0F                  cmp         ah,0x0f 
+0665    75 02                     jne         L$55 
+0667    0C 01                     or          al,0x01 
+0669                          L$55:
+0669    89 F2                     mov         dx,si 
+066B    30 E4                     xor         ah,ah 
+066D    E8 00 00                  call        fputc_ 
+0670    30 C0                     xor         al,al 
+0672    E9 0D FF                  jmp         L$46 
+0675                          L$56:
+0675    83 46 EC 40               add         word ptr -0x14[bp],0x0040 
+0679    FE 46 F5                  inc         byte ptr -0xb[bp] 
+067C    E9 D2 FE                  jmp         L$44 
+067F                          L$57:
+067F    89 F0                     mov         ax,si 
+0681    E8 00 00                  call        fclose_ 
+0684                          L$58:
+0684    8B 46 F2                  mov         ax,word ptr -0xe[bp] 
+0687    E8 00 00                  call        free_ 
+068A                          L$59:
+068A    B8 03 00                  mov         ax,0x0003 
+068D    B4 00                     mov         ah,0x00 
+068F    CD 10                     int         0x10 
+0691    89 EC                     mov         sp,bp 
+0693    5D                        pop         bp 
+0694    5F                        pop         di 
+0695    5E                        pop         si 
+0696    59                        pop         cx 
+0697    5B                        pop         bx 
+0698    C3                        ret         
+
+Routine Size: 989 bytes,    Routine Base: _TEXT + 02BC
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000006 bytes
+0000                          L$60:
+0000    72 62 00                                        rb.
+0003                          L$61:
+0003    77 62 00                                        wb.
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 000000B0 bytes
+0000                          _VGA:
+0000    00 00 00 A0                                     ....
+0004                          __TITLE_COLOR:
+0004    00                                              .
+0005                          __TITLE_COLOR_IA:
+0005    00                                              .
+0006                          __TITLE_TEXTCOLOR:
+0006    01                                              .
+0007                          __WINDOW_BGCOLOR:
+0007    01                                              .
+0008                          __MENU_BGCOLOR:
+0008    01                                              .
+0009                          __MENU_SELCOLOR:
+0009    00                                              .
+000A                          __MENU_LINECOLOR:
+000A    00                                              .
+000B                          __MENU_ATEXTCOLOR:
+000B    01                                              .
+000C                          __WINDOW_BASICTEXTCOLOR:
+000C    00                                              .
+000D                          __BORDERCOLOR_LIGHT:
+000D    00                                              .
+000E                          __BORDERCOLOR_SHADOW:
+000E    00                                              .
+000F                          __DESKTOP_BGCOLOR:
+000F    FF                                              .
+0010                          __ICON_ACOLOR:
+0010    00                                              .
+0011                          __ICON_ICOLOR:
+0011    00                                              .
+0012                          __TEXTBOX_BGCOLOR:
+0012    01                                              .
+0013                          __TEXTBOX_ABGCOLOR:
+0013    01                                              .
+0014                          __TEXTBOX_TEXTCOLOR:
+0014    00                                              .
+0015                          __TEXTBOX_ATEXTCOLOR:
+0015    01                                              .
+0016                          __SCROLLBAR_BGCOLOR:
+0016    00                                              .
+0017                          __ATEXT_BGCOLOR:
+0017    00                                              .
+0018                          _monospace_font:
+0018    00 00                                           ..
+001A                          _video:
+001A    06                                              .
+001B                          _mouse_dragboxes:
+001B    00 00                                           ..
+001D                          _titlebar_drag:
+001D    00 00                                           ..
+001F                          _windows:
+001F    00 00                                           ..
+0021                          _window_count:
+0021    00 00                                           ..
+0023                          _desktop_icon_count:
+0023    00 00                                           ..
+0025                          _icon_selected:
+0025    00 00                                           ..
+0027                          _active_window:
+0027    FF FF                                           ..
+0029                          _running_window:
+0029    00 00                                           ..
+002B                          _running_console:
+002B    00 00                                           ..
+002D                          _system_font_file:
+002D    46 4F 4E 54 53 2F 43 47 41 2E 46 4F 4E 00       FONTS/CGA.FON.
+003B                          _monospace_font_file:
+003B    46 4F 4E 54 53 2F 43 47 41 4D 4F 4E 2E 46 4F 4E FONTS/CGAMON.FON
+004B    00                                              .
+004C                          _VPUCON_LINES:
+004C    0F                                              .
+004D                          _window_x:
+004D    28 00                                           (.
+004F                          _window_y:
+004F    28 00                                           (.
+0051                          _comsuf:
+0051    2E 43 4F 4D 00                                  .COM.
+0056                          _exesuf:
+0056    2E 45 58 45 00                                  .EXE.
+005B                          _batsuf:
+005B    2E 42 41 54 00                                  .BAT.
+0060                          _appsuf:
+0060    2E 41 50 50 00                                  .APP.
+0065                          _lnksuf:
+0065    2E 4C 4E 4B 00                                  .LNK.
+006A                          _shortcut_count:
+006A    00 00                                           ..
+006C                          _screensaver_delay:
+006C    00 00                                           ..
+006E                          _screen_redraw:
+006E    01                                              .
+006F                          _videodriver:
+006F    FF FF                                           ..
+0071                          _null_byte:
+0071    00                                              .
+0072                          _update_screen:
+0072    00 00                                           ..
+0074                          _infotitle:
+0074    49 6E 66 6F 00                                  Info.
+0079                          _tty:
+0079    00                                              .
+007A                          _new_tty:
+007A    FF                                              .
+007B                          _caret_visible:
+007B    00                                              .
+007C                          _versioninfo:
+007C    6C 45 45 74 2F 4F 53 20 30 2E 39 2E 34 39 30 20 lEEt/OS 0.9.490 
+008C    38 30 38 36 20 62 75 69 6C 64 20 2D 20 28 63 29 8086 build - (c)
+009C    20 53 61 6D 69 20 54 69 6B 6B 61 6E 65 6E 20 32  Sami Tikkanen 2
+00AC    30 32 34 00                                     024.
+
+Segment: _BSS WORD USE16 000000A6 bytes
+0000                          _wallpaper_struct:
+0008                          _next_tty:
+000A                          _ttys:
+000C                          _errorlog:
+000E                          _next_window:
+0010                          _comspec:
+0012                          _caret_screeny:
+0014                          _caret_screenx:
+0016                          _old_fill_screen:
+0018                          _old_get_pixel:
+001A                          _old_yres:
+001C                          _old_xres:
+001E                          _old_put_pixel:
+0020                          _old_draw_rectangle:
+0022                          _screensaver_timer:
+0024                          _desktop_shortcuts:
+0026                          _cwdrive:
+0028                          _mouse:
+002A                          _path:
+002C                          _default_icons:
+002E                          _system_font:
+0030                          __RES_X:
+0032                          __RES_Y:
+0034                          _window_visibility_order:
+0036                          _desktop_icons:
+0038                          _desktop_menu:
+003A                          _wallpaper:
+0047                          _cwd:
+0098                          _screensaver_program:
+00A5                          __FONT_HEIGHT:
+
+BSS Size: 166 bytes
+
+Segment: _TEXT WORD USE16 00000000 bytes
+
+Routine Size: 0 bytes,    Routine Base: _TEXT + 0000
+
+No disassembly errors
+

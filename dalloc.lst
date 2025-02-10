@@ -1,0 +1,1752 @@
+Module: D:\LEETSRC\482\dalloc.c
+GROUP: 'DGROUP' CONST,CONST2,_DATA,_BSS
+
+Segment: dalloc_TEXT BYTE USE16 00000D20 bytes
+0000                          make_calltrace_serialport_settings_:
+0000    53                        push        bx 
+0001    52                        push        dx 
+0002    B8 00 00                  mov         ax,DGROUP:CONST 
+0005    8E D8                     mov         ds,ax 
+0007    C5 1E 00 00               lds         bx,dword ptr _calltrace_serialbase 
+000B    8B 07                     mov         ax,word ptr [bx] 
+000D    05 03 00                  add         ax,0x0003 
+0010    BA 80 00                  mov         dx,0x0080 
+0013    9A 00 00 00 00            call        outp_ 
+0018    B8 00 00                  mov         ax,DGROUP:CONST 
+001B    8E D8                     mov         ds,ax 
+001D    C5 1E 00 00               lds         bx,dword ptr _calltrace_serialbase 
+0021    8B 07                     mov         ax,word ptr [bx] 
+0023    BA 01 00                  mov         dx,0x0001 
+0026    9A 00 00 00 00            call        outp_ 
+002B    B8 00 00                  mov         ax,DGROUP:CONST 
+002E    8E D8                     mov         ds,ax 
+0030    C5 1E 00 00               lds         bx,dword ptr _calltrace_serialbase 
+0034    8B 07                     mov         ax,word ptr [bx] 
+0036    40                        inc         ax 
+0037    31 D2                     xor         dx,dx 
+0039    9A 00 00 00 00            call        outp_ 
+003E    B8 00 00                  mov         ax,DGROUP:CONST 
+0041    8E D8                     mov         ds,ax 
+0043    C5 1E 00 00               lds         bx,dword ptr _calltrace_serialbase 
+0047    8B 07                     mov         ax,word ptr [bx] 
+0049    05 03 00                  add         ax,0x0003 
+004C    BA 17 00                  mov         dx,0x0017 
+004F    9A 00 00 00 00            call        outp_ 
+0054    B8 00 00                  mov         ax,DGROUP:CONST 
+0057    8E D8                     mov         ds,ax 
+0059    C5 1E 00 00               lds         bx,dword ptr _calltrace_serialbase 
+005D    8B 07                     mov         ax,word ptr [bx] 
+005F    40                        inc         ax 
+0060    40                        inc         ax 
+0061    31 D2                     xor         dx,dx 
+0063    9A 00 00 00 00            call        outp_ 
+0068    5A                        pop         dx 
+0069    5B                        pop         bx 
+006A    CB                        retf        
+
+Routine Size: 107 bytes,    Routine Base: dalloc_TEXT + 0000
+
+006B                          calltrace_serial_write_:
+006B    53                        push        bx 
+006C    52                        push        dx 
+006D    56                        push        si 
+006E    88 C7                     mov         bh,al 
+0070    30 DB                     xor         bl,bl 
+0072                          L$1:
+0072    B8 00 00                  mov         ax,DGROUP:CONST 
+0075    8E D8                     mov         ds,ax 
+0077    C5 36 00 00               lds         si,dword ptr _calltrace_serialbase 
+007B    8B 04                     mov         ax,word ptr [si] 
+007D    05 06 00                  add         ax,0x0006 
+0080    9A 00 00 00 00            call        inp_ 
+0085    A8 10                     test        al,0x10 
+0087    74 E9                     je          L$1 
+0089                          L$2:
+0089    B8 00 00                  mov         ax,DGROUP:CONST 
+008C    8E D8                     mov         ds,ax 
+008E    C5 36 00 00               lds         si,dword ptr _calltrace_serialbase 
+0092    8B 04                     mov         ax,word ptr [si] 
+0094    05 05 00                  add         ax,0x0005 
+0097    9A 00 00 00 00            call        inp_ 
+009C    A8 20                     test        al,0x20 
+009E    74 E9                     je          L$2 
+00A0                          L$3:
+00A0    FE C3                     inc         bl 
+00A2    80 FB 01                  cmp         bl,0x01 
+00A5    74 08                     je          L$4 
+00A7    B8 01 00                  mov         ax,0x0001 
+00AA    9A 00 00 00 00            call        delay_ 
+00AF                          L$4:
+00AF    80 FB FF                  cmp         bl,0xff 
+00B2    75 04                     jne         L$5 
+00B4    B0 01                     mov         al,0x01 
+00B6    EB 2C                     jmp         L$6 
+00B8                          L$5:
+00B8    0F B6 D7                  movzx       dx,bh 
+00BB    B8 00 00                  mov         ax,DGROUP:CONST 
+00BE    8E D8                     mov         ds,ax 
+00C0    C5 36 00 00               lds         si,dword ptr _calltrace_serialbase 
+00C4    8B 04                     mov         ax,word ptr [si] 
+00C6    9A 00 00 00 00            call        outp_ 
+00CB    B8 00 00                  mov         ax,DGROUP:CONST 
+00CE    8E D8                     mov         ds,ax 
+00D0    C5 36 00 00               lds         si,dword ptr _calltrace_serialbase 
+00D4    8B 04                     mov         ax,word ptr [si] 
+00D6    05 05 00                  add         ax,0x0005 
+00D9    9A 00 00 00 00            call        inp_ 
+00DE    A8 02                     test        al,0x02 
+00E0    75 BE                     jne         L$3 
+00E2    30 C0                     xor         al,al 
+00E4                          L$6:
+00E4    5E                        pop         si 
+00E5    5A                        pop         dx 
+00E6    5B                        pop         bx 
+00E7    CB                        retf        
+
+Routine Size: 125 bytes,    Routine Base: dalloc_TEXT + 006B
+
+00E8                          calltrace_serial_output_:
+00E8    51                        push        cx 
+00E9    56                        push        si 
+00EA    57                        push        di 
+00EB    89 C6                     mov         si,ax 
+00ED    89 D1                     mov         cx,dx 
+00EF    89 DF                     mov         di,bx 
+00F1    B8 00 00                  mov         ax,DGROUP:CONST 
+00F4    8E D8                     mov         ds,ax 
+00F6    80 3E 05 00 00            cmp         byte ptr DGROUP:L$148,0x00 
+00FB    75 0E                     jne         L$7 
+00FD    0E                        push        cs 
+00FE    E8 00 00                  call        make_calltrace_serialport_settings_ 
+0101    B8 00 00                  mov         ax,DGROUP:CONST 
+0104    8E D8                     mov         ds,ax 
+0106    C6 06 05 00 01            mov         byte ptr DGROUP:L$148,0x01 
+010B                          L$7:
+010B    B8 00 00                  mov         ax,DGROUP:CONST 
+010E    8E D8                     mov         ds,ax 
+0110    0F B6 16 00 00            movzx       dx,byte ptr _debug_callstack_p 
+0115                          L$8:
+0115    85 D2                     test        dx,dx 
+0117    74 0A                     je          L$9 
+0119    B8 20 00                  mov         ax,0x0020 
+011C    0E                        push        cs 
+011D    E8 00 00                  call        calltrace_serial_write_ 
+0120    4A                        dec         dx 
+0121    EB F2                     jmp         L$8 
+0123                          L$9:
+0123    8E D9                     mov         ds,cx 
+0125    89 F3                     mov         bx,si 
+0127    01 D3                     add         bx,dx 
+0129    0F B6 07                  movzx       ax,byte ptr [bx] 
+012C    0E                        push        cs 
+012D    E8 00 00                  call        calltrace_serial_write_ 
+0130    89 D0                     mov         ax,dx 
+0132    42                        inc         dx 
+0133    39 F8                     cmp         ax,di 
+0135    72 EC                     jb          L$9 
+0137    E9 70 01                  jmp         L$23 
+
+Routine Size: 82 bytes,    Routine Base: dalloc_TEXT + 00E8
+
+013A                          load_call_trace_blacklist_:
+013A    53                        push        bx 
+013B    51                        push        cx 
+013C    52                        push        dx 
+013D    56                        push        si 
+013E    57                        push        di 
+013F    C8 02 00 00               enter       0x0002,0x00 
+0143    BB 00 00                  mov         bx,offset DGROUP:L$108 
+0146    B9 00 00                  mov         cx,DGROUP:CONST 
+0149    B8 02 00                  mov         ax,offset DGROUP:L$109 
+014C    89 CA                     mov         dx,cx 
+014E    9A 00 00 00 00            call        fopen_ 
+0153    89 C6                     mov         si,ax 
+0155    89 D1                     mov         cx,dx 
+0157    85 D2                     test        dx,dx 
+0159    75 09                     jne         L$10 
+015B    85 C0                     test        ax,ax 
+015D    75 05                     jne         L$10 
+015F    31 C0                     xor         ax,ax 
+0161    E9 DD 00                  jmp         L$15 
+0164                          L$10:
+0164    BA 04 00                  mov         dx,0x0004 
+0167    B8 02 00                  mov         ax,0x0002 
+016A    9A 00 00 00 00            call        calloc_ 
+016F    BB 00 00                  mov         bx,DGROUP:CONST 
+0172    8E DB                     mov         ds,bx 
+0174    A3 00 00                  mov         word ptr _call_trace_blacklist,ax 
+0177    89 16 02 00               mov         word ptr _call_trace_blacklist+0x2,dx 
+017B    85 D2                     test        dx,dx 
+017D    75 04                     jne         L$11 
+017F    85 C0                     test        ax,ax 
+0181    74 6C                     je          L$13 
+0183                          L$11:
+0183    B8 00 00                  mov         ax,DGROUP:CONST 
+0186    8E D8                     mov         ds,ax 
+0188    8B 1E 00 00               mov         bx,word ptr _call_trace_blacklist_len 
+018C    43                        inc         bx 
+018D    C1 E3 02                  shl         bx,0x02 
+0190    A1 00 00                  mov         ax,word ptr _call_trace_blacklist 
+0193    8B 16 02 00               mov         dx,word ptr _call_trace_blacklist+0x2 
+0197    9A 00 00 00 00            call        realloc_ 
+019C    BB 00 00                  mov         bx,DGROUP:CONST 
+019F    8E DB                     mov         ds,bx 
+01A1    A3 00 00                  mov         word ptr _call_trace_blacklist,ax 
+01A4    89 16 02 00               mov         word ptr _call_trace_blacklist+0x2,dx 
+01A8    85 D2                     test        dx,dx 
+01AA    75 04                     jne         L$12 
+01AC    85 C0                     test        ax,ax 
+01AE    74 3F                     je          L$13 
+01B0                          L$12:
+01B0    B8 41 00                  mov         ax,0x0041 
+01B3    9A 00 00 00 00            call        malloc_ 
+01B8    8E DB                     mov         ds,bx 
+01BA    8B 1E 00 00               mov         bx,word ptr _call_trace_blacklist_len 
+01BE    C1 E3 02                  shl         bx,0x02 
+01C1    8B 3E 00 00               mov         di,word ptr _call_trace_blacklist 
+01C5    8E 1E 02 00               mov         ds,word ptr _call_trace_blacklist+0x2 
+01C9    01 FB                     add         bx,di 
+01CB    89 07                     mov         word ptr [bx],ax 
+01CD    89 57 02                  mov         word ptr 0x2[bx],dx 
+01D0    B8 00 00                  mov         ax,DGROUP:CONST 
+01D3    8E D8                     mov         ds,ax 
+01D5    8B 1E 00 00               mov         bx,word ptr _call_trace_blacklist_len 
+01D9    C1 E3 02                  shl         bx,0x02 
+01DC    C5 06 00 00               lds         ax,dword ptr _call_trace_blacklist 
+01E0    01 C3                     add         bx,ax 
+01E2    8B 17                     mov         dx,word ptr [bx] 
+01E4    8B 47 02                  mov         ax,word ptr 0x2[bx] 
+01E7    85 C0                     test        ax,ax 
+01E9    75 0E                     jne         L$14 
+01EB    85 D2                     test        dx,dx 
+01ED    75 0A                     jne         L$14 
+01EF                          L$13:
+01EF    B8 0F 00                  mov         ax,offset DGROUP:L$110 
+01F2    BA 00 00                  mov         dx,DGROUP:CONST 
+01F5    0E                        push        cs 
+01F6    E8 00 00                  call        dalloc_abortmsg_ 
+01F9                          L$14:
+01F9    51                        push        cx 
+01FA    56                        push        si 
+01FB    B8 00 00                  mov         ax,DGROUP:CONST 
+01FE    8E D8                     mov         ds,ax 
+0200    A1 00 00                  mov         ax,word ptr _call_trace_blacklist_len 
+0203    89 C3                     mov         bx,ax 
+0205    C1 E3 02                  shl         bx,0x02 
+0208    8B 16 00 00               mov         dx,word ptr _call_trace_blacklist 
+020C    89 56 FE                  mov         word ptr -0x2[bp],dx 
+020F    8B 16 02 00               mov         dx,word ptr _call_trace_blacklist+0x2 
+0213    40                        inc         ax 
+0214    A3 00 00                  mov         word ptr _call_trace_blacklist_len,ax 
+0217    8E DA                     mov         ds,dx 
+0219    03 5E FE                  add         bx,word ptr -0x2[bp] 
+021C    8B 07                     mov         ax,word ptr [bx] 
+021E    8B 57 02                  mov         dx,word ptr 0x2[bx] 
+0221    BB 41 00                  mov         bx,0x0041 
+0224    9A 00 00 00 00            call        fgets_ 
+0229    85 D2                     test        dx,dx 
+022B    0F 85 54 FF               jne         L$11 
+022F    85 C0                     test        ax,ax 
+0231    0F 85 4E FF               jne         L$11 
+0235    89 F0                     mov         ax,si 
+0237    89 CA                     mov         dx,cx 
+0239    9A 00 00 00 00            call        fclose_ 
+023E    B8 01 00                  mov         ax,0x0001 
+0241                          L$15:
+0241    C9                        leave       
+0242                          L$16:
+0242    5F                        pop         di 
+0243                          L$17:
+0243    5E                        pop         si 
+0244                          L$18:
+0244    5A                        pop         dx 
+0245    59                        pop         cx 
+0246    5B                        pop         bx 
+0247    CB                        retf        
+
+Routine Size: 270 bytes,    Routine Base: dalloc_TEXT + 013A
+
+0248                          function_name_is_blacklisted_:
+0248    51                        push        cx 
+0249    56                        push        si 
+024A    57                        push        di 
+024B    C8 02 00 00               enter       0x0002,0x00 
+024F    50                        push        ax 
+0250    89 D7                     mov         di,dx 
+0252    89 5E FE                  mov         word ptr -0x2[bp],bx 
+0255    B8 00 00                  mov         ax,DGROUP:CONST 
+0258    8E D8                     mov         ds,ax 
+025A    8B 16 00 00               mov         dx,word ptr _call_trace_blacklist 
+025E    A1 02 00                  mov         ax,word ptr _call_trace_blacklist+0x2 
+0261    85 C0                     test        ax,ax 
+0263    75 08                     jne         L$19 
+0265    85 D2                     test        dx,dx 
+0267    75 04                     jne         L$19 
+0269    0E                        push        cs 
+026A    E8 00 00                  call        load_call_trace_blacklist_ 
+026D                          L$19:
+026D    B8 00 00                  mov         ax,DGROUP:CONST 
+0270    8E D8                     mov         ds,ax 
+0272    8B 36 00 00               mov         si,word ptr _call_trace_blacklist_len 
+0276                          L$20:
+0276    4E                        dec         si 
+0277    83 FE FF                  cmp         si,0xffff 
+027A    74 2B                     je          L$21 
+027C    FF 76 FE                  push        word ptr -0x2[bp] 
+027F    89 F3                     mov         bx,si 
+0281    C1 E3 02                  shl         bx,0x02 
+0284    B8 00 00                  mov         ax,DGROUP:CONST 
+0287    8E D8                     mov         ds,ax 
+0289    C5 06 00 00               lds         ax,dword ptr _call_trace_blacklist 
+028D    01 C3                     add         bx,ax 
+028F    8B 07                     mov         ax,word ptr [bx] 
+0291    8B 57 02                  mov         dx,word ptr 0x2[bx] 
+0294    8B 5E FC                  mov         bx,word ptr -0x4[bp] 
+0297    89 F9                     mov         cx,di 
+0299    9A 00 00 00 00            call        strncmp_ 
+029E    85 C0                     test        ax,ax 
+02A0    75 D4                     jne         L$20 
+02A2    B8 01 00                  mov         ax,0x0001 
+02A5    EB 02                     jmp         L$22 
+02A7                          L$21:
+02A7    31 C0                     xor         ax,ax 
+02A9                          L$22:
+02A9    C9                        leave       
+02AA                          L$23:
+02AA    5F                        pop         di 
+02AB    5E                        pop         si 
+02AC    59                        pop         cx 
+02AD    CB                        retf        
+
+Routine Size: 102 bytes,    Routine Base: dalloc_TEXT + 0248
+
+02AE                          push_call_trace_:
+02AE    51                        push        cx 
+02AF    56                        push        si 
+02B0    57                        push        di 
+02B1    C8 02 00 00               enter       0x0002,0x00 
+02B5    89 C6                     mov         si,ax 
+02B7    89 D7                     mov         di,dx 
+02B9    89 5E FE                  mov         word ptr -0x2[bp],bx 
+02BC    B8 00 00                  mov         ax,DGROUP:CONST 
+02BF    8E D8                     mov         ds,ax 
+02C1    A1 00 00                  mov         ax,word ptr _call_trace_index 
+02C4    C1 E0 06                  shl         ax,0x06 
+02C7    05 00 00                  add         ax,offset _call_trace 
+02CA    B9 40 00                  mov         cx,0x0040 
+02CD    31 DB                     xor         bx,bx 
+02CF    8C DA                     mov         dx,ds 
+02D1    9A 00 00 00 00            call        memset_ 
+02D6    FF 76 FE                  push        word ptr -0x2[bp] 
+02D9    B8 00 00                  mov         ax,DGROUP:CONST 
+02DC    8E D8                     mov         ds,ax 
+02DE    A1 00 00                  mov         ax,word ptr _call_trace_index 
+02E1    C1 E0 06                  shl         ax,0x06 
+02E4    05 00 00                  add         ax,offset _call_trace 
+02E7    89 F3                     mov         bx,si 
+02E9    89 F9                     mov         cx,di 
+02EB    8C DA                     mov         dx,ds 
+02ED    9A 00 00 00 00            call        strncpy_ 
+02F2    B8 00 00                  mov         ax,DGROUP:CONST 
+02F5    8E D8                     mov         ds,ax 
+02F7    FF 06 00 00               inc         word ptr _call_trace_index 
+02FB    83 3E 00 00 0C            cmp         word ptr _call_trace_index,0x000c 
+0300    75 A7                     jne         L$22 
+0302    31 C0                     xor         ax,ax 
+0304    A3 00 00                  mov         word ptr _call_trace_index,ax 
+0307    EB A0                     jmp         L$22 
+
+Routine Size: 91 bytes,    Routine Base: dalloc_TEXT + 02AE
+
+0309                          show_call_trace_:
+0309    53                        push        bx 
+030A    51                        push        cx 
+030B    52                        push        dx 
+030C    56                        push        si 
+030D    57                        push        di 
+030E    B8 00 00                  mov         ax,DGROUP:CONST 
+0311    8E D8                     mov         ds,ax 
+0313    8B 1E 00 00               mov         bx,word ptr _call_trace_index 
+0317    43                        inc         bx 
+0318    31 C9                     xor         cx,cx 
+031A    B8 48 00                  mov         ax,offset DGROUP:L$111 
+031D    8C DA                     mov         dx,ds 
+031F    9A 00 00 00 00            call        puts_ 
+0324    BF 05 00                  mov         di,0x0005 
+0327                          L$24:
+0327    83 FB 0C                  cmp         bx,0x000c 
+032A    75 02                     jne         L$25 
+032C    31 DB                     xor         bx,bx 
+032E                          L$25:
+032E    89 DE                     mov         si,bx 
+0330    C1 E6 06                  shl         si,0x06 
+0333    B8 00 00                  mov         ax,DGROUP:CONST 
+0336    8E D8                     mov         ds,ax 
+0338    80 BC 00 00 00            cmp         byte ptr _call_trace[si],0x00 
+033D    74 27                     je          L$27 
+033F    41                        inc         cx 
+0340    89 C8                     mov         ax,cx 
+0342    31 D2                     xor         dx,dx 
+0344    F7 F7                     div         di 
+0346    B8 00 00                  mov         ax,offset _call_trace 
+0349    01 F0                     add         ax,si 
+034B    85 D2                     test        dx,dx 
+034D    75 09                     jne         L$26 
+034F    8C DA                     mov         dx,ds 
+0351    9A 00 00 00 00            call        puts_ 
+0356    EB 0E                     jmp         L$27 
+0358                          L$26:
+0358    1E                        push        ds 
+0359    50                        push        ax 
+035A    1E                        push        ds 
+035B    68 54 00                  push        offset DGROUP:L$112 
+035E    9A 00 00 00 00            call        printf_ 
+0363    83 C4 08                  add         sp,0x0008 
+0366                          L$27:
+0366    89 D8                     mov         ax,bx 
+0368    43                        inc         bx 
+0369    BA 00 00                  mov         dx,DGROUP:CONST 
+036C    8E DA                     mov         ds,dx 
+036E    3B 06 00 00               cmp         ax,word ptr _call_trace_index 
+0372    75 B3                     jne         L$24 
+0374    E9 CB FE                  jmp         L$16 
+
+Routine Size: 110 bytes,    Routine Base: dalloc_TEXT + 0309
+
+0377                          show_call_stack_:
+0377    53                        push        bx 
+0378    51                        push        cx 
+0379    52                        push        dx 
+037A    31 C9                     xor         cx,cx 
+037C    B8 00 00                  mov         ax,DGROUP:CONST 
+037F    8E D8                     mov         ds,ax 
+0381    0F B6 06 00 00            movzx       ax,byte ptr _debug_callstack_p 
+0386    50                        push        ax 
+0387    1E                        push        ds 
+0388    68 59 00                  push        offset DGROUP:L$113 
+038B    9A 00 00 00 00            call        printf_ 
+0390    83 C4 06                  add         sp,0x0006 
+0393    B8 70 00                  mov         ax,offset DGROUP:L$114 
+0396    BA 00 00                  mov         dx,DGROUP:CONST 
+0399    9A 00 00 00 00            call        puts_ 
+039E                          L$28:
+039E    B8 00 00                  mov         ax,DGROUP:CONST 
+03A1    8E D8                     mov         ds,ax 
+03A3    0F B6 06 00 00            movzx       ax,byte ptr _debug_callstack_p 
+03A8    39 C1                     cmp         cx,ax 
+03AA    0F 83 96 FE               jae         L$18 
+03AE    6B D9 4A                  imul        bx,cx,0x004a 
+03B1    66 FF B7 46 00            push        dword ptr _call_stack+0x46[bx] 
+03B6    B8 00 00                  mov         ax,offset _call_stack 
+03B9    01 D8                     add         ax,bx 
+03BB    1E                        push        ds 
+03BC    50                        push        ax 
+03BD    8C D8                     mov         ax,ds 
+03BF    66 FF B7 42 00            push        dword ptr _call_stack+0x42[bx] 
+03C4    50                        push        ax 
+03C5    68 7C 00                  push        offset DGROUP:L$115 
+03C8    9A 00 00 00 00            call        printf_ 
+03CD    83 C4 10                  add         sp,0x0010 
+03D0    41                        inc         cx 
+03D1    EB CB                     jmp         L$28 
+
+Routine Size: 92 bytes,    Routine Base: dalloc_TEXT + 0377
+
+03D3                          debug_exit_:
+03D3    53                        push        bx 
+03D4    51                        push        cx 
+03D5    52                        push        dx 
+03D6    56                        push        si 
+03D7    89 C3                     mov         bx,ax 
+03D9    B8 00 00                  mov         ax,DGROUP:CONST 
+03DC    8E D8                     mov         ds,ax 
+03DE    8B 16 00 00               mov         dx,word ptr _dalloc_count 
+03E2    31 C9                     xor         cx,cx 
+03E4    83 3E 00 00 00            cmp         word ptr _dalloc_giveup,0x0000 
+03E9    74 0C                     je          L$29 
+03EB    B8 AF 00                  mov         ax,offset DGROUP:L$116 
+03EE    8C DA                     mov         dx,ds 
+03F0    9A 00 00 00 00            call        puts_ 
+03F5    EB 3B                     jmp         L$32 
+03F7                          L$29:
+03F7    52                        push        dx 
+03F8    50                        push        ax 
+03F9    68 CF 00                  push        offset DGROUP:L$117 
+03FC    9A 00 00 00 00            call        printf_ 
+0401    83 C4 06                  add         sp,0x0006 
+0404                          L$30:
+0404    4A                        dec         dx 
+0405    83 FA FF                  cmp         dx,0xffff 
+0408    74 19                     je          L$31 
+040A    89 D6                     mov         si,dx 
+040C    C1 E6 03                  shl         si,0x03 
+040F    B8 00 00                  mov         ax,DGROUP:CONST 
+0412    8E D8                     mov         ds,ax 
+0414    C5 06 00 00               lds         ax,dword ptr _debug_memory_allocs 
+0418    01 C6                     add         si,ax 
+041A    F6 44 06 01               test        byte ptr 0x6[si],0x01 
+041E    75 E4                     jne         L$30 
+0420    41                        inc         cx 
+0421    EB E1                     jmp         L$30 
+0423                          L$31:
+0423    51                        push        cx 
+0424    68 00 00                  push        DGROUP:CONST 
+0427    68 E0 00                  push        offset DGROUP:L$118 
+042A    9A 00 00 00 00            call        printf_ 
+042F    83 C4 06                  add         sp,0x0006 
+0432                          L$32:
+0432    B8 00 00                  mov         ax,DGROUP:CONST 
+0435    8E D8                     mov         ds,ax 
+0437    FF 36 00 00               push        word ptr _vague_memsets 
+043B    50                        push        ax 
+043C    68 EB 00                  push        offset DGROUP:L$119 
+043F    9A 00 00 00 00            call        printf_ 
+0444    83 C4 06                  add         sp,0x0006 
+0447    B8 00 00                  mov         ax,DGROUP:CONST 
+044A    8E D8                     mov         ds,ax 
+044C    FF 36 00 00               push        word ptr _vague_memcpys 
+0450    50                        push        ax 
+0451    68 FE 00                  push        offset DGROUP:L$120 
+0454    9A 00 00 00 00            call        printf_ 
+0459    83 C4 06                  add         sp,0x0006 
+045C    B8 00 00                  mov         ax,DGROUP:CONST 
+045F    8E D8                     mov         ds,ax 
+0461    FF 36 00 00               push        word ptr _vague_strcpys 
+0465    50                        push        ax 
+0466    68 11 01                  push        offset DGROUP:L$121 
+0469    9A 00 00 00 00            call        printf_ 
+046E    83 C4 06                  add         sp,0x0006 
+0471    B8 00 00                  mov         ax,DGROUP:CONST 
+0474    8E D8                     mov         ds,ax 
+0476    FF 36 00 00               push        word ptr _vague_strncpys 
+047A    50                        push        ax 
+047B    68 24 01                  push        offset DGROUP:L$122 
+047E    9A 00 00 00 00            call        printf_ 
+0483    83 C4 06                  add         sp,0x0006 
+0486    0E                        push        cs 
+0487    E8 00 00                  call        show_call_stack_ 
+048A    0E                        push        cs 
+048B    E8 00 00                  call        show_call_trace_ 
+048E    89 D8                     mov         ax,bx 
+0490    9A 00 00 00 00            call        exit_ 
+0495    E9 AB FD                  jmp         L$17 
+
+Routine Size: 197 bytes,    Routine Base: dalloc_TEXT + 03D3
+
+0498                          dalloc_abortmsg_:
+0498    53                        push        bx 
+0499    89 C3                     mov         bx,ax 
+049B    B8 00 00                  mov         ax,DGROUP:CONST 
+049E    8E D8                     mov         ds,ax 
+04A0    83 3E 00 00 00            cmp         word ptr _dalloc_giveup,0x0000 
+04A5    75 1A                     jne         L$33 
+04A7    9A 00 00 00 00            call        getch_ 
+04AC    B8 03 00                  mov         ax,0x0003 
+04AF    9A 00 00 00 00            call        video_mode_ 
+04B4    89 D8                     mov         ax,bx 
+04B6    9A 00 00 00 00            call        puts_ 
+04BB    31 C0                     xor         ax,ax 
+04BD    0E                        push        cs 
+04BE    E8 00 00                  call        debug_exit_ 
+04C1                          L$33:
+04C1    5B                        pop         bx 
+04C2    CB                        retf        
+
+Routine Size: 43 bytes,    Routine Base: dalloc_TEXT + 0498
+
+04C3                          init_dallocs_:
+04C3    53                        push        bx 
+04C4    52                        push        dx 
+04C5    BA 08 00                  mov         dx,0x0008 
+04C8    B8 70 17                  mov         ax,0x1770 
+04CB    9A 00 00 00 00            call        calloc_ 
+04D0    BB 00 00                  mov         bx,DGROUP:CONST 
+04D3    8E DB                     mov         ds,bx 
+04D5    A3 00 00                  mov         word ptr _debug_memory_allocs,ax 
+04D8    89 16 02 00               mov         word ptr _debug_memory_allocs+0x2,dx 
+04DC    85 D2                     test        dx,dx 
+04DE    75 0D                     jne         L$34 
+04E0    85 C0                     test        ax,ax 
+04E2    75 09                     jne         L$34 
+04E4    B8 38 01                  mov         ax,offset DGROUP:L$123 
+04E7    89 DA                     mov         dx,bx 
+04E9    0E                        push        cs 
+04EA    E8 00 00                  call        dalloc_abortmsg_ 
+04ED                          L$34:
+04ED    B8 01 00                  mov         ax,0x0001 
+04F0    5A                        pop         dx 
+04F1    5B                        pop         bx 
+04F2    CB                        retf        
+
+Routine Size: 48 bytes,    Routine Base: dalloc_TEXT + 04C3
+
+04F3                          new_dalloc_:
+04F3    53                        push        bx 
+04F4    56                        push        si 
+04F5    57                        push        di 
+04F6    B8 00 00                  mov         ax,DGROUP:CONST 
+04F9    8E D8                     mov         ds,ax 
+04FB    83 3E 00 00 00            cmp         word ptr _dalloc_count,0x0000 
+0500    75 04                     jne         L$35 
+0502    0E                        push        cs 
+0503    E8 00 00                  call        init_dallocs_ 
+0506                          L$35:
+0506    B8 00 00                  mov         ax,DGROUP:CONST 
+0509    8E D8                     mov         ds,ax 
+050B    83 3E 00 00 00            cmp         word ptr _dalloc_giveup,0x0000 
+0510    74 0A                     je          L$36 
+0512    A1 00 00                  mov         ax,word ptr _debug_memory_allocs 
+0515    8B 16 02 00               mov         dx,word ptr _debug_memory_allocs+0x2 
+0519    E9 87 00                  jmp         L$44 
+051C                          L$36:
+051C    A1 00 00                  mov         ax,word ptr _dalloc_count 
+051F    3D 70 17                  cmp         ax,0x1770 
+0522    75 6A                     jne         L$42 
+0524    31 C0                     xor         ax,ax 
+0526    EB 06                     jmp         L$38 
+0528                          L$37:
+0528    40                        inc         ax 
+0529    3D 70 17                  cmp         ax,0x1770 
+052C    73 3F                     jae         L$40 
+052E                          L$38:
+052E    89 C6                     mov         si,ax 
+0530    C1 E6 03                  shl         si,0x03 
+0533    BA 00 00                  mov         dx,DGROUP:CONST 
+0536    8E DA                     mov         ds,dx 
+0538    C5 1E 00 00               lds         bx,dword ptr _debug_memory_allocs 
+053C    01 DE                     add         si,bx 
+053E    F6 44 06 01               test        byte ptr 0x6[si],0x01 
+0542    74 E4                     je          L$37 
+0544                          L$39:
+0544    3D 6F 17                  cmp         ax,0x176f 
+0547    73 DF                     jae         L$37 
+0549    89 C6                     mov         si,ax 
+054B    C1 E6 03                  shl         si,0x03 
+054E    BA 00 00                  mov         dx,DGROUP:CONST 
+0551    8E DA                     mov         ds,dx 
+0553    8B 1E 00 00               mov         bx,word ptr _debug_memory_allocs 
+0557    8B 16 02 00               mov         dx,word ptr _debug_memory_allocs+0x2 
+055B    01 DE                     add         si,bx 
+055D    8E C2                     mov         es,dx 
+055F    89 F7                     mov         di,si 
+0561    8E DA                     mov         ds,dx 
+0563    8D 74 08                  lea         si,0x8[si] 
+0566    A5                        movsw       
+0567    A5                        movsw       
+0568    A5                        movsw       
+0569    A5                        movsw       
+056A    40                        inc         ax 
+056B    EB D7                     jmp         L$39 
+056D                          L$40:
+056D    75 0D                     jne         L$41 
+056F    B8 00 00                  mov         ax,DGROUP:CONST 
+0572    8E D8                     mov         ds,ax 
+0574    C7 06 00 00 01 00         mov         word ptr _dalloc_giveup,0x0001 
+057A    31 C0                     xor         ax,ax 
+057C                          L$41:
+057C    C1 E0 03                  shl         ax,0x03 
+057F    BA 00 00                  mov         dx,DGROUP:CONST 
+0582    8E DA                     mov         ds,dx 
+0584    8B 1E 00 00               mov         bx,word ptr _debug_memory_allocs 
+0588    8B 16 02 00               mov         dx,word ptr _debug_memory_allocs+0x2 
+058C    EB 13                     jmp         L$43 
+058E                          L$42:
+058E    89 C3                     mov         bx,ax 
+0590    C1 E3 03                  shl         bx,0x03 
+0593    8B 36 00 00               mov         si,word ptr _debug_memory_allocs 
+0597    8B 16 02 00               mov         dx,word ptr _debug_memory_allocs+0x2 
+059B    40                        inc         ax 
+059C    A3 00 00                  mov         word ptr _dalloc_count,ax 
+059F    89 F0                     mov         ax,si 
+05A1                          L$43:
+05A1    01 D8                     add         ax,bx 
+05A3                          L$44:
+05A3    5F                        pop         di 
+05A4    5E                        pop         si 
+05A5    5B                        pop         bx 
+05A6    CB                        retf        
+
+Routine Size: 180 bytes,    Routine Base: dalloc_TEXT + 04F3
+
+05A7                          debug_malloc_:
+05A7    53                        push        bx 
+05A8    51                        push        cx 
+05A9    56                        push        si 
+05AA    89 C1                     mov         cx,ax 
+05AC    0E                        push        cs 
+05AD    E8 00 00                  call        new_dalloc_ 
+05B0    89 C3                     mov         bx,ax 
+05B2    89 D6                     mov         si,dx 
+05B4    89 C8                     mov         ax,cx 
+05B6    9A 00 00 00 00            call        malloc_ 
+05BB    8E DE                     mov         ds,si 
+05BD    89 07                     mov         word ptr [bx],ax 
+05BF    89 57 02                  mov         word ptr 0x2[bx],dx 
+05C2    89 4F 04                  mov         word ptr 0x4[bx],cx 
+05C5                          L$45:
+05C5    8B 07                     mov         ax,word ptr [bx] 
+05C7    8B 57 02                  mov         dx,word ptr 0x2[bx] 
+05CA    EB 2C                     jmp         L$47 
+
+Routine Size: 37 bytes,    Routine Base: dalloc_TEXT + 05A7
+
+05CC                          debug_calloc_:
+05CC    53                        push        bx 
+05CD    51                        push        cx 
+05CE    56                        push        si 
+05CF    57                        push        di 
+05D0    89 C1                     mov         cx,ax 
+05D2    89 D6                     mov         si,dx 
+05D4    0E                        push        cs 
+05D5    E8 00 00                  call        new_dalloc_ 
+05D8    89 C3                     mov         bx,ax 
+05DA    89 D7                     mov         di,dx 
+05DC    89 F2                     mov         dx,si 
+05DE    89 C8                     mov         ax,cx 
+05E0    9A 00 00 00 00            call        calloc_ 
+05E5    8E DF                     mov         ds,di 
+05E7    89 07                     mov         word ptr [bx],ax 
+05E9    89 57 02                  mov         word ptr 0x2[bx],dx 
+05EC    0F AF CE                  imul        cx,si 
+05EF    89 4F 04                  mov         word ptr 0x4[bx],cx 
+05F2    8B 07                     mov         ax,word ptr [bx] 
+05F4    8B 57 02                  mov         dx,word ptr 0x2[bx] 
+05F7                          L$46:
+05F7    5F                        pop         di 
+05F8                          L$47:
+05F8    5E                        pop         si 
+05F9    59                        pop         cx 
+05FA    5B                        pop         bx 
+05FB    CB                        retf        
+
+Routine Size: 48 bytes,    Routine Base: dalloc_TEXT + 05CC
+
+05FC                          debug_realloc_:
+05FC    51                        push        cx 
+05FD    56                        push        si 
+05FE    57                        push        di 
+05FF    C8 04 00 00               enter       0x0004,0x00 
+0603    50                        push        ax 
+0604    52                        push        dx 
+0605    89 DF                     mov         di,bx 
+0607    0E                        push        cs 
+0608    E8 00 00                  call        new_dalloc_ 
+060B    89 C6                     mov         si,ax 
+060D    89 56 FE                  mov         word ptr -0x2[bp],dx 
+0610    B8 00 00                  mov         ax,DGROUP:CONST 
+0613    8E D8                     mov         ds,ax 
+0615    8B 0E 00 00               mov         cx,word ptr _dalloc_count 
+0619    83 7E F8 00               cmp         word ptr -0x8[bp],0x0000 
+061D    75 0F                     jne         L$48 
+061F    83 7E FA 00               cmp         word ptr -0x6[bp],0x0000 
+0623    75 09                     jne         L$48 
+0625    B8 46 01                  mov         ax,offset DGROUP:L$124 
+0628    8C DA                     mov         dx,ds 
+062A    0E                        push        cs 
+062B    E8 00 00                  call        dalloc_abortmsg_ 
+062E                          L$48:
+062E    49                        dec         cx 
+062F    83 F9 FF                  cmp         cx,0xffff 
+0632    74 1F                     je          L$49 
+0634    89 C8                     mov         ax,cx 
+0636    C1 E0 03                  shl         ax,0x03 
+0639    BA 00 00                  mov         dx,DGROUP:CONST 
+063C    8E DA                     mov         ds,dx 
+063E    C5 1E 00 00               lds         bx,dword ptr _debug_memory_allocs 
+0642    01 C3                     add         bx,ax 
+0644    8B 17                     mov         dx,word ptr [bx] 
+0646    8B 47 02                  mov         ax,word ptr 0x2[bx] 
+0649    3B 46 F8                  cmp         ax,word ptr -0x8[bp] 
+064C    75 E0                     jne         L$48 
+064E    3B 56 FA                  cmp         dx,word ptr -0x6[bp] 
+0651    75 DB                     jne         L$48 
+0653                          L$49:
+0653    83 F9 FF                  cmp         cx,0xffff 
+0656    75 18                     jne         L$50 
+0658    B8 00 00                  mov         ax,DGROUP:CONST 
+065B    8E D8                     mov         ds,ax 
+065D    83 3E 00 00 00            cmp         word ptr _dalloc_giveup,0x0000 
+0662    75 0C                     jne         L$50 
+0664    B8 6A 01                  mov         ax,offset DGROUP:L$125 
+0667    8C DA                     mov         dx,ds 
+0669    0E                        push        cs 
+066A    E8 00 00                  call        dalloc_abortmsg_ 
+066D    E9 20 01                  jmp         L$58 
+0670                          L$50:
+0670    83 F9 FF                  cmp         cx,0xffff 
+0673    0F 84 19 01               je          L$58 
+0677    B8 00 00                  mov         ax,DGROUP:CONST 
+067A    8E D8                     mov         ds,ax 
+067C    83 3E 00 00 00            cmp         word ptr _dalloc_giveup,0x0000 
+0681    0F 85 0B 01               jne         L$58 
+0685    89 CB                     mov         bx,cx 
+0687    C1 E3 03                  shl         bx,0x03 
+068A    C5 06 00 00               lds         ax,dword ptr _debug_memory_allocs 
+068E    01 C3                     add         bx,ax 
+0690    F6 47 06 01               test        byte ptr 0x6[bx],0x01 
+0694    74 0A                     je          L$51 
+0696    B8 7B 01                  mov         ax,offset DGROUP:L$126 
+0699    BA 00 00                  mov         dx,DGROUP:CONST 
+069C    0E                        push        cs 
+069D    E8 00 00                  call        dalloc_abortmsg_ 
+06A0                          L$51:
+06A0    89 CB                     mov         bx,cx 
+06A2    C1 E3 03                  shl         bx,0x03 
+06A5    B8 00 00                  mov         ax,DGROUP:CONST 
+06A8    8E D8                     mov         ds,ax 
+06AA    C5 16 00 00               lds         dx,dword ptr _debug_memory_allocs 
+06AE    01 D3                     add         bx,dx 
+06B0    3B 7F 04                  cmp         di,word ptr 0x4[bx] 
+06B3    75 0B                     jne         L$52 
+06B5    B8 AE 01                  mov         ax,offset DGROUP:L$127 
+06B8    BA 00 00                  mov         dx,DGROUP:CONST 
+06BB    9A 00 00 00 00            call        show_error_msg_ 
+06C0                          L$52:
+06C0    89 CB                     mov         bx,cx 
+06C2    C1 E3 03                  shl         bx,0x03 
+06C5    85 FF                     test        di,di 
+06C7    75 1F                     jne         L$53 
+06C9    B8 C8 01                  mov         ax,offset DGROUP:L$128 
+06CC    BA 00 00                  mov         dx,DGROUP:CONST 
+06CF    9A 00 00 00 00            call        show_error_msg_ 
+06D4    B8 00 00                  mov         ax,DGROUP:CONST 
+06D7    8E D8                     mov         ds,ax 
+06D9    C5 06 00 00               lds         ax,dword ptr _debug_memory_allocs 
+06DD    01 C3                     add         bx,ax 
+06DF    80 4F 06 01               or          byte ptr 0x6[bx],0x01 
+06E3    31 DB                     xor         bx,bx 
+06E5    E9 AA 00                  jmp         L$59 
+06E8                          L$53:
+06E8    B8 00 00                  mov         ax,DGROUP:CONST 
+06EB    8E D8                     mov         ds,ax 
+06ED    C5 16 00 00               lds         dx,dword ptr _debug_memory_allocs 
+06F1    01 D3                     add         bx,dx 
+06F3    F6 47 06 02               test        byte ptr 0x6[bx],0x02 
+06F7    74 0A                     je          L$54 
+06F9    B8 E8 01                  mov         ax,offset DGROUP:L$129 
+06FC    BA 00 00                  mov         dx,DGROUP:CONST 
+06FF    0E                        push        cs 
+0700    E8 00 00                  call        dalloc_abortmsg_ 
+0703                          L$54:
+0703    89 FB                     mov         bx,di 
+0705    8B 46 FA                  mov         ax,word ptr -0x6[bp] 
+0708    8B 56 F8                  mov         dx,word ptr -0x8[bp] 
+070B    9A 00 00 00 00            call        realloc_ 
+0710    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+0713    89 04                     mov         word ptr [si],ax 
+0715    89 54 02                  mov         word ptr 0x2[si],dx 
+0718    8B 14                     mov         dx,word ptr [si] 
+071A    8B 44 02                  mov         ax,word ptr 0x2[si] 
+071D    85 C0                     test        ax,ax 
+071F    75 3F                     jne         L$55 
+0721    85 D2                     test        dx,dx 
+0723    75 3B                     jne         L$55 
+0725    89 C8                     mov         ax,cx 
+0727    C1 E0 03                  shl         ax,0x03 
+072A    89 46 FC                  mov         word ptr -0x4[bp],ax 
+072D    B8 00 00                  mov         ax,DGROUP:CONST 
+0730    8E D8                     mov         ds,ax 
+0732    C5 1E 00 00               lds         bx,dword ptr _debug_memory_allocs 
+0736    03 5E FC                  add         bx,word ptr -0x4[bp] 
+0739    3B 7F 04                  cmp         di,word ptr 0x4[bx] 
+073C    73 22                     jae         L$55 
+073E    B8 06 02                  mov         ax,offset DGROUP:L$130 
+0741    BA 00 00                  mov         dx,DGROUP:CONST 
+0744    9A 00 00 00 00            call        show_error_msg_ 
+0749    B8 00 00                  mov         ax,DGROUP:CONST 
+074C    8E D8                     mov         ds,ax 
+074E    C5 1E 00 00               lds         bx,dword ptr _debug_memory_allocs 
+0752    03 5E FC                  add         bx,word ptr -0x4[bp] 
+0755    80 4F 06 01               or          byte ptr 0x6[bx],0x01 
+0759    31 C0                     xor         ax,ax 
+075B    31 D2                     xor         dx,dx 
+075D    E9 49 FB                  jmp         L$22 
+0760                          L$55:
+0760    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+0763    89 7C 04                  mov         word ptr 0x4[si],di 
+0766    8B 04                     mov         ax,word ptr [si] 
+0768    8B 54 02                  mov         dx,word ptr 0x2[si] 
+076B    85 D2                     test        dx,dx 
+076D    75 04                     jne         L$56 
+076F    85 C0                     test        ax,ax 
+0771    74 12                     je          L$57 
+0773                          L$56:
+0773    C1 E1 03                  shl         cx,0x03 
+0776    B8 00 00                  mov         ax,DGROUP:CONST 
+0779    8E D8                     mov         ds,ax 
+077B    C5 3E 00 00               lds         di,dword ptr _debug_memory_allocs 
+077F    01 CF                     add         di,cx 
+0781    80 4D 06 01               or          byte ptr 0x6[di],0x01 
+0785                          L$57:
+0785    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+0788    8B 04                     mov         ax,word ptr [si] 
+078A    8B 54 02                  mov         dx,word ptr 0x2[si] 
+078D    E9 19 FB                  jmp         L$22 
+0790                          L$58:
+0790    89 FB                     mov         bx,di 
+0792                          L$59:
+0792    8B 46 FA                  mov         ax,word ptr -0x6[bp] 
+0795    8B 56 F8                  mov         dx,word ptr -0x8[bp] 
+0798    9A 00 00 00 00            call        realloc_ 
+079D    E9 09 FB                  jmp         L$22 
+
+Routine Size: 420 bytes,    Routine Base: dalloc_TEXT + 05FC
+
+07A0                          debug_free_:
+07A0    53                        push        bx 
+07A1    51                        push        cx 
+07A2    56                        push        si 
+07A3    57                        push        di 
+07A4    89 C7                     mov         di,ax 
+07A6    89 D1                     mov         cx,dx 
+07A8    B8 00 00                  mov         ax,DGROUP:CONST 
+07AB    8E D8                     mov         ds,ax 
+07AD    8B 1E 00 00               mov         bx,word ptr _dalloc_count 
+07B1                          L$60:
+07B1    4B                        dec         bx 
+07B2    83 FB FF                  cmp         bx,0xffff 
+07B5    74 1D                     je          L$61 
+07B7    89 DE                     mov         si,bx 
+07B9    C1 E6 03                  shl         si,0x03 
+07BC    B8 00 00                  mov         ax,DGROUP:CONST 
+07BF    8E D8                     mov         ds,ax 
+07C1    C5 06 00 00               lds         ax,dword ptr _debug_memory_allocs 
+07C5    01 C6                     add         si,ax 
+07C7    8B 14                     mov         dx,word ptr [si] 
+07C9    8B 44 02                  mov         ax,word ptr 0x2[si] 
+07CC    39 C8                     cmp         ax,cx 
+07CE    75 E1                     jne         L$60 
+07D0    39 FA                     cmp         dx,di 
+07D2    75 DD                     jne         L$60 
+07D4                          L$61:
+07D4    85 C9                     test        cx,cx 
+07D6    75 06                     jne         L$62 
+07D8    85 FF                     test        di,di 
+07DA    0F 84 7B 00               je          L$66 
+07DE                          L$62:
+07DE    83 FB FF                  cmp         bx,0xffff 
+07E1    75 17                     jne         L$63 
+07E3    B8 00 00                  mov         ax,DGROUP:CONST 
+07E6    8E D8                     mov         ds,ax 
+07E8    83 3E 00 00 00            cmp         word ptr _dalloc_giveup,0x0000 
+07ED    75 0B                     jne         L$63 
+07EF    B8 38 02                  mov         ax,offset DGROUP:L$131 
+07F2    8C DA                     mov         dx,ds 
+07F4    0E                        push        cs 
+07F5    E8 00 00                  call        dalloc_abortmsg_ 
+07F8    EB 5F                     jmp         L$66 
+07FA                          L$63:
+07FA    83 FB FF                  cmp         bx,0xffff 
+07FD    74 5A                     je          L$66 
+07FF    89 D8                     mov         ax,bx 
+0801    C1 E0 03                  shl         ax,0x03 
+0804    BA 00 00                  mov         dx,DGROUP:CONST 
+0807    8E DA                     mov         ds,dx 
+0809    C5 36 00 00               lds         si,dword ptr _debug_memory_allocs 
+080D    01 C6                     add         si,ax 
+080F    F6 44 06 01               test        byte ptr 0x6[si],0x01 
+0813    74 10                     je          L$64 
+0815    8E DA                     mov         ds,dx 
+0817    83 3E 00 00 00            cmp         word ptr _dalloc_giveup,0x0000 
+081C    75 07                     jne         L$64 
+081E    B8 46 02                  mov         ax,offset DGROUP:L$132 
+0821    0E                        push        cs 
+0822    E8 00 00                  call        dalloc_abortmsg_ 
+0825                          L$64:
+0825    89 DE                     mov         si,bx 
+0827    C1 E6 03                  shl         si,0x03 
+082A    B8 00 00                  mov         ax,DGROUP:CONST 
+082D    8E D8                     mov         ds,ax 
+082F    C5 06 00 00               lds         ax,dword ptr _debug_memory_allocs 
+0833    01 C6                     add         si,ax 
+0835    F6 44 06 02               test        byte ptr 0x6[si],0x02 
+0839    74 0A                     je          L$65 
+083B    B8 53 02                  mov         ax,offset DGROUP:L$133 
+083E    BA 00 00                  mov         dx,DGROUP:CONST 
+0841    0E                        push        cs 
+0842    E8 00 00                  call        dalloc_abortmsg_ 
+0845                          L$65:
+0845    89 D8                     mov         ax,bx 
+0847    C1 E0 03                  shl         ax,0x03 
+084A    BA 00 00                  mov         dx,DGROUP:CONST 
+084D    8E DA                     mov         ds,dx 
+084F    C5 1E 00 00               lds         bx,dword ptr _debug_memory_allocs 
+0853    01 C3                     add         bx,ax 
+0855    80 4F 06 01               or          byte ptr 0x6[bx],0x01 
+0859                          L$66:
+0859    89 F8                     mov         ax,di 
+085B    89 CA                     mov         dx,cx 
+085D    9A 00 00 00 00            call        free_ 
+0862    E9 92 FD                  jmp         L$46 
+
+Routine Size: 197 bytes,    Routine Base: dalloc_TEXT + 07A0
+
+0865                          debug_salloc_:
+0865    53                        push        bx 
+0866    51                        push        cx 
+0867    56                        push        si 
+0868    89 C1                     mov         cx,ax 
+086A    0E                        push        cs 
+086B    E8 00 00                  call        new_dalloc_ 
+086E    89 C3                     mov         bx,ax 
+0870    89 D6                     mov         si,dx 
+0872    89 C8                     mov         ax,cx 
+0874    9A 00 00 00 00            call        malloc_ 
+0879    8E DE                     mov         ds,si 
+087B    89 07                     mov         word ptr [bx],ax 
+087D    89 57 02                  mov         word ptr 0x2[bx],dx 
+0880    89 4F 04                  mov         word ptr 0x4[bx],cx 
+0883    80 4F 06 02               or          byte ptr 0x6[bx],0x02 
+0887    E9 3B FD                  jmp         L$45 
+
+Routine Size: 37 bytes,    Routine Base: dalloc_TEXT + 0865
+
+088A                          pointer_in_allocated_block_:
+088A    53                        push        bx 
+088B    51                        push        cx 
+088C    56                        push        si 
+088D    57                        push        di 
+088E    C8 06 00 00               enter       0x0006,0x00 
+0892    89 C1                     mov         cx,ax 
+0894    B8 00 00                  mov         ax,DGROUP:CONST 
+0897    8E D8                     mov         ds,ax 
+0899    A1 00 00                  mov         ax,word ptr _dalloc_count 
+089C                          L$67:
+089C    48                        dec         ax 
+089D    3D FF FF                  cmp         ax,0xffff 
+08A0    74 42                     je          L$69 
+08A2    89 C3                     mov         bx,ax 
+08A4    C1 E3 03                  shl         bx,0x03 
+08A7    BE 00 00                  mov         si,DGROUP:CONST 
+08AA    8E DE                     mov         ds,si 
+08AC    C5 36 00 00               lds         si,dword ptr _debug_memory_allocs 
+08B0    01 F3                     add         bx,si 
+08B2    3B 0F                     cmp         cx,word ptr [bx] 
+08B4    72 E6                     jb          L$67 
+08B6    8B 77 04                  mov         si,word ptr 0x4[bx] 
+08B9    89 76 FE                  mov         word ptr -0x2[bp],si 
+08BC    C7 46 FC 00 00            mov         word ptr -0x4[bp],0x0000 
+08C1    8B 37                     mov         si,word ptr [bx] 
+08C3    8B 7F 02                  mov         di,word ptr 0x2[bx] 
+08C6    89 7E FA                  mov         word ptr -0x6[bp],di 
+08C9    8B 7E FE                  mov         di,word ptr -0x2[bp] 
+08CC    01 F7                     add         di,si 
+08CE    8B 76 FA                  mov         si,word ptr -0x6[bp] 
+08D1    13 76 FC                  adc         si,word ptr -0x4[bp] 
+08D4    39 F2                     cmp         dx,si 
+08D6    72 06                     jb          L$68 
+08D8    75 C2                     jne         L$67 
+08DA    39 F9                     cmp         cx,di 
+08DC    73 BE                     jae         L$67 
+08DE                          L$68:
+08DE    F6 47 06 01               test        byte ptr 0x6[bx],0x01 
+08E2    75 B8                     jne         L$67 
+08E4                          L$69:
+08E4    C9                        leave       
+08E5    E9 0F FD                  jmp         L$46 
+
+Routine Size: 94 bytes,    Routine Base: dalloc_TEXT + 088A
+
+08E8                          pointer_in_block_:
+08E8    51                        push        cx 
+08E9    56                        push        si 
+08EA    C8 02 00 00               enter       0x0002,0x00 
+08EE    C1 E3 03                  shl         bx,0x03 
+08F1    B9 00 00                  mov         cx,DGROUP:CONST 
+08F4    8E D9                     mov         ds,cx 
+08F6    C5 0E 00 00               lds         cx,dword ptr _debug_memory_allocs 
+08FA    01 CB                     add         bx,cx 
+08FC    3B 07                     cmp         ax,word ptr [bx] 
+08FE    72 21                     jb          L$71 
+0900    8B 77 04                  mov         si,word ptr 0x4[bx] 
+0903    C7 46 FE 00 00            mov         word ptr -0x2[bp],0x0000 
+0908    8B 0F                     mov         cx,word ptr [bx] 
+090A    8B 5F 02                  mov         bx,word ptr 0x2[bx] 
+090D    01 F1                     add         cx,si 
+090F    13 5E FE                  adc         bx,word ptr -0x2[bp] 
+0912    39 DA                     cmp         dx,bx 
+0914    72 06                     jb          L$70 
+0916    75 09                     jne         L$71 
+0918    39 C8                     cmp         ax,cx 
+091A    73 05                     jae         L$71 
+091C                          L$70:
+091C    B8 01 00                  mov         ax,0x0001 
+091F    EB 02                     jmp         L$72 
+0921                          L$71:
+0921    31 C0                     xor         ax,ax 
+0923                          L$72:
+0923    C9                        leave       
+0924    5E                        pop         si 
+0925    59                        pop         cx 
+0926    CB                        retf        
+
+Routine Size: 63 bytes,    Routine Base: dalloc_TEXT + 08E8
+
+0927                          debug_memset_:
+0927    56                        push        si 
+0928    57                        push        di 
+0929    C8 02 00 00               enter       0x0002,0x00 
+092D    89 C7                     mov         di,ax 
+092F    89 D6                     mov         si,dx 
+0931    89 5E FE                  mov         word ptr -0x2[bp],bx 
+0934    81 FA 00 A0               cmp         dx,0xa000 
+0938    74 31                     je          L$74 
+093A    0E                        push        cs 
+093B    E8 00 00                  call        pointer_in_allocated_block_ 
+093E    3D FF FF                  cmp         ax,0xffff 
+0941    74 1F                     je          L$73 
+0943    89 FA                     mov         dx,di 
+0945    01 CA                     add         dx,cx 
+0947    4A                        dec         dx 
+0948    89 C3                     mov         bx,ax 
+094A    89 D0                     mov         ax,dx 
+094C    89 F2                     mov         dx,si 
+094E    0E                        push        cs 
+094F    E8 00 00                  call        pointer_in_block_ 
+0952    85 C0                     test        ax,ax 
+0954    75 15                     jne         L$74 
+0956    B8 6F 02                  mov         ax,offset DGROUP:L$134 
+0959    BA 00 00                  mov         dx,DGROUP:CONST 
+095C    0E                        push        cs 
+095D    E8 00 00                  call        dalloc_abortmsg_ 
+0960    EB 09                     jmp         L$74 
+0962                          L$73:
+0962    B8 00 00                  mov         ax,DGROUP:CONST 
+0965    8E D8                     mov         ds,ax 
+0967    FF 06 00 00               inc         word ptr _vague_memsets 
+096B                          L$74:
+096B    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+096E    89 F8                     mov         ax,di 
+0970    89 F2                     mov         dx,si 
+0972    9A 00 00 00 00            call        memset_ 
+0977                          L$75:
+0977    C9                        leave       
+0978    5F                        pop         di 
+0979    5E                        pop         si 
+097A    CB                        retf        
+
+Routine Size: 84 bytes,    Routine Base: dalloc_TEXT + 0927
+
+097B                          debug_memcpy_:
+097B    56                        push        si 
+097C    57                        push        di 
+097D    C8 02 00 00               enter       0x0002,0x00 
+0981    89 C7                     mov         di,ax 
+0983    89 D6                     mov         si,dx 
+0985    89 5E FE                  mov         word ptr -0x2[bp],bx 
+0988    0E                        push        cs 
+0989    E8 00 00                  call        pointer_in_allocated_block_ 
+098C    3D FF FF                  cmp         ax,0xffff 
+098F    74 20                     je          L$76 
+0991    8B 56 0A                  mov         dx,word ptr 0xa[bp] 
+0994    01 FA                     add         dx,di 
+0996    4A                        dec         dx 
+0997    89 C3                     mov         bx,ax 
+0999    89 D0                     mov         ax,dx 
+099B    89 F2                     mov         dx,si 
+099D    0E                        push        cs 
+099E    E8 00 00                  call        pointer_in_block_ 
+09A1    85 C0                     test        ax,ax 
+09A3    75 15                     jne         L$77 
+09A5    B8 7F 02                  mov         ax,offset DGROUP:L$135 
+09A8    BA 00 00                  mov         dx,DGROUP:CONST 
+09AB    0E                        push        cs 
+09AC    E8 00 00                  call        dalloc_abortmsg_ 
+09AF    EB 09                     jmp         L$77 
+09B1                          L$76:
+09B1    B8 00 00                  mov         ax,DGROUP:CONST 
+09B4    8E D8                     mov         ds,ax 
+09B6    FF 06 00 00               inc         word ptr _vague_memcpys 
+09BA                          L$77:
+09BA    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
+09BD    89 CA                     mov         dx,cx 
+09BF    0E                        push        cs 
+09C0    E8 00 00                  call        pointer_in_allocated_block_ 
+09C3    3D FF FF                  cmp         ax,0xffff 
+09C6    74 21                     je          L$78 
+09C8    8B 56 FE                  mov         dx,word ptr -0x2[bp] 
+09CB    03 56 0A                  add         dx,word ptr 0xa[bp] 
+09CE    4A                        dec         dx 
+09CF    89 C3                     mov         bx,ax 
+09D1    89 D0                     mov         ax,dx 
+09D3    89 CA                     mov         dx,cx 
+09D5    0E                        push        cs 
+09D6    E8 00 00                  call        pointer_in_block_ 
+09D9    85 C0                     test        ax,ax 
+09DB    75 15                     jne         L$79 
+09DD    B8 AC 02                  mov         ax,offset DGROUP:L$136 
+09E0    BA 00 00                  mov         dx,DGROUP:CONST 
+09E3    0E                        push        cs 
+09E4    E8 00 00                  call        dalloc_abortmsg_ 
+09E7    EB 09                     jmp         L$79 
+09E9                          L$78:
+09E9    B8 00 00                  mov         ax,DGROUP:CONST 
+09EC    8E D8                     mov         ds,ax 
+09EE    FF 06 00 00               inc         word ptr _vague_memcpys 
+09F2                          L$79:
+09F2    FF 76 0A                  push        word ptr 0xa[bp] 
+09F5    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+09F8    89 F8                     mov         ax,di 
+09FA    89 F2                     mov         dx,si 
+09FC    9A 00 00 00 00            call        memcpy_ 
+0A01                          L$80:
+0A01    C9                        leave       
+0A02    5F                        pop         di 
+0A03    5E                        pop         si 
+0A04    CA 02 00                  retf        0x0002 
+
+Routine Size: 140 bytes,    Routine Base: dalloc_TEXT + 097B
+
+0A07                          debug_strcpy_:
+0A07    56                        push        si 
+0A08    57                        push        di 
+0A09    C8 04 00 00               enter       0x0004,0x00 
+0A0D    50                        push        ax 
+0A0E    89 D7                     mov         di,dx 
+0A10    89 DE                     mov         si,bx 
+0A12    0E                        push        cs 
+0A13    E8 00 00                  call        pointer_in_allocated_block_ 
+0A16    89 46 FE                  mov         word ptr -0x2[bp],ax 
+0A19    3D FF FF                  cmp         ax,0xffff 
+0A1C    74 44                     je          L$83 
+0A1E    89 D8                     mov         ax,bx 
+0A20    89 CA                     mov         dx,cx 
+0A22    9A 00 00 00 00            call        strlen_ 
+0A27    03 46 FA                  add         ax,word ptr -0x6[bp] 
+0A2A    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+0A2D    89 FA                     mov         dx,di 
+0A2F    0E                        push        cs 
+0A30    E8 00 00                  call        pointer_in_block_ 
+0A33    85 C0                     test        ax,ax 
+0A35    75 34                     jne         L$84 
+0A37    89 F0                     mov         ax,si 
+0A39    89 CA                     mov         dx,cx 
+0A3B    9A 00 00 00 00            call        strlen_ 
+0A40    03 46 FA                  add         ax,word ptr -0x6[bp] 
+0A43    48                        dec         ax 
+0A44    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+0A47    89 FA                     mov         dx,di 
+0A49    0E                        push        cs 
+0A4A    E8 00 00                  call        pointer_in_block_ 
+0A4D    85 C0                     test        ax,ax 
+0A4F    74 0C                     je          L$82 
+0A51    B8 D4 02                  mov         ax,offset DGROUP:L$137 
+0A54                          L$81:
+0A54    BA 00 00                  mov         dx,DGROUP:CONST 
+0A57    0E                        push        cs 
+0A58    E8 00 00                  call        dalloc_abortmsg_ 
+0A5B    EB 0E                     jmp         L$84 
+0A5D                          L$82:
+0A5D    B8 0C 03                  mov         ax,offset DGROUP:L$138 
+0A60    EB F2                     jmp         L$81 
+0A62                          L$83:
+0A62    B8 00 00                  mov         ax,DGROUP:CONST 
+0A65    8E D8                     mov         ds,ax 
+0A67    FF 06 00 00               inc         word ptr _vague_strcpys 
+0A6B                          L$84:
+0A6B    89 F0                     mov         ax,si 
+0A6D    89 CA                     mov         dx,cx 
+0A6F    0E                        push        cs 
+0A70    E8 00 00                  call        pointer_in_allocated_block_ 
+0A73    89 46 FC                  mov         word ptr -0x4[bp],ax 
+0A76    3D FF FF                  cmp         ax,0xffff 
+0A79    74 42                     je          L$87 
+0A7B    89 F0                     mov         ax,si 
+0A7D    89 CA                     mov         dx,cx 
+0A7F    9A 00 00 00 00            call        strlen_ 
+0A84    01 F0                     add         ax,si 
+0A86    8B 5E FC                  mov         bx,word ptr -0x4[bp] 
+0A89    89 CA                     mov         dx,cx 
+0A8B    0E                        push        cs 
+0A8C    E8 00 00                  call        pointer_in_block_ 
+0A8F    85 C0                     test        ax,ax 
+0A91    75 33                     jne         L$88 
+0A93    89 F0                     mov         ax,si 
+0A95    89 CA                     mov         dx,cx 
+0A97    9A 00 00 00 00            call        strlen_ 
+0A9C    01 F0                     add         ax,si 
+0A9E    48                        dec         ax 
+0A9F    8B 5E FC                  mov         bx,word ptr -0x4[bp] 
+0AA2    89 CA                     mov         dx,cx 
+0AA4    0E                        push        cs 
+0AA5    E8 00 00                  call        pointer_in_block_ 
+0AA8    85 C0                     test        ax,ax 
+0AAA    74 0C                     je          L$86 
+0AAC    B8 39 03                  mov         ax,offset DGROUP:L$139 
+0AAF                          L$85:
+0AAF    BA 00 00                  mov         dx,DGROUP:CONST 
+0AB2    0E                        push        cs 
+0AB3    E8 00 00                  call        dalloc_abortmsg_ 
+0AB6    EB 0E                     jmp         L$88 
+0AB8                          L$86:
+0AB8    B8 6C 03                  mov         ax,offset DGROUP:L$140 
+0ABB    EB F2                     jmp         L$85 
+0ABD                          L$87:
+0ABD    B8 00 00                  mov         ax,DGROUP:CONST 
+0AC0    8E D8                     mov         ds,ax 
+0AC2    FF 06 00 00               inc         word ptr _vague_strcpys 
+0AC6                          L$88:
+0AC6    89 F3                     mov         bx,si 
+0AC8    8B 46 FA                  mov         ax,word ptr -0x6[bp] 
+0ACB    89 FA                     mov         dx,di 
+0ACD    9A 00 00 00 00            call        strcpy_ 
+0AD2    E9 A2 FE                  jmp         L$75 
+
+Routine Size: 206 bytes,    Routine Base: dalloc_TEXT + 0A07
+
+0AD5                          debug_strncpy_:
+0AD5    56                        push        si 
+0AD6    57                        push        di 
+0AD7    C8 08 00 00               enter       0x0008,0x00 
+0ADB    50                        push        ax 
+0ADC    89 D6                     mov         si,dx 
+0ADE    89 DF                     mov         di,bx 
+0AE0    0E                        push        cs 
+0AE1    E8 00 00                  call        pointer_in_allocated_block_ 
+0AE4    89 46 FC                  mov         word ptr -0x4[bp],ax 
+0AE7    3D FF FF                  cmp         ax,0xffff 
+0AEA    74 51                     je          L$91 
+0AEC    8B 46 F6                  mov         ax,word ptr -0xa[bp] 
+0AEF    03 46 0A                  add         ax,word ptr 0xa[bp] 
+0AF2    89 46 F8                  mov         word ptr -0x8[bp],ax 
+0AF5    40                        inc         ax 
+0AF6    8B 5E FC                  mov         bx,word ptr -0x4[bp] 
+0AF9    89 F2                     mov         dx,si 
+0AFB    0E                        push        cs 
+0AFC    E8 00 00                  call        pointer_in_block_ 
+0AFF    85 C0                     test        ax,ax 
+0B01    75 43                     jne         L$92 
+0B03    89 F8                     mov         ax,di 
+0B05    89 CA                     mov         dx,cx 
+0B07    9A 00 00 00 00            call        strlen_ 
+0B0C    03 46 F6                  add         ax,word ptr -0xa[bp] 
+0B0F    8B 5E FC                  mov         bx,word ptr -0x4[bp] 
+0B12    89 F2                     mov         dx,si 
+0B14    0E                        push        cs 
+0B15    E8 00 00                  call        pointer_in_block_ 
+0B18    85 C0                     test        ax,ax 
+0B1A    75 2A                     jne         L$92 
+0B1C    8B 5E FC                  mov         bx,word ptr -0x4[bp] 
+0B1F    8B 46 F8                  mov         ax,word ptr -0x8[bp] 
+0B22    89 F2                     mov         dx,si 
+0B24    0E                        push        cs 
+0B25    E8 00 00                  call        pointer_in_block_ 
+0B28    85 C0                     test        ax,ax 
+0B2A    74 0C                     je          L$90 
+0B2C    B8 94 03                  mov         ax,offset DGROUP:L$141 
+0B2F                          L$89:
+0B2F    BA 00 00                  mov         dx,DGROUP:CONST 
+0B32    0E                        push        cs 
+0B33    E8 00 00                  call        dalloc_abortmsg_ 
+0B36    EB 0E                     jmp         L$92 
+0B38                          L$90:
+0B38    B8 CD 03                  mov         ax,offset DGROUP:L$142 
+0B3B    EB F2                     jmp         L$89 
+0B3D                          L$91:
+0B3D    B8 00 00                  mov         ax,DGROUP:CONST 
+0B40    8E D8                     mov         ds,ax 
+0B42    FF 06 00 00               inc         word ptr _vague_strncpys 
+0B46                          L$92:
+0B46    89 F8                     mov         ax,di 
+0B48    89 CA                     mov         dx,cx 
+0B4A    0E                        push        cs 
+0B4B    E8 00 00                  call        pointer_in_allocated_block_ 
+0B4E    89 46 FE                  mov         word ptr -0x2[bp],ax 
+0B51    3D FF FF                  cmp         ax,0xffff 
+0B54    74 4F                     je          L$95 
+0B56    8B 46 0A                  mov         ax,word ptr 0xa[bp] 
+0B59    01 F8                     add         ax,di 
+0B5B    89 46 FA                  mov         word ptr -0x6[bp],ax 
+0B5E    40                        inc         ax 
+0B5F    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+0B62    89 CA                     mov         dx,cx 
+0B64    0E                        push        cs 
+0B65    E8 00 00                  call        pointer_in_block_ 
+0B68    85 C0                     test        ax,ax 
+0B6A    75 42                     jne         L$96 
+0B6C    89 F8                     mov         ax,di 
+0B6E    89 CA                     mov         dx,cx 
+0B70    9A 00 00 00 00            call        strlen_ 
+0B75    01 F8                     add         ax,di 
+0B77    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+0B7A    89 CA                     mov         dx,cx 
+0B7C    0E                        push        cs 
+0B7D    E8 00 00                  call        pointer_in_block_ 
+0B80    85 C0                     test        ax,ax 
+0B82    75 2A                     jne         L$96 
+0B84    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+0B87    8B 46 FA                  mov         ax,word ptr -0x6[bp] 
+0B8A    89 CA                     mov         dx,cx 
+0B8C    0E                        push        cs 
+0B8D    E8 00 00                  call        pointer_in_block_ 
+0B90    85 C0                     test        ax,ax 
+0B92    74 0C                     je          L$94 
+0B94    B8 FB 03                  mov         ax,offset DGROUP:L$143 
+0B97                          L$93:
+0B97    BA 00 00                  mov         dx,DGROUP:CONST 
+0B9A    0E                        push        cs 
+0B9B    E8 00 00                  call        dalloc_abortmsg_ 
+0B9E    EB 0E                     jmp         L$96 
+0BA0                          L$94:
+0BA0    B8 2F 04                  mov         ax,offset DGROUP:L$144 
+0BA3    EB F2                     jmp         L$93 
+0BA5                          L$95:
+0BA5    B8 00 00                  mov         ax,DGROUP:CONST 
+0BA8    8E D8                     mov         ds,ax 
+0BAA    FF 06 00 00               inc         word ptr _vague_strncpys 
+0BAE                          L$96:
+0BAE    FF 76 0A                  push        word ptr 0xa[bp] 
+0BB1    89 FB                     mov         bx,di 
+0BB3    8B 46 F6                  mov         ax,word ptr -0xa[bp] 
+0BB6    89 F2                     mov         dx,si 
+0BB8    9A 00 00 00 00            call        strncpy_ 
+0BBD    E9 41 FE                  jmp         L$80 
+0BC0                          debug_callstack_push_:
+0BC0    52                        push        dx 
+0BC1    56                        push        si 
+0BC2    57                        push        di 
+0BC3    55                        push        bp 
+0BC4    89 E5                     mov         bp,sp 
+0BC6    50                        push        ax 
+0BC7    89 DF                     mov         di,bx 
+0BC9    89 CE                     mov         si,cx 
+0BCB    50                        push        ax 
+0BCC    B8 00 00                  mov         ax,DGROUP:CONST 
+0BCF    8E D8                     mov         ds,ax 
+0BD1    0F B6 06 00 00            movzx       ax,byte ptr _debug_callstack_p 
+0BD6    6B C0 4A                  imul        ax,0x004a 
+0BD9    05 00 00                  add         ax,offset _call_stack 
+0BDC    8C DA                     mov         dx,ds 
+0BDE    9A 00 00 00 00            call        strncpy_ 
+0BE3    B8 00 00                  mov         ax,DGROUP:CONST 
+0BE6    8E D8                     mov         ds,ax 
+0BE8    0F B6 1E 00 00            movzx       bx,byte ptr _debug_callstack_p 
+0BED    6B DB 4A                  imul        bx,0x004a 
+0BF0    8B 46 0A                  mov         ax,word ptr 0xa[bp] 
+0BF3    89 87 42 00               mov         word ptr _call_stack+0x42[bx],ax 
+0BF7    8B 46 0C                  mov         ax,word ptr 0xc[bp] 
+0BFA    89 87 44 00               mov         word ptr _call_stack+0x44[bx],ax 
+0BFE    8B 46 0E                  mov         ax,word ptr 0xe[bp] 
+0C01    89 87 46 00               mov         word ptr _call_stack+0x46[bx],ax 
+0C05    8B 46 10                  mov         ax,word ptr 0x10[bp] 
+0C08    89 87 48 00               mov         word ptr _call_stack+0x48[bx],ax 
+0C0C    FE 06 00 00               inc         byte ptr _debug_callstack_p 
+0C10    80 3E 00 00 80            cmp         byte ptr _debug_callstack_p,0x80 
+0C15    75 09                     jne         L$97 
+0C17    B8 58 04                  mov         ax,offset DGROUP:L$145 
+0C1A    8C DA                     mov         dx,ds 
+0C1C    0E                        push        cs 
+0C1D    E8 00 00                  call        dalloc_abortmsg_ 
+0C20                          L$97:
+0C20    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+0C23    89 F8                     mov         ax,di 
+0C25    89 F2                     mov         dx,si 
+0C27    0E                        push        cs 
+0C28    E8 00 00                  call        function_name_is_blacklisted_ 
+0C2B    85 C0                     test        ax,ax 
+0C2D    75 0B                     jne         L$98 
+0C2F    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+0C32    89 F8                     mov         ax,di 
+0C34    89 F2                     mov         dx,si 
+0C36    0E                        push        cs 
+0C37    E8 00 00                  call        push_call_trace_ 
+0C3A                          L$98:
+0C3A    C9                        leave       
+0C3B    5F                        pop         di 
+0C3C    5E                        pop         si 
+0C3D    5A                        pop         dx 
+0C3E    C2 08 00                  ret         0x0008 
+
+Routine Size: 364 bytes,    Routine Base: dalloc_TEXT + 0AD5
+
+0C41                          __PRO:
+0C41    50                        push        ax 
+0C42    53                        push        bx 
+0C43    51                        push        cx 
+0C44    52                        push        dx 
+0C45    56                        push        si 
+0C46    57                        push        di 
+0C47    1E                        push        ds 
+0C48    06                        push        es 
+0C49    C8 06 00 00               enter       0x0006,0x00 
+0C4D    8D 7E 16                  lea         di,0x16[bp] 
+0C50    4F                        dec         di 
+0C51    4F                        dec         di 
+0C52    B8 00 00                  mov         ax,DGROUP:CONST 
+0C55    89 46 FA                  mov         word ptr -0x6[bp],ax 
+0C58    89 7E FC                  mov         word ptr -0x4[bp],di 
+0C5B    8D 5E 16                  lea         bx,0x16[bp] 
+0C5E    83 EB 04                  sub         bx,0x0004 
+0C61    8E D8                     mov         ds,ax 
+0C63    30 D2                     xor         dl,dl 
+0C65    BE 6D 04                  mov         si,offset DGROUP:L$146 
+0C68    89 C1                     mov         cx,ax 
+0C6A    8A 46 16                  mov         al,byte ptr 0x16[bp] 
+0C6D    A8 01                     test        al,0x01 
+0C6F    74 0C                     je          L$99 
+0C71    8B 07                     mov         ax,word ptr [bx] 
+0C73    8B 7F 02                  mov         di,word ptr 0x2[bx] 
+0C76    89 C3                     mov         bx,ax 
+0C78    89 7E FE                  mov         word ptr -0x2[bp],di 
+0C7B    EB 07                     jmp         L$100 
+0C7D                          L$99:
+0C7D    8B 1D                     mov         bx,word ptr [di] 
+0C7F    8C C8                     mov         ax,cs 
+0C81    89 46 FE                  mov         word ptr -0x2[bp],ax 
+0C84                          L$100:
+0C84    31 FF                     xor         di,di 
+0C86    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+0C89    EB 07                     jmp         L$102 
+0C8B                          L$101:
+0C8B    47                        inc         di 
+0C8C    4B                        dec         bx 
+0C8D    83 FF 20                  cmp         di,0x0020 
+0C90    7D 24                     jge         L$104 
+0C92                          L$102:
+0C92    80 3F 55                  cmp         byte ptr [bx],0x55 
+0C95    75 F4                     jne         L$101 
+0C97    80 7F 01 89               cmp         byte ptr 0x1[bx],0x89 
+0C9B    75 EE                     jne         L$101 
+0C9D    80 7F 02 E5               cmp         byte ptr 0x2[bx],0xe5 
+0CA1    75 E8                     jne         L$101 
+0CA3    F6 46 16 01               test        byte ptr 0x16[bp],0x01 
+0CA7    74 01                     je          L$103 
+0CA9    4B                        dec         bx 
+0CAA                          L$103:
+0CAA    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+0CAD    8A 57 FF                  mov         dl,byte ptr -0x1[bx] 
+0CB0    BE 75 04                  mov         si,offset DGROUP:L$147 
+0CB3    B9 00 00                  mov         cx,DGROUP:CONST 
+0CB6                          L$104:
+0CB6    84 D2                     test        dl,dl 
+0CB8    74 0F                     je          L$105 
+0CBA    0F B6 F2                  movzx       si,dl 
+0CBD    89 D8                     mov         ax,bx 
+0CBF    29 F0                     sub         ax,si 
+0CC1    89 C6                     mov         si,ax 
+0CC3    8B 4E FE                  mov         cx,word ptr -0x2[bp] 
+0CC6    4E                        dec         si 
+0CC7    EB 0B                     jmp         L$106 
+0CC9                          L$105:
+0CC9    89 F0                     mov         ax,si 
+0CCB    89 CA                     mov         dx,cx 
+0CCD    9A 00 00 00 00            call        _fstrlen_ 
+0CD2    88 C2                     mov         dl,al 
+0CD4                          L$106:
+0CD4    89 EF                     mov         di,bp 
+0CD6    57                        push        di 
+0CD7    8E 5E FA                  mov         ds,word ptr -0x6[bp] 
+0CDA    8B 7E FC                  mov         di,word ptr -0x4[bp] 
+0CDD    FF 75 02                  push        word ptr 0x2[di] 
+0CE0    FF 76 FE                  push        word ptr -0x2[bp] 
+0CE3    53                        push        bx 
+0CE4    0F B6 C2                  movzx       ax,dl 
+0CE7    89 F3                     mov         bx,si 
+0CE9    E8 00 00                  call        debug_callstack_push_ 
+0CEC    C9                        leave       
+0CED    07                        pop         es 
+0CEE    1F                        pop         ds 
+0CEF    5F                        pop         di 
+0CF0    5E                        pop         si 
+0CF1                          L$107:
+0CF1    5A                        pop         dx 
+0CF2    59                        pop         cx 
+0CF3    5B                        pop         bx 
+0CF4    58                        pop         ax 
+0CF5    CB                        retf        
+
+Routine Size: 181 bytes,    Routine Base: dalloc_TEXT + 0C41
+
+0CF6                          __EPI:
+0CF6    50                        push        ax 
+0CF7    53                        push        bx 
+0CF8    51                        push        cx 
+0CF9    52                        push        dx 
+0CFA    1E                        push        ds 
+0CFB    06                        push        es 
+0CFC    B8 00 00                  mov         ax,DGROUP:CONST 
+0CFF    8E D8                     mov         ds,ax 
+0D01    FE 0E 00 00               dec         byte ptr _debug_callstack_p 
+0D05    0F B6 06 00 00            movzx       ax,byte ptr _debug_callstack_p 
+0D0A    6B C0 4A                  imul        ax,0x004a 
+0D0D    05 00 00                  add         ax,offset _call_stack 
+0D10    B9 40 00                  mov         cx,0x0040 
+0D13    31 DB                     xor         bx,bx 
+0D15    8C DA                     mov         dx,ds 
+0D17    9A 00 00 00 00            call        memset_ 
+0D1C    07                        pop         es 
+0D1D    1F                        pop         ds 
+0D1E    EB D1                     jmp         L$107 
+
+Routine Size: 42 bytes,    Routine Base: dalloc_TEXT + 0CF6
+
+No disassembly errors
+
+Segment: CONST WORD USE16 0000047B bytes
+0000                          L$108:
+0000    72 00                                           r.
+0002                          L$109:
+0002    62 6C 61 63 6B 6C 73 74 2E 70 72 66 00          blacklst.prf.
+000F                          L$110:
+000F    4F 75 74 20 6F 66 20 6D 65 6D 6F 72 79 20 77 68 Out of memory wh
+001F    69 6C 65 20 61 6C 6C 6F 63 61 74 69 6E 67 20 66 ile allocating f
+002F    75 6E 63 74 69 6F 6E 20 62 6C 61 63 6B 6C 69 73 unction blacklis
+003F    74 20 74 61 62 6C 65 21 00                      t table!.
+0048                          L$111:
+0048    43 61 6C 6C 20 74 72 61 63 65 3A 00             Call trace:.
+0054                          L$112:
+0054    25 73 2C 20 00                                  %s, .
+0059                          L$113:
+0059    43 61 6C 6C 20 73 74 61 63 6B 20 6C 65 6E 67 74 Call stack lengt
+0069    68 3A 20 25 75 0A 00                            h: %u..
+0070                          L$114:
+0070    43 61 6C 6C 20 73 74 61 63 6B 3A 00             Call stack:.
+007C                          L$115:
+007C    25 70 20 2D 3E 20 25 73 20 28 63 61 6C 6C 65 72 %p -> %s (caller
+008C    20 42 50 3A 20 30 78 25 2E 34 58 2C 20 66 75 6E  BP: 0x%.4X, fun
+009C    63 74 69 6F 6E 20 42 50 3A 20 30 78 25 2E 34 58 ction BP: 0x%.4X
+00AC    29 0A 00                                        )..
+00AF                          L$116:
+00AF    54 6F 6F 20 6D 75 63 68 20 61 6C 6C 6F 63 73 20 Too much allocs 
+00BF    28 6F 72 20 6A 75 73 74 20 6C 65 61 6B 73 29 00 (or just leaks).
+00CF                          L$117:
+00CF    41 6C 6C 6F 63 61 74 69 6F 6E 73 3A 20 25 75 0A Allocations: %u.
+00DF    00                                              .
+00E0                          L$118:
+00E0    4C 65 61 6B 73 3A 20 25 75 0A 00                Leaks: %u..
+00EB                          L$119:
+00EB    56 61 67 75 65 20 6D 65 6D 73 65 74 73 3A 20 25 Vague memsets: %
+00FB    75 0A 00                                        u..
+00FE                          L$120:
+00FE    56 61 67 75 65 20 6D 65 6D 63 70 79 73 3A 20 25 Vague memcpys: %
+010E    75 0A 00                                        u..
+0111                          L$121:
+0111    56 61 67 75 65 20 73 74 72 63 70 79 73 3A 20 25 Vague strcpys: %
+0121    75 0A 00                                        u..
+0124                          L$122:
+0124    56 61 67 75 65 20 73 74 72 6E 63 70 79 73 3A 20 Vague strncpys: 
+0134    25 75 0A 00                                     %u..
+0138                          L$123:
+0138    4F 75 74 20 6F 66 20 6D 65 6D 6F 72 79 00       Out of memory.
+0146                          L$124:
+0146    54 72 69 65 64 20 74 6F 20 72 65 61 6C 6C 6F 63 Tried to realloc
+0156    61 74 65 20 61 20 6E 75 6C 6C 20 70 6F 69 6E 74 ate a null point
+0166    65 72 21 00                                     er!.
+016A                          L$125:
+016A    49 6E 76 61 6C 69 64 20 72 65 61 6C 6C 6F 63 21 Invalid realloc!
+017A    00                                              .
+017B                          L$126:
+017B    54 72 69 65 64 20 74 6F 20 72 65 61 6C 6C 6F 63 Tried to realloc
+018B    61 74 65 20 61 6E 20 61 6C 72 65 61 64 79 20 66 ate an already f
+019B    72 65 65 64 20 6D 65 6D 6F 72 79 20 62 6C 6F 63 reed memory bloc
+01AB    6B 21 00                                        k!.
+01AE                          L$127:
+01AE    52 65 61 6C 6C 6F 63 20 77 69 74 68 20 6E 6F 20 Realloc with no 
+01BE    73 69 7A 65 20 63 68 67 21 00                   size chg!.
+01C8                          L$128:
+01C8    54 72 69 65 64 20 74 6F 20 72 65 61 6C 6C 6F 63 Tried to realloc
+01D8    61 74 65 20 6E 75 6C 6C 20 62 79 74 65 73 21 00 ate null bytes!.
+01E8                          L$129:
+01E8    54 72 69 65 64 20 74 6F 20 72 65 73 69 7A 65 20 Tried to resize 
+01F8    73 74 61 74 69 63 20 61 72 72 61 79 21 00       static array!.
+0206                          L$130:
+0206    52 65 61 6C 6C 6F 63 20 72 65 74 75 72 6E 65 64 Realloc returned
+0216    20 30 20 77 68 65 6E 20 74 72 79 69 6E 67 20 74  0 when trying t
+0226    6F 20 73 68 72 69 6E 6B 20 61 72 72 61 79 2E 2E o shrink array..
+0236    2E 00                                           ..
+0238                          L$131:
+0238    49 6E 76 61 6C 69 64 20 66 72 65 65 21 00       Invalid free!.
+0246                          L$132:
+0246    44 6F 75 62 6C 65 20 66 72 65 65 21 00          Double free!.
+0253                          L$133:
+0253    54 72 69 65 64 20 74 6F 20 66 72 65 65 20 73 74 Tried to free st
+0263    61 74 69 63 20 61 72 72 61 79 21 00             atic array!.
+026F                          L$134:
+026F    49 6E 76 61 6C 69 64 20 6D 65 6D 73 65 74 21 00 Invalid memset!.
+027F                          L$135:
+027F    49 6E 76 61 6C 69 64 20 6D 65 6D 63 70 79 20 28 Invalid memcpy (
+028F    64 65 73 74 69 6E 61 74 69 6F 6E 20 62 75 66 66 destination buff
+029F    65 72 20 6F 76 65 72 66 6C 6F 77 29 00          er overflow).
+02AC                          L$136:
+02AC    49 6E 76 61 6C 69 64 20 6D 65 6D 63 70 79 20 28 Invalid memcpy (
+02BC    73 6F 75 72 63 65 20 62 75 66 66 65 72 20 6F 76 source buffer ov
+02CC    65 72 66 6C 6F 77 29 00                         erflow).
+02D4                          L$137:
+02D4    49 6E 76 61 6C 69 64 20 73 74 72 63 70 79 20 28 Invalid strcpy (
+02E4    6E 6F 20 73 70 61 63 65 20 66 6F 72 20 6E 75 6C no space for nul
+02F4    6C 20 63 68 61 72 20 69 6E 20 64 65 73 74 69 6E l char in destin
+0304    61 74 69 6F 6E 3F 29 00                         ation?).
+030C                          L$138:
+030C    49 6E 76 61 6C 69 64 20 73 74 72 63 70 79 20 28 Invalid strcpy (
+031C    64 65 73 74 69 6E 61 74 69 6F 6E 20 62 75 66 66 destination buff
+032C    65 72 20 6F 76 65 72 66 6C 6F 77 29 00          er overflow).
+0339                          L$139:
+0339    49 6E 76 61 6C 69 64 20 73 74 72 63 70 79 20 28 Invalid strcpy (
+0349    6E 6F 20 73 70 61 63 65 20 66 6F 72 20 6E 75 6C no space for nul
+0359    6C 20 63 68 61 72 20 69 6E 20 73 6F 75 72 63 65 l char in source
+0369    3F 29 00                                        ?).
+036C                          L$140:
+036C    49 6E 76 61 6C 69 64 20 73 74 72 63 70 79 20 28 Invalid strcpy (
+037C    73 6F 75 72 63 65 20 62 75 66 66 65 72 20 6F 76 source buffer ov
+038C    65 72 66 6C 6F 77 29 00                         erflow).
+0394                          L$141:
+0394    49 6E 76 61 6C 69 64 20 73 74 72 6E 63 70 79 20 Invalid strncpy 
+03A4    28 6E 6F 20 73 70 61 63 65 20 66 6F 72 20 6E 75 (no space for nu
+03B4    6C 6C 20 63 68 61 72 20 69 6E 20 64 65 73 74 69 ll char in desti
+03C4    6E 61 74 69 6F 6E 3F 29 00                      nation?).
+03CD                          L$142:
+03CD    49 6E 76 61 6C 69 64 20 73 74 72 6E 63 70 79 20 Invalid strncpy 
+03DD    28 64 65 73 74 69 6E 61 74 69 6F 6E 20 62 75 66 (destination buf
+03ED    66 65 72 20 6F 76 65 72 66 6C 6F 77 29 00       fer overflow).
+03FB                          L$143:
+03FB    49 6E 76 61 6C 69 64 20 73 74 72 6E 63 70 79 20 Invalid strncpy 
+040B    28 6E 6F 20 73 70 61 63 65 20 66 6F 72 20 6E 75 (no space for nu
+041B    6C 6C 20 63 68 61 72 20 69 6E 20 73 6F 75 72 63 ll char in sourc
+042B    65 3F 29 00                                     e?).
+042F                          L$144:
+042F    49 6E 76 61 6C 69 64 20 73 74 72 6E 63 70 79 20 Invalid strncpy 
+043F    28 73 6F 75 72 63 65 20 62 75 66 66 65 72 20 6F (source buffer o
+044F    76 65 72 66 6C 6F 77 29 00                      verflow).
+0458                          L$145:
+0458    43 61 6C 6C 20 73 74 61 63 6B 20 6F 76 65 72 66 Call stack overf
+0468    6C 6F 77 21 00                                  low!.
+046D                          L$146:
+046D    75 6E 6B 6E 6F 77 6E 00                         unknown.
+0475                          L$147:
+0475    66 6F 75 6E 64 00                               found.
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 0000001A bytes
+0000                          _calltrace_serialbase:
+0000    00 00 40 00                                     ..@.
+0004                          _debug_callstack_p:
+0004    00                                              .
+0005                          L$148:
+0005    00                                              .
+0006                          _dalloc_count:
+0006    00 00                                           ..
+0008                          _dalloc_giveup:
+0008    00 00                                           ..
+000A                          _vague_memsets:
+000A    00 00                                           ..
+000C                          _vague_memcpys:
+000C    00 00                                           ..
+000E                          _vague_strcpys:
+000E    00 00                                           ..
+0010                          _vague_strncpys:
+0010    00 00                                           ..
+0012                          _call_trace_index:
+0012    00 00                                           ..
+0014                          _call_trace_blacklist:
+0014    00 00 00 00                                     ....
+0018                          _call_trace_blacklist_len:
+0018    00 00                                           ..
+
+Segment: _BSS WORD USE16 00002804 bytes
+0000                          _call_trace:
+0300                          _call_stack:
+2800                          _debug_memory_allocs:
+
+BSS Size: 10244 bytes
+

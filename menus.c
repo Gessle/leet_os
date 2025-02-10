@@ -76,7 +76,6 @@ static void print_menuitem(int x, int y, unsigned char *text, unsigned selected)
 static void draw_menubar_menu(struct dropmenu *menu)
 {
   unsigned x = 6;
-
   while(menu)
   {
     gprint_text(x, 1, menu->label, _WINDOW_BASICTEXTCOLOR, _FONT_HEIGHT, x+40, 0);
@@ -91,6 +90,8 @@ static void draw_menubar_menu(struct dropmenu *menu)
 
 static void draw_menubar(void)
 {
+  void *rw = running_window;
+  running_window = 0;
   draw_rectangle(0, 0,_RES_X, _FONT_HEIGHT+2, _WINDOW_BGCOLOR);
   draw_line(0, _FONT_HEIGHT+2, _RES_X, _FONT_HEIGHT+2, _BORDERCOLOR_SHADOW);
 
@@ -102,6 +103,7 @@ static void draw_menubar(void)
   {
     draw_menubar_menu(desktop_menu);
   }
+  running_window = 0;
 }
 
 static struct coords print_menu(struct prog_window *window, unsigned int menuid, unsigned int selection)
@@ -260,7 +262,7 @@ static int dropmenu_handler(struct prog_window *window)
 
   if(kbhit())
   {
-    screensaver_timer = 0;
+    zero_screensaver_timer();
     keyboard_select = 1;
     switch(getch())
     {

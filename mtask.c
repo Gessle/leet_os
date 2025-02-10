@@ -15,6 +15,7 @@ unsigned mtask_win(int *c, unsigned a, struct prog_window *prev_run_win)
     if(next_window < 0) next_window = window_count;
     nextwindow:while((n = --next_window) >= 0)
     {
+      running_window = windows[n];
       if(next_tty >= 0) goto nexttty;
       if(windows[n]->resized)
       {
@@ -36,7 +37,7 @@ unsigned mtask_win(int *c, unsigned a, struct prog_window *prev_run_win)
       }
       if(windows[n]->function_pointer && windows[n]->initialized)
       {
-        running_window = windows[n];
+//        running_window = windows[n];
         if(!diskio_in_progress && n == active_window && !tty)
           a = (*windows[n]->function_pointer)(windows[n], call_mouse_handler(a), c);
         else

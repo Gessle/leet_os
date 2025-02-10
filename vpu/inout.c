@@ -1,6 +1,6 @@
 static int vpu_instr_in(struct vpu *vpu, unsigned flags)
 {
-  unsigned char port = vpu->code[vpu->code_segment][vpu->ip++];
+  unsigned char port = vpu_next_code_byte(vpu);
 
   if(port >= vpu->port_count)
   {
@@ -17,7 +17,7 @@ static int vpu_instr_in(struct vpu *vpu, unsigned flags)
 
 static int vpu_instr_out(struct vpu *vpu, unsigned flags)
 {
-  unsigned char port = vpu->code[vpu->code_segment][vpu->ip++];
+  unsigned char port = vpu_next_code_byte(vpu);
 
   if(port >= vpu->port_count)
   {

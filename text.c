@@ -123,7 +123,7 @@ static unsigned edit_textbox(struct prog_window *window, unsigned textbox)
 
   if(kbhit())
   {
-    screensaver_timer = 0;
+    zero_screensaver_timer();
 //    draw_mouse_cursor(2); 
     if(!(c = getch()))
       switch(c = getch())

@@ -1,0 +1,233 @@
+Module: D:\LEETSRC\490\vpu\vpuhwint.c
+GROUP: 'DGROUP' CONST,CONST2,_DATA
+
+Segment: vpuhwint_TEXT BYTE USE16 000001EB bytes
+0000                          set_vpu_turn_:
+0000    53                        push        bx 
+0001    51                        push        cx 
+0002    56                        push        si 
+0003    57                        push        di 
+0004    1E                        push        ds 
+0005    C8 08 00 00               enter       0x0008,0x00 
+0009    89 C1                     mov         cx,ax 
+000B    89 56 FA                  mov         word ptr -0x6[bp],dx 
+000E    89 C3                     mov         bx,ax 
+0010    8E DA                     mov         ds,dx 
+0012    89 C6                     mov         si,ax 
+0014    89 56 FE                  mov         word ptr -0x2[bp],dx 
+0017    80 A4 8A 01 DF            and         byte ptr 0x18a[si],0xdf 
+001C                          L$1:
+001C    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+001F    8B 97 76 01               mov         dx,word ptr 0x176[bx] 
+0023    8B 87 74 01               mov         ax,word ptr 0x174[bx] 
+0027    85 D2                     test        dx,dx 
+0029    75 04                     jne         L$2 
+002B    85 C0                     test        ax,ax 
+002D    74 3B                     je          L$4 
+002F                          L$2:
+002F    89 C6                     mov         si,ax 
+0031    8E DA                     mov         ds,dx 
+0033    89 C3                     mov         bx,ax 
+0035    8B 84 7E 01               mov         ax,word ptr 0x17e[si] 
+0039    89 56 FE                  mov         word ptr -0x2[bp],dx 
+003C    89 C2                     mov         dx,ax 
+003E    C1 E2 02                  shl         dx,0x02 
+0041                          L$3:
+0041    48                        dec         ax 
+0042    83 EA 04                  sub         dx,0x0004 
+0045    3D FF FF                  cmp         ax,0xffff 
+0048    74 D2                     je          L$1 
+004A    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+004D    C5 B7 7A 01               lds         si,dword ptr 0x17a[bx] 
+0051    01 D6                     add         si,dx 
+0053    8B 3C                     mov         di,word ptr [si] 
+0055    8B 74 02                  mov         si,word ptr 0x2[si] 
+0058    3B 76 FA                  cmp         si,word ptr -0x6[bp] 
+005B    75 E4                     jne         L$3 
+005D    39 CF                     cmp         di,cx 
+005F    75 E0                     jne         L$3 
+0061    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+0064    89 87 80 01               mov         word ptr 0x180[bx],ax 
+0068    EB B2                     jmp         L$1 
+006A                          L$4:
+006A    89 CE                     mov         si,cx 
+006C    80 8F 8B 01 04            or          byte ptr 0x18b[bx],0x04 
+0071    8E 5E FA                  mov         ds,word ptr -0x6[bp] 
+0074    B8 00 00                  mov         ax,DGROUP:CONST 
+0077    C7 84 80 01 FF FF         mov         word ptr 0x180[si],0xffff 
+007D    8E D8                     mov         ds,ax 
+007F    A1 02 00                  mov         ax,word ptr _running_window+0x2 
+0082    8B 16 00 00               mov         dx,word ptr _running_window 
+0086    85 C0                     test        ax,ax 
+0088    75 04                     jne         L$5 
+008A    85 D2                     test        dx,dx 
+008C    74 58                     je          L$9 
+008E                          L$5:
+008E    89 D6                     mov         si,dx 
+0090    8E D8                     mov         ds,ax 
+0092    8B 44 38                  mov         ax,word ptr 0x38[si] 
+0095    8B 54 36                  mov         dx,word ptr 0x36[si] 
+0098    3D 00 00                  cmp         ax,seg vpuconsole_program_ 
+009B    75 49                     jne         L$9 
+009D    81 FA 00 00               cmp         dx,offset vpuconsole_program_ 
+00A1    75 43                     jne         L$9 
+00A3    C5 7C 3A                  lds         di,dword ptr 0x3a[si] 
+00A6    8B 45 18                  mov         ax,word ptr 0x18[di] 
+00A9    8B 75 16                  mov         si,word ptr 0x16[di] 
+00AC                          L$6:
+00AC    89 46 FC                  mov         word ptr -0x4[bp],ax 
+00AF    8E 5E FC                  mov         ds,word ptr -0x4[bp] 
+00B2    8B 84 80 01               mov         ax,word ptr 0x180[si] 
+00B6    3D FF FF                  cmp         ax,0xffff 
+00B9    74 12                     je          L$7 
+00BB    89 C7                     mov         di,ax 
+00BD    C1 E7 02                  shl         di,0x02 
+00C0    C5 84 7A 01               lds         ax,dword ptr 0x17a[si] 
+00C4    01 C7                     add         di,ax 
+00C6    8B 45 02                  mov         ax,word ptr 0x2[di] 
+00C9    8B 35                     mov         si,word ptr [di] 
+00CB    EB DF                     jmp         L$6 
+00CD                          L$7:
+00CD    8C D8                     mov         ax,ds 
+00CF    3B 46 FA                  cmp         ax,word ptr -0x6[bp] 
+00D2    75 04                     jne         L$8 
+00D4    39 CE                     cmp         si,cx 
+00D6    74 0E                     je          L$9 
+00D8                          L$8:
+00D8    89 F0                     mov         ax,si 
+00DA    8C DA                     mov         dx,ds 
+00DC    9A 00 00 00 00            call        vpu_sched_yield_ 
+00E1    80 8C 8B 01 10            or          byte ptr 0x18b[si],0x10 
+00E6                          L$9:
+00E6    B8 00 00                  mov         ax,DGROUP:CONST 
+00E9    8E D8                     mov         ds,ax 
+00EB    A1 00 00                  mov         ax,word ptr _window_count 
+00EE    89 C2                     mov         dx,ax 
+00F0    C1 E2 02                  shl         dx,0x02 
+00F3                          L$10:
+00F3    48                        dec         ax 
+00F4    83 EA 04                  sub         dx,0x0004 
+00F7    3D FF FF                  cmp         ax,0xffff 
+00FA    74 40                     je          L$11 
+00FC    BE 00 00                  mov         si,DGROUP:CONST 
+00FF    8E DE                     mov         ds,si 
+0101    C5 3E 00 00               lds         di,dword ptr _windows 
+0105    01 D7                     add         di,dx 
+0107    C5 35                     lds         si,dword ptr [di] 
+0109    8B 7C 36                  mov         di,word ptr 0x36[si] 
+010C    89 7E F8                  mov         word ptr -0x8[bp],di 
+010F    8B 7C 38                  mov         di,word ptr 0x38[si] 
+0112    81 FF 00 00               cmp         di,seg vpuconsole_program_ 
+0116    75 DB                     jne         L$10 
+0118    81 7E F8 00 00            cmp         word ptr -0x8[bp],offset vpuconsole_program_ 
+011D    75 D4                     jne         L$10 
+011F    C5 7C 3A                  lds         di,dword ptr 0x3a[si] 
+0122    8B 75 1A                  mov         si,word ptr 0x1a[di] 
+0125    8B 7D 1C                  mov         di,word ptr 0x1c[di] 
+0128    3B 7E FE                  cmp         di,word ptr -0x2[bp] 
+012B    75 C6                     jne         L$10 
+012D    39 DE                     cmp         si,bx 
+012F    75 C2                     jne         L$10 
+0131    BA 00 00                  mov         dx,DGROUP:CONST 
+0134    40                        inc         ax 
+0135    8E DA                     mov         ds,dx 
+0137    A3 00 00                  mov         word ptr _next_window,ax 
+013A    EB 3E                     jmp         L$13 
+013C                          L$11:
+013C    B8 04 00                  mov         ax,0x0004 
+013F    BA C0 02                  mov         dx,0x02c0 
+0142                          L$12:
+0142    48                        dec         ax 
+0143    81 EA B0 00               sub         dx,0x00b0 
+0147    3D FF FF                  cmp         ax,0xffff 
+014A    74 2E                     je          L$13 
+014C    BE 00 00                  mov         si,DGROUP:CONST 
+014F    8E DE                     mov         ds,si 
+0151    C5 3E 00 00               lds         di,dword ptr _ttys 
+0155    01 D7                     add         di,dx 
+0157    C5 B5 A4 00               lds         si,dword ptr 0xa4[di] 
+015B    8B 7C 1A                  mov         di,word ptr 0x1a[si] 
+015E    8B 74 1C                  mov         si,word ptr 0x1c[si] 
+0161    3B 76 FE                  cmp         si,word ptr -0x2[bp] 
+0164    75 DC                     jne         L$12 
+0166    39 DF                     cmp         di,bx 
+0168    75 D8                     jne         L$12 
+016A    BA 00 00                  mov         dx,DGROUP:CONST 
+016D    8E DA                     mov         ds,dx 
+016F    89 C2                     mov         dx,ax 
+0171    42                        inc         dx 
+0172    89 16 00 00               mov         word ptr _next_tty,dx 
+0176    40                        inc         ax 
+0177    A3 00 00                  mov         word ptr _next_tty,ax 
+017A                          L$13:
+017A    C9                        leave       
+017B    1F                        pop         ds 
+017C    5F                        pop         di 
+017D    5E                        pop         si 
+017E    59                        pop         cx 
+017F    5B                        pop         bx 
+0180    CB                        retf        
+
+Routine Size: 385 bytes,    Routine Base: vpuhwint_TEXT + 0000
+
+0181                          int_to_vpu_:
+0181    53                        push        bx 
+0182    51                        push        cx 
+0183    52                        push        dx 
+0184    56                        push        si 
+0185    1E                        push        ds 
+0186    88 C2                     mov         dl,al 
+0188    B8 00 00                  mov         ax,DGROUP:CONST 
+018B    8E D8                     mov         ds,ax 
+018D    8B 1E 00 00               mov         bx,word ptr _vpu_hwint_count 
+0191    89 D8                     mov         ax,bx 
+0193    B9 00 00                  mov         cx,DGROUP:CONST 
+0196    C1 E0 04                  shl         ax,0x04 
+0199                          L$14:
+0199    4B                        dec         bx 
+019A    2D 10 00                  sub         ax,0x0010 
+019D    83 FB FF                  cmp         bx,0xffff 
+01A0    74 0C                     je          L$15 
+01A2    8E D9                     mov         ds,cx 
+01A4    C5 36 00 00               lds         si,dword ptr _vpu_hardware_int_table 
+01A8    01 C6                     add         si,ax 
+01AA    3A 14                     cmp         dl,byte ptr [si] 
+01AC    75 EB                     jne         L$14 
+01AE                          L$15:
+01AE    B8 00 00                  mov         ax,DGROUP:CONST 
+01B1    89 DE                     mov         si,bx 
+01B3    8E D8                     mov         ds,ax 
+01B5    C1 E6 04                  shl         si,0x04 
+01B8    C5 1E 00 00               lds         bx,dword ptr _vpu_hardware_int_table 
+01BC    01 F3                     add         bx,si 
+01BE    8B 47 02                  mov         ax,word ptr 0x2[bx] 
+01C1    8B 4F 04                  mov         cx,word ptr 0x4[bx] 
+01C4    8B 57 06                  mov         dx,word ptr 0x6[bx] 
+01C7    89 C3                     mov         bx,ax 
+01C9    89 C8                     mov         ax,cx 
+01CB    9A 00 00 00 00            call        send_vpu_signal_ 
+01D0    B8 00 00                  mov         ax,DGROUP:CONST 
+01D3    8E D8                     mov         ds,ax 
+01D5    C5 1E 00 00               lds         bx,dword ptr _vpu_hardware_int_table 
+01D9    01 F3                     add         bx,si 
+01DB    8B 47 04                  mov         ax,word ptr 0x4[bx] 
+01DE    8B 57 06                  mov         dx,word ptr 0x6[bx] 
+01E1    0E                        push        cs 
+01E2    E8 00 00                  call        set_vpu_turn_ 
+01E5    1F                        pop         ds 
+01E6    5E                        pop         si 
+01E7    5A                        pop         dx 
+01E8    59                        pop         cx 
+01E9    5B                        pop         bx 
+01EA    CB                        retf        
+
+Routine Size: 106 bytes,    Routine Base: vpuhwint_TEXT + 0181
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000000 bytes
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000000 bytes
+

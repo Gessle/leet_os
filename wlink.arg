@@ -14,6 +14,7 @@ file strings.obj
 file timerrtn.obj 
 file 86serpar.obj 
 file ibmpc.obj 
+file vgadraw.obj
 file int28hdl.obj
 file idlehdl.obj
 option map=main.map

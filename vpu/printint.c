@@ -1,6 +1,6 @@
 static int vpu_instr_printuint(struct vpu *vpu, unsigned flags)
 {
-  unsigned char operand = vpu->code[vpu->code_segment][vpu->ip++];
+  unsigned char operand = vpu_next_code_byte(vpu);
 
   if(operand & 0x80)
       sprintf(message, "%u", vpu->regs[operand & 0x0F]);
@@ -13,7 +13,7 @@ static int vpu_instr_printuint(struct vpu *vpu, unsigned flags)
 
 static int vpu_instr_printsint(struct vpu *vpu, unsigned flags)
 {
-  unsigned char operand = vpu->code[vpu->code_segment][vpu->ip++];
+  unsigned char operand = vpu_next_code_byte(vpu);
 
   if(operand & 0x80)
       sprintf(message, "%i", *(short*)&vpu->regs[operand & 0x0F]);

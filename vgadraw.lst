@@ -1,0 +1,143 @@
+Module: D:\LEETSRC\490\vgadraw.asm
+GROUP: 'DGROUP' _DATA
+
+Segment: vgadraw_TEXT WORD USE16 00000000 bytes
+
+Routine Size: 0 bytes,    Routine Base: vgadraw_TEXT + 0000
+
+No disassembly errors
+
+Segment: _DATA WORD USE16 00000000 bytes
+
+Segment: main_TEXT BYTE USE16 000000E6 bytes
+0000                          L$1:
+0000    FF                                              .
+
+Routine Size: 1 bytes,    Routine Base: main_TEXT + 0000
+
+0001                          sync_pixels_ega4_:
+0001    50                        push        ax 
+0002    53                        push        bx 
+0003    51                        push        cx 
+0004    52                        push        dx 
+0005    90                        nop         
+0006    2E 80 3E 00 00 01         cmp         byte ptr cs:L$1,0x01 
+000C    74 10                     je          L$2 
+000E    BA CE 03                  mov         dx,0x03ce 
+0011    B8 05 02                  mov         ax,0x0205 
+0014    EF                        out         dx,ax 
+0015    B0 08                     mov         al,0x08 
+0017    EE                        out         dx,al 
+0018    2E C6 06 00 00 01         mov         byte ptr cs:L$1,0x01 
+001E                          L$2:
+001E    BA CF 03                  mov         dx,0x03cf 
+0021    B0                                              .
+0022                          L$3:
+0022    00                                              .
+0023    EE                        out         dx,al 
+0024    B8 00 A0                  mov         ax,0xa000 
+0027    8E C0                     mov         es,ax 
+0029    2E 8B 1E 53 00            mov         bx,word ptr cs:L$4 
+002E    2E A0 59 00               mov         al,byte ptr cs:L$5 
+0032    26 86 07                  xchg        byte ptr es:[bx],al 
+0035    5A                        pop         dx 
+0036    59                        pop         cx 
+0037    5B                        pop         bx 
+0038    58                        pop         ax 
+0039    CB                        retf        
+
+Routine Size: 57 bytes,    Routine Base: main_TEXT + 0001
+
+003A                          put_pixel_ega4_:
+003A    52                        push        dx 
+003B    51                        push        cx 
+003C    B1 06                     mov         cl,0x06 
+003E    8B D3                     mov         dx,bx 
+0040    D3 E3                     shl         bx,cl 
+0042    B1 04                     mov         cl,0x04 
+0044    D3 E2                     shl         dx,cl 
+0046    03 DA                     add         bx,dx 
+0048    8A D0                     mov         dl,al 
+004A    B1 03                     mov         cl,0x03 
+004C    D3 E8                     shr         ax,cl 
+004E    03 D8                     add         bx,ax 
+0050    59                        pop         cx 
+0051    81 FB                                           ..
+0053                          L$4:
+0053    00 00                                           ..
+0055    75 05                     jne         L$6 
+0057    80 F9                                           ..
+0059                          L$5:
+0059    00                                              .
+005A    74 14                     je          L$7 
+005C                          L$6:
+005C    0E                        push        cs 
+005D    E8 A1 FF                  call        sync_pixels_ega4_ 
+0060    2E 88 0E 59 00            mov         byte ptr cs:L$5,cl 
+0065    2E 89 1E 53 00            mov         word ptr cs:L$4,bx 
+006A    2E C6 06 22 00 00         mov         byte ptr cs:L$3,0x00 
+0070                          L$7:
+0070    80 E2 07                  and         dl,0x07 
+0073    8A CA                     mov         cl,dl 
+0075    B2 80                     mov         dl,0x80 
+0077    D2 EA                     shr         dl,cl 
+0079    2E 08 16 22 00            or          byte ptr cs:L$3,dl 
+007E    5A                        pop         dx 
+007F    CB                        retf        
+
+Routine Size: 70 bytes,    Routine Base: main_TEXT + 003A
+
+0080                          get_pixel_ega4_:
+0080    52                        push        dx 
+0081    51                        push        cx 
+0082    B1 06                     mov         cl,0x06 
+0084    8B D3                     mov         dx,bx 
+0086    D3 E3                     shl         bx,cl 
+0088    B1 04                     mov         cl,0x04 
+008A    D3 E2                     shl         dx,cl 
+008C    03 DA                     add         bx,dx 
+008E    8A D0                     mov         dl,al 
+0090    B1 03                     mov         cl,0x03 
+0092    D3 E8                     shr         ax,cl 
+0094    03 D8                     add         bx,ax 
+0096    80 E2 07                  and         dl,0x07 
+0099    8A CA                     mov         cl,dl 
+009B    B2 80                     mov         dl,0x80 
+009D    D2 EA                     shr         dl,cl 
+009F    8A CA                     mov         cl,dl 
+00A1    B8 00 A0                  mov         ax,0xa000 
+00A4    8E C0                     mov         es,ax 
+00A6    B8 04 04                  mov         ax,0x0404 
+00A9    BA CE 03                  mov         dx,0x03ce 
+00AC    2E 80 3E 00 00 00         cmp         byte ptr cs:L$1,0x00 
+00B2    74 0B                     je          L$8 
+00B4    0E                        push        cs 
+00B5    E8 49 FF                  call        sync_pixels_ega4_ 
+00B8    EF                        out         dx,ax 
+00B9    2E C6 06 00 00 00         mov         byte ptr cs:L$1,0x00 
+00BF                          L$8:
+00BF    42                        inc         dx 
+00C0    32 E4                     xor         ah,ah 
+00C2                          L$9:
+00C2    26 84 0F                  test        byte ptr es:[bx],cl 
+00C5    74 03                     je          L$10 
+00C7    80 CC 01                  or          ah,0x01 
+00CA                          L$10:
+00CA    FE C8                     dec         al 
+00CC    78 05                     js          L$11 
+00CE    EE                        out         dx,al 
+00CF    D0 E4                     shl         ah,0x01 
+00D1    EB EF                     jmp         L$9 
+00D3                          L$11:
+00D3    86 E0                     xchg        al,ah 
+00D5    2E 89 1E 53 00            mov         word ptr cs:L$4,bx 
+00DA    2E A2 59 00               mov         byte ptr cs:L$5,al 
+00DE    2E 88 0E 22 00            mov         byte ptr cs:L$3,cl 
+00E3    59                        pop         cx 
+00E4    5A                        pop         dx 
+00E5    CB                        retf        
+
+Routine Size: 102 bytes,    Routine Base: main_TEXT + 0080
+
+No disassembly errors
+

@@ -1,7 +1,7 @@
-;stack 32
-;data auto
-;code auto
-;interrupts 1
+stack 32
+data auto
+code auto
+interrupts 1
 
 word starttime_high
 word starttime_low
@@ -18,54 +18,96 @@ mov bx 2
 sys
 mov $starttime_low ax
 
-:loop
 ; get time
 mov ax 18
 sys
 
-mov bx $starttime_low
-sub dx bx
-mov $uptime_low dx
+mov ax dx
+mov dx cx
+mov bx $starttime_high
+mov cx $starttime_low
+call b32_sub
+mov $uptime_low ax
+mov $uptime_high dx
 
-;mov ax $starttime_high
-;jfns 0x01 nocarry
-;inc cx
-;:nocarry
-;sub cx ax
-;mov $uptime_high cx
+str time "0    days, 0  hours, 0  minutes, 0  seconds\n" 
 
-;printuint dx
+; divide uptime in seconds by 86400 (secs per day)
 
-str time "0  hours, 0  minutes, 0  seconds\n" 
+; divide by 43200
+mov cx 2
+ldiv dx ax cx
+mov ex cx
+mov cx 43200
+ldiv dx ax cx
 
-mov ex 60
-div dx ex
-mov fx ex
-mov ex 60
-div dx ex
+xor bx bx
+lmul bx cx 2
+add cx ex
+adc bx 0
+
+
+
+
+
+;mov bx 0x0001
+;mov cx 0x5180
+;call b32_div
+; now ax = days
+; and bx:cx = uptime % secs per day
+mov gx ax
+
+mov ax cx
+mov dx bx
+xor bx bx
+mov cx 60
+; divide by 60
+;call b32_div
+ldiv dx ax cx
+
+; now ax = minutes and (bx:)cx = seconds
+mov fx cx
+
+xor dx dx
+mov cx 60
+; divide minutes by 60
+;call b32_div
+ldiv dx ax cx
+; now ax = hours, cx = minutes
+mov dx ax
+mov ex cx
+
+
+;mov dx cx
+;mov fx 60
+;mov ex fx
+;div dx fx
+;div dx ex
+
 
 mov bx $time
+push bx
+mov ax gx
+call printf_u
+pop bx
+add bx 11
 push bx
 mov ax dx
 call printf_u
 pop bx
-mov ax 10
-add bx ax
+add bx 10
 push bx
 mov ax ex
 call printf_u
 pop bx
-mov ax 12
-add bx ax
+add bx 12
 mov ax fx
 call printf_u
 
-;mov ax $time
-;printstr ax
 mov ax 1
 mov bx $time
 mov dx 1
-mov cx 33
+mov cx 44
 sys
 
 mov ax 12
@@ -133,4 +175,44 @@ sys
   pop cx
   pop ax
   ret
+
+; dx:ax = dx:ax - bx:cx
+:b32_sub
+;  push bx
+;  sub ax cx
+;  jfns 0x80 b32_sub_nc
+;  inc bx
+;  :b32_sub_nc
+;  sub dx bx
+;  pop bx
+  sub ax cx
+  sbb dx bx
+  ret
+
+; ax = dx:ax / bx:cx
+; bx:cx = mod
+;:b32_div
+; todo: replace this with binary division...
+;  push ex
+;  xor ex ex
+;
+;  :b32_div_loop
+;  push ax
+;  push dx
+;
+;  call b32_sub
+;  jfs 0x20 b32_div_end
+;  inc ex
+;  add sp 2
+;  jmp b32_div_loop
+;
+;  :b32_div_end
+;  pop bx
+;  pop cx
+;  mov ax ex
+;
+;  pop ex
+;  ret
+
+
 

@@ -152,6 +152,8 @@ int serial_init(unsigned char port, unsigned short mode)
   // set RTS/DSR, IRQ enable
   outbyte(serialbase[port]+4, 0x0B);
 
+  inbyte(serialbase[port]);
+
   return 0;   
 }
 

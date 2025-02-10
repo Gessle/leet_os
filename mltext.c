@@ -169,10 +169,13 @@ static unsigned edit_ml_textbox(struct prog_window *window, unsigned textbox)
   unsigned max_x = element_x+element->width;
   unsigned rowlen = row_len(rowptr);
   unsigned currowlen = row_len(curptr);
+  void *rw;
 
   if(kbhit())
   {
-    screensaver_timer = 0;
+    rw = running_window;
+    running_window = 0;
+    zero_screensaver_timer();
     draw_textbox_caret(1);
     scroll_to_cursor(window, textbox);
 //    draw_textbox_caret(1);
@@ -386,6 +389,7 @@ static unsigned edit_ml_textbox(struct prog_window *window, unsigned textbox)
     else // if the textbox wasn't scrolled and/or lines redrawn...
       goto end;
     caret_visible = 1;
+    running_window = rw;
   }
 
   draw_textbox_caret(0);

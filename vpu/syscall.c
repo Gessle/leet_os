@@ -221,7 +221,7 @@ static int vpu_syscall_read(struct vpu *vpu)
   struct file_struct *file_struct = vpu->file_struct[fd];
   int c = 0;
 
-  if(count && !memory_allowed(vpu, (long)vpu->regs[1] + count - 1))  return 0;
+  if(count && !memory_allowed(vpu, (long)vpu->regs[1] + count - 1))  return 4;
 
   if(fd < MAX_FILES && file_struct->open)
   {
@@ -297,7 +297,7 @@ static int pipe_write(struct vpu *vpu, struct file_struct *pipe, char *buf, unsi
   {
     if(send_vpu_signal(vpu, SIGPIPE))
       send_vpu_signal(vpu, SIGABRT);
-    return 0;
+    return 4;
   }
 
   buffer_end = *read_pos + PIPE_BUF;
@@ -320,8 +320,9 @@ static int vpu_syscall_write(struct vpu *vpu)
   unsigned fd = vpu->regs[3];
   struct file_struct *file_struct = vpu->file_struct[fd];
   unsigned char r;
+  int retval = 0;
 
-  if(count && !memory_allowed(vpu, (long)vpu->regs[1] + count - 1)) return 0;
+  if(count && !memory_allowed(vpu, (long)vpu->regs[1] + count - 1)) return 4;
 
   if(fd < MAX_FILES && file_struct->open)
   {
@@ -362,7 +363,10 @@ static int vpu_syscall_write(struct vpu *vpu)
       else if(file_struct->is_ioport == 12) // console
       {
         if((r = con_stdout_write(buf[n])) == 3)
+        {
           vpu_sched_yield(vpu);
+          retval = r;
+        }
       }
       else goto error; // writing to read end of a pipe or something?
 
@@ -391,7 +395,7 @@ static int vpu_syscall_write(struct vpu *vpu)
     fd_dup_sync(file_struct);      
   }
   vpu->regs[0] = n;
-  return 0;
+  return retval;
 }
 
 static int vpu_syscall_fsync(struct vpu *vpu)
@@ -458,6 +462,7 @@ static int vpu_syscall_open(struct vpu *vpu)
   unsigned fileflags = openflags2openmod(vpu->regs[1]);
   struct file_struct *file_struct;
   unsigned char io_type;
+  int retval = 0;
 
   if(!(vpu->privileges & VPU_PRIV_FS_WRITE))
     if(vpu->regs[1] & (OPEN_O_WRITE | OPEN_O_APPEND | OPEN_O_RW))
@@ -466,7 +471,7 @@ static int vpu_syscall_open(struct vpu *vpu)
 
   n = strlen(filename);
   if(!memory_allowed(vpu, (long)vpu->regs[3] + n))
-    return 0;
+    return 4;
   if(!n)
   {
     end:
@@ -545,19 +550,21 @@ static int vpu_syscall_open(struct vpu *vpu)
     file_struct->flags |= OPEN_O_NONBLOCK; // real files are nonblocking...
     file_struct->handle = i;
   }
-  if(vpu->regs[4] && memory_allowed(vpu, (long)vpu->regs[4] + sizeof(unsigned long)-1))
-  {
-    file_struct->file_pos = (unsigned long*)&vpu->data[vpu->data_segment][vpu->regs[4]];
-    file_struct->filepos_segment = vpu->data_segment;
-    file_struct->filepos_offset = vpu->regs[4];
-    *file_struct->file_pos = lseek(file_struct->handle, 0, SEEK_CUR);
-  }
+  if(vpu->regs[4])
+    if(memory_allowed(vpu, (long)vpu->regs[4] + sizeof(unsigned long)-1))
+    {
+      file_struct->file_pos = (unsigned long*)&vpu->data[vpu->data_segment][vpu->regs[4]];
+      file_struct->filepos_segment = vpu->data_segment;
+      file_struct->filepos_offset = vpu->regs[4];
+      *file_struct->file_pos = lseek(file_struct->handle, 0, SEEK_CUR);
+    }
+    else retval = 4;
   ioport:
   file_struct->is_ioport = io_type;
   vpu->regs[0] = file_descriptor;
   file_struct->flags |= vpu->regs[1];
 
-  return 0;
+  return retval;
 }
 
 
@@ -665,28 +672,34 @@ static int vpu_syscall_close(struct vpu *vpu)
 
 static int vpu_syscall_lseek(struct vpu *vpu)
 {
-  int lseek_ret;
+  long lseek_ret;
   unsigned fd = vpu->regs[3];
   struct file_struct *file_struct = vpu->file_struct[fd];
+  long seekcnt = *(signed short*)&vpu->regs[1];
+
+  if(vpu->regs[0] & 0x8000)
+    seekcnt |= ((unsigned long)vpu->regs[4] << 16);
   
   if(fd < MAX_FILES && file_struct->open && !file_struct->is_ioport)
   {
     switch(vpu->regs[2])
     {
       case 0:
-        lseek_ret = lseek(file_struct->handle, *(signed short*)&vpu->regs[1], SEEK_SET);
+        lseek_ret = lseek(file_struct->handle, seekcnt, SEEK_SET);
         break;
       case 1:
-        lseek_ret = lseek(file_struct->handle, *(signed short*)&vpu->regs[1], SEEK_CUR);
+        lseek_ret = lseek(file_struct->handle, seekcnt, SEEK_CUR);
         break;
       case 2:
-        lseek_ret = lseek(file_struct->handle, *(signed short*)&vpu->regs[1], SEEK_END);
+        lseek_ret = lseek(file_struct->handle, seekcnt, SEEK_END);
     }
     if(lseek_ret == -1)
       vpu->error_code = errno;
     if(file_struct->file_pos)
       *file_struct->file_pos = lseek_ret;
     fd_dup_sync(file_struct);      
+    if(vpu->regs[0] & 0x8000)
+      vpu->regs[1] = lseek_ret>>16;
     vpu->regs[0] = lseek_ret;
   }
   return 0;
@@ -774,10 +787,12 @@ static int vpu_syscall_mmap(struct vpu *vpu)
   int c;
   unsigned segment = vpu->regs[1];
   unsigned n;
+  unsigned long fpos = vpu->regs[4] | ((unsigned long)vpu->regs[5] << 16);
+  unsigned fd = vpu->regs[3];
   
   if(!vpu->regs[2])
   {
-    putstr("Cannot allocate zero bytes!");
+//    putstr("Cannot allocate zero bytes!");
     vpu->regs[0] = 0xFFFF;
     return 0;
   }
@@ -799,22 +814,22 @@ static int vpu_syscall_mmap(struct vpu *vpu)
     goto error;
   }
   // if file descriptor argument is set, read file contents into newly allocated memory
-  if(vpu->regs[4] && vpu->file_struct[vpu->regs[4]]->open)
+  if(fd && vpu->file_struct[fd]->open)
   {
-    if(vpu->file_struct[vpu->regs[4]]->is_ioport)
+    if(vpu->file_struct[fd]->is_ioport)
     {
       vpu->error_code = EACCESS;
       goto error;
     }
     fpreadp = vpu->data[segment];
-    lseek(vpu->file_struct[vpu->regs[4]]->handle, *(signed short*)&vpu->regs[5], SEEK_CUR);
+    lseek(vpu->file_struct[fd]->handle, fpos, SEEK_SET);
     n = vpu->regs[2];
    
-    read(vpu->file_struct[vpu->regs[4]]->handle, fpreadp, n);
+    read(vpu->file_struct[fd]->handle, fpreadp, n);
     // save file position to file struct
-    if(vpu->file_struct[vpu->regs[4]]->file_pos)
-      *vpu->file_struct[vpu->regs[4]]->file_pos = lseek(vpu->file_struct[vpu->regs[4]]->handle, 0, SEEK_CUR);
-    fd_dup_sync(vpu->file_struct[vpu->regs[4]]);
+    if(vpu->file_struct[fd]->file_pos)
+      *vpu->file_struct[fd]->file_pos = lseek(vpu->file_struct[fd]->handle, 0, SEEK_CUR);
+    fd_dup_sync(vpu->file_struct[fd]);
   }
   vpu->regs[0]=segment;
   return 0;
@@ -903,7 +918,7 @@ static int vpu_syscall_spawn(struct vpu *vpu)
   m = strlen(args);  
    
   if(!memory_allowed(vpu, (long)vpu->regs[1] + sizeof(unsigned short)-1) || !memory_allowed(vpu, (long)vpu->regs[2]+n) || !memory_allowed(vpu, (long)vpu->regs[3]+m))
-    return 0;
+    return 4;
 
   vpu_cwd(vpu);  
   chdrive(*vpu->cwd);
@@ -1173,7 +1188,7 @@ static int vpu_syscall_exec(struct vpu *vpu)
   n = strlen(program);
   m = strlen(args);
   if(!memory_allowed(vpu, (long)vpu->regs[1] + n) || !memory_allowed(vpu, (long)vpu->regs[2] + m))
-    return 0;
+    return 4;
 
   if(!n)
   {
@@ -1384,6 +1399,8 @@ static int vpu_syscall_procinfo(struct vpu *vpu)
         }
     if(memory_allowed(vpu, (long)vpu->regs[2]+strlen(process_name)))
       strcpy(&vpu->data[vpu->data_segment][vpu->regs[2]], process_name);                  
+    else
+      return 4;
   }
 
   return 0;
@@ -1399,7 +1416,7 @@ static int vpu_syscall_chdir(struct vpu *vpu)
 
   n = strlen(dirname);
   if(!memory_allowed(vpu, (long)vpu->regs[1] + n))
-    return 0;
+    return 4;
 
   if(!(vpu->privileges & VPU_PRIV_FS_READ))
   {
@@ -1447,7 +1464,9 @@ static int vpu_syscall_opendir(struct vpu *vpu)
   
   n = strlen(dirname);
 
-  if(!memory_allowed(vpu, (long)vpu->regs[1] + n) || n>80)
+  if(!memory_allowed(vpu, (long)vpu->regs[1] + n))
+    return 4;
+  if(n>80)
     goto error;
 
   if(!*dirname)
@@ -1473,7 +1492,7 @@ static int vpu_syscall_opendir(struct vpu *vpu)
       nomemory();
       goto error;
     }
-    if(_dos_findfirst(path, 0xFF, &vpu->dir_handles[dir_descriptor]->fileinfo))
+    if(findfirst(path, 0xFF, &vpu->dir_handles[dir_descriptor]->fileinfo))
     {
       free(vpu->dir_handles[dir_descriptor]);
       vpu->dir_handles[dir_descriptor] = 0;          
@@ -1496,9 +1515,11 @@ static int vpu_syscall_readdir(struct vpu *vpu)
   {
     if(memory_allowed(vpu, (long)vpu->regs[2] + strlen(vpu->dir_handles[vpu->regs[1]]->fileinfo.name)))
       strcpy(&vpu->data[vpu->data_segment][vpu->regs[2]], vpu->dir_handles[vpu->regs[1]]->fileinfo.name);
+    else
+      return 4;
     vpu->regs[3] = vpu->dir_handles[vpu->regs[1]]->fileinfo.attrib;      
     vpu->regs[0] = 0;
-    vpu->dir_handles[vpu->regs[1]]->error = _dos_findnext(&vpu->dir_handles[vpu->regs[1]]->fileinfo);
+    vpu->dir_handles[vpu->regs[1]]->error = findnext(&vpu->dir_handles[vpu->regs[1]]->fileinfo);
   }
   else
     vpu->regs[0] = 0xFFFF;
@@ -1558,21 +1579,24 @@ static int vpu_syscall_stat(struct vpu *vpu)
 
   n = strlen(filename);
   if(!memory_allowed(vpu, (long)vpu->regs[2] + n))
-    return 0;
+    return 4;
   
-  if(_dos_findfirst(filename, 0xFF, &fileinfo))
+  if(findfirst(filename, 0xFF, &fileinfo))
   {
     vpu->regs[0] = 0xFFFF;
     return 0;
   }
   else
   {
-    vpu->regs[0] = 0;
-    if(memory_allowed(vpu, (long)vpu->regs[1]+return_offset))
+//    if(memory_allowed(vpu, (long)vpu->regs[1]+return_offset))
+    if(memory_allowed(vpu, (long)vpu->regs[1]+1+sizeof(unsigned long)+sizeof(unsigned long long)))
       *return_struct = fileinfo.attrib;
+    else
+      return 4;
+    vpu->regs[0] = 0;
     return_offset++;
-    if(memory_allowed(vpu, (long)vpu->regs[1]+return_offset+sizeof(unsigned long)-1))
-      *(unsigned long*)&return_struct[return_offset] = fileinfo.size;
+//    if(memory_allowed(vpu, (long)vpu->regs[1]+return_offset+sizeof(unsigned long)-1))
+    *(unsigned long*)&return_struct[return_offset] = fileinfo.size;
     return_offset += sizeof(unsigned long);
 
     year = (*(fdate_t*)(&fileinfo.wr_date)).year+1980;
@@ -1582,7 +1606,7 @@ static int vpu_syscall_stat(struct vpu *vpu)
     min = (*(ftime_t*)(&fileinfo.wr_time)).minutes;
     sec = (*(ftime_t*)(&fileinfo.wr_time)).twosecs<<1;    
     
-    if(memory_allowed(vpu, (long)vpu->regs[1]+return_offset+sizeof(unsigned long long)-1))
+//    if(memory_allowed(vpu, (long)vpu->regs[1]+return_offset+sizeof(unsigned long long)-1))
       *(unsigned long long*)&return_struct[return_offset] = human2unixtime(year, month, day, hour, min, sec);
   }
 
@@ -1639,7 +1663,7 @@ static int vpu_syscall_loadmod(struct vpu *vpu)
 
   if(!memory_allowed(vpu, (long)vpu->regs[1] + n) || !memory_allowed(vpu, (long)vpu->regs[2] + m))
   {
-    return 0;
+    return 4;
   }
 
   vpu->regs[0] = load_driver(filename, modname);  
@@ -1656,6 +1680,8 @@ static int vpu_syscall_unloadmod(struct vpu *vpu)
 
   if(memory_allowed(vpu, (long)vpu->regs[1]+l))
     vpu->regs[0] = unload_module(modname);
+  else
+    return 4;
 
   return 0;
 }
@@ -1680,7 +1706,7 @@ static int vpu_syscall_cmdmod(struct vpu *vpu)
 
   if(!memory_allowed(vpu, (long)vpu->regs[1] + n) || !memory_allowed(vpu, (long)vpu->regs[2] + m))
   {
-    return 0;
+    return 4;
   }
 
   strncpy(devname2, devname, 8);
@@ -1702,7 +1728,7 @@ static int vpu_syscall_cmdmod(struct vpu *vpu)
   }
  
   if(!memory_allowed(vpu, (long)vpu->regs[2] + drivers[i].cmd_func_arglen))
-    return 0;
+    return 4;
 
   vpu->regs[0] = dev_cmd(i, devnum, args);
 
@@ -1797,7 +1823,7 @@ static int vpu_syscall_mkdir(struct vpu *vpu)
   
   n = strlen(dirname)+1;
   if(!memory_allowed(vpu, (long)vpu->regs[1] + n))
-    return 0;
+    return 4;
 
   if(n > 80)
   {
@@ -1888,7 +1914,7 @@ static int vpu_syscall_unlink(struct vpu *vpu)
   char *filename = &vpu->data[vpu->data_segment][vpu->regs[1]];
 
   if(!memory_allowed(vpu, (long)vpu->regs[1] + strlen(filename)))
-    return 0;
+    return 4;
 
   vpu_cwd(vpu);
 
@@ -1909,7 +1935,7 @@ static int vpu_syscall_rmdir(struct vpu *vpu)
   char *dirname = &vpu->data[vpu->data_segment][vpu->regs[1]];
 
   if(!memory_allowed(vpu, (long)vpu->regs[1] + strlen(dirname)+1))
-    return 0;
+    return 4;
 
   vpu_cwd(vpu);
 
@@ -1983,8 +2009,7 @@ static int vpu_syscall_getcwd(struct vpu *vpu)
 
   if(!memory_allowed(vpu, (long)vpu->regs[1]+max_len))
   {
-    vpu->regs[0] = -1;
-    return 0;
+    return 4;
   }
 
   for(n=0;vpu->cwd[n] && n < max_len;n++)
@@ -2014,6 +2039,7 @@ static int vpu_syscall_getenv(struct vpu *vpu)
     strncpy(&vpu->data[vpu->data_segment][target_offset], vpu->envs[envnum],
       max_len);
   }
+  else return 4;
   return 0;
 }
 
@@ -2030,8 +2056,7 @@ static int vpu_syscall_setenv(struct vpu *vpu)
   if(!memory_allowed(vpu, (long)name_offset + strlen(name)+1)
      || overwrite<2 && !memory_allowed(vpu, (long)value_offset + strlen(value)+1))
   {
-    vpu->regs[0] = -1;
-    return 0;
+    return 4;
   }
 
   if(svpu = vpu_shares_envs(vpu))
@@ -2101,9 +2126,9 @@ int (*vpu_instr_syscall[])(struct vpu *) =
   vpu_syscall_setenv // 49
 };
 
-static int vpu_disk_busy(struct vpu *vpu)
+static int vpu_disk_busy(struct vpu *vpu, unsigned function)
 {
-  unsigned function = vpu->regs[0];
+//  unsigned function = vpu->regs[0] & 0x7FFF;
   if(function == 2
      || function > 3 && function <= 12
 //     || function >= 15 && function <= 17
@@ -2125,10 +2150,9 @@ static int vpu_disk_busy(struct vpu *vpu)
 static int vpu_instr_sys(struct vpu *vpu, unsigned flags)
 {
   int rc;
-  unsigned function;
-  if(vpu_disk_busy(vpu))
+  unsigned function = vpu->regs[0] & 0x7FFF;
+  if(vpu_disk_busy(vpu, function))
     return 3;
-  function = vpu->regs[0];
   if(function < sizeof(vpu_instr_syscall) / sizeof(void*) && vpu_instr_syscall[function])
   {
     vpu->sys_wait = 1;
@@ -2139,7 +2163,7 @@ static int vpu_instr_sys(struct vpu *vpu, unsigned flags)
   {
     if(send_vpu_signal(vpu, SIGSYS))
       send_vpu_signal(vpu, SIGABRT);
-    rc = 0;
+    rc = 4;
   }
 
   return rc;

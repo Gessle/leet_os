@@ -1,4 +1,8 @@
-0.9.439: Drawing optimizations. Dithering for XPM images.
+0.9.499: More "addressing modes" for the bytecode. More arithmetic instructions.
+
+0.9.492: Support for ST-DOS power management.
+
+0.9.489: Drawing optimizations. Dithering for XPM images.
 
 0.9.482: Fixed a file descriptor leak.
 

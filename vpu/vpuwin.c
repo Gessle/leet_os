@@ -50,7 +50,7 @@ static int vpu_scrcall_createwindow(struct vpu *vpu)
 
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(title)))
-    return 0;
+    return 4;
 
   for(window_descriptor=0;vpu->windows[window_descriptor].window && window_descriptor < MAX_WINDOWS;window_descriptor++);
 
@@ -155,7 +155,7 @@ static int vpu_scrcall_memcpy(struct vpu *vpu)
   unsigned y = vpu->windows[vpu->regs[4]].window->y+vpu->regs[2]+_FONT_HEIGHT+2;
 
   if(!memory_allowed(vpu, (long)dataoffset+count))
-    return 0;
+    return 4;
 
   while(count--)
   {
@@ -177,23 +177,18 @@ static int vpu_scrcall_update(struct vpu *vpu)
     putstr(nowindowerror);
   else if(!vpu->windows[vpu->regs[4]].window->minimized && vpu->windows[vpu->regs[4]].renderer)
   {
-//    draw_mouse_cursor(2);      
     memcpy(VGA, vpu->windows[vpu->regs[4]].renderer, vpu->windows[vpu->regs[4]].buffer_size);
-//    draw_mouse_cursor(1);
   }
   return 0;
 }
 
 static int vpu_scrcall_clear(struct vpu *vpu)
 {
-//  draw_mouse_cursor(2);    
   if(!vpu->windows[vpu->regs[4]].window->minimized
     && windows[active_window] == vpu->windows[vpu->regs[4]].window)
   {
-/*    draw_mouse_cursor(2);        
     draw_window(vpu->windows[vpu->regs[4]].window, 0, 1);
-    draw_mouse_cursor(1);*/
-    return 1;
+//    return 1;
   }
   return 0;
 }
@@ -204,7 +199,7 @@ static int vpu_scrcall_text(struct vpu *vpu)
   struct window_element *element;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(text)))
-    return 0;
+    return 4;
 
   element = window_text(vpu->windows[vpu->regs[4]].window, vpu->regs[1], vpu->regs[2], text, vpu->regs[5]);
   if(!element) vpu->regs[0] = 0xFFFF;
@@ -218,7 +213,7 @@ static int vpu_scrcall_button(struct vpu *vpu)
   struct window_element *element;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(text)))
-    return 0;
+    return 4;
 
   element = window_button(vpu->windows[vpu->regs[4]].window, vpu->regs[1], vpu->regs[2], vpu->regs[6], vpu->regs[7],
     text, vpu->regs[5]);
@@ -236,7 +231,7 @@ static int vpu_scrcall_checkbox(struct vpu *vpu)
   struct window_element *element;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(text)))
-    return 0;
+    return 4;
 
   element = window_checkbox(vpu->windows[vpu->regs[4]].window, vpu->regs[1], vpu->regs[2], text, vpu->regs[5]);
 
@@ -255,7 +250,7 @@ static int vpu_scrcall_textbox_update(struct vpu *vpu)
   char *text = &vpu->data[vpu->data_segment][vpu->regs[3]];
   struct window_element *element;  
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(text)) || vpu->regs[1] >= vpu->windows[vpu->regs[4]].window->element_count)
-    return 0;
+    return 4;
 
   element = vpu->windows[vpu->regs[4]].window->window_grid[vpu->regs[1]];
   free(element->text);
@@ -273,7 +268,7 @@ static int vpu_scrcall_textbox(struct vpu *vpu)
   struct window_element *element;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+vpu->regs[5]))
-    return 0;
+    return 4;
 
   element = window_textbox(vpu->windows[vpu->regs[4]].window, vpu->regs[1], vpu->regs[2], vpu->regs[6], text,
     vpu->regs[5]);
@@ -305,9 +300,9 @@ static unsigned char **make_list(struct vpu *vpu, unsigned list_len, unsigned sh
   while(list_len--)
     if(memory_allowed(vpu, items[list_len]))
     {
-      
       if(!(retval[list_len] = calloc(1+strlen(&vpu->data[vpu->data_segment][items[list_len]]), sizeof(unsigned char))))
       {
+        free_list:
         while(++list_len < vpu->regs[7])
           free(retval[list_len]);
         free(retval);
@@ -315,6 +310,8 @@ static unsigned char **make_list(struct vpu *vpu, unsigned list_len, unsigned sh
       }
       strcpy(retval[list_len], &vpu->data[vpu->data_segment][items[list_len]]);
     }
+    else
+      goto free_list;
   return retval;
 }
 
@@ -325,7 +322,7 @@ static int vpu_scrcall_textbuff(struct vpu *vpu)
   unsigned count = vpu->regs[5];
 
   if(!memory_allowed(vpu, (long)vpu->regs[3] + count))
-    return 1;
+    return 4;
   element = window_ml_textbox(vpu->windows[vpu->regs[4]].window, vpu->regs[1],
               vpu->regs[2], vpu->regs[6], vpu->regs[7], text_buff, count);
   if(!element)
@@ -338,7 +335,7 @@ static int vpu_scrcall_textbuff(struct vpu *vpu)
   return 0;
 }
 
-static void vpu_scrcall_list_textbox(struct vpu *vpu, unsigned char type)
+static int vpu_scrcall_list_textbox(struct vpu *vpu, unsigned char type)
 {
   struct window_element *element;
   unsigned short *items = (unsigned short*)&vpu->data[vpu->data_segment][vpu->regs[3]];
@@ -347,14 +344,14 @@ static void vpu_scrcall_list_textbox(struct vpu *vpu, unsigned char type)
   
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+(list_len<<1)))
-    return;
+    return 4;
 
   element = window_list(vpu->windows[vpu->regs[4]].window, vpu->regs[1], vpu->regs[2], vpu->regs[5], vpu->regs[6], 0, vpu->regs[7]);
   if(!element)
   {
     nomemory:
     vpu->regs[0] = 0xFFFF;
-    return;
+    return 4;
   }
   
   list_rows = make_list(vpu, list_len, items);
@@ -370,18 +367,18 @@ static void vpu_scrcall_list_textbox(struct vpu *vpu, unsigned char type)
 
   vpu->regs[0] = 0x00FF + vpu->windows[vpu->regs[4]].window->hitbox_count;
   vpu->regs[1] = vpu->windows[vpu->regs[4]].window->element_count-1;
+
+  return 0;
 }
 
 static int vpu_scrcall_list(struct vpu *vpu)
 {
-  vpu_scrcall_list_textbox(vpu, 0);
-  return 0;
+  return vpu_scrcall_list_textbox(vpu, 0);
 }
 
 static int vpu_scrcall_mltext(struct vpu *vpu)
 {
-  vpu_scrcall_list_textbox(vpu, 1);
-  return 0;
+  return vpu_scrcall_list_textbox(vpu, 1);
 }
 
 static int vpu_scrcall_updatemltext(struct vpu *vpu)
@@ -392,7 +389,7 @@ static int vpu_scrcall_updatemltext(struct vpu *vpu)
   unsigned char **list_rows;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+(list_len<<1)) || vpu->regs[1] >= vpu->windows[vpu->regs[4]].window->element_count)
-    return 0;  
+    return 4;  
     
   element = vpu->windows[vpu->regs[4]].window->window_grid[vpu->regs[1]];
 
@@ -407,7 +404,10 @@ static int vpu_scrcall_updatemltext(struct vpu *vpu)
     element->c = vpu->regs[7];
   }
   else
+  {
     vpu->regs[0] = 0xFFFF;
+    return 4;
+  }
 
   window_drawelement(vpu->windows[vpu->regs[4]].window, vpu->regs[1]);
   return 0;
@@ -466,7 +466,7 @@ static int vpu_scrcall_icon(struct vpu *vpu)
   struct window_element *element;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(text)) || !memory_allowed(vpu, (long)vpu->regs[5]+strlen(icon)))
-    return 0;
+    return 4;
 
   element = window_icon(vpu->windows[vpu->regs[4]].window, vpu->regs[1], vpu->regs[2], text, icon);
   
@@ -525,7 +525,7 @@ static int vpu_scrcall_temptext(struct vpu *vpu)
   unsigned x2 = vpu->windows[vpu->regs[4]].window->x+vpu->windows[vpu->regs[4]].window->width;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(text)))
-    return 0;
+    return 4;
 
   gprint_text(x, y, text, vpu->regs[5], _FONT_HEIGHT, x2, vpu->regs[6]);
 
@@ -546,11 +546,11 @@ static int vpu_scrcall_dialog(struct vpu *vpu)
   char *helptext = &vpu->data[vpu->data_segment][vpu->regs[3]];
 
   if(!memory_allowed(vpu, (long)vpu->regs[2]+strlen(message)) && !memory_allowed(vpu, (long)vpu->regs[1]+strlen(title)))
-    return 0;
+    return 4;
   if(vpu->regs[3])
   {
     if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(helptext)))    
-      return 0;
+      return 4;
   }
   else helptext = 0;
 
@@ -567,7 +567,7 @@ static int vpu_scrcall_xpm2img(struct vpu *vpu)
   struct window_element *element;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(filename)))
-    return 0;
+    return 4;
 
   append_path(vpu, file_path, filename);
 
@@ -714,7 +714,7 @@ static int vpu_scrcall_radiobutton(struct vpu *vpu)
   struct window_element *prev_element = 0;
 
   if(!memory_allowed(vpu, (long)vpu->regs[3]+strlen(text)))
-    return 0;
+    return 4;
 
   if(vpu->regs[6] < vpu->windows[vpu->regs[4]].window->element_count)
       prev_element = vpu->windows[vpu->regs[4]].window->window_grid[vpu->regs[6]];
@@ -791,6 +791,7 @@ static int vpu_instr_scr(struct vpu *vpu, unsigned flags)
   struct prog_window *oldrw = running_window;
   unsigned char __far *vgap;
   unsigned draw;
+  unsigned retval;
 
   if(vpuwin_disk_busy(vpu))
   {
@@ -826,12 +827,14 @@ static int vpu_instr_scr(struct vpu *vpu, unsigned flags)
       }
     }
     else
-      (*vpu_instr_scrcall[vpu->regs[0]])(vpu);
+      retval = (*vpu_instr_scrcall[vpu->regs[0]])(vpu);
   }
+  else
+    retval = 4;
 
   vpu->sys_wait = 0;
 
-  return 0;
+  return retval;
 }
 
 static void vpu_getwindowkeys(struct vpu *vpu)

@@ -1,0 +1,41 @@
+Module: D:\LEETSRC\490\vpu\vpudint.asm
+GROUP: 'DGROUP' _DATA
+
+Segment: vpudint_TEXT WORD USE16 00000000 bytes
+
+Routine Size: 0 bytes,    Routine Base: vpudint_TEXT + 0000
+
+No disassembly errors
+
+Segment: _DATA WORD USE16 00000000 bytes
+
+Segment: main_TEXT BYTE USE16 00000020 bytes
+0000                          dummy_interrupt_mask_handler_:
+0000    50                        push        ax 
+0001    B8 FF 00                  mov         ax,0x00ff 
+0004    FC                        cld         
+0005    9A 00 00 00 00            call        int_to_vpu_ 
+000A    B0 20                     mov         al,0x20 
+000C    E6 20                     out         0x20,al 
+000E    58                        pop         ax 
+000F    CF                        iret        
+
+Routine Size: 16 bytes,    Routine Base: main_TEXT + 0000
+
+0010                          dummy_interrupt_mask_handler_cont_:
+
+Routine Size: 0 bytes,    Routine Base: main_TEXT + 0010
+
+0010                          dummy_interrupt_mask_handler_end_:
+0010    50                        push        ax 
+0011    B8 FF 00                  mov         ax,0x00ff 
+0014    FC                        cld         
+0015    9A 00 00 00 00            call        int_to_vpu_ 
+001A    58                        pop         ax 
+001B    EA 00 00 00 00            jmp         int_to_vpu_ 
+0020                          dummy_interrupt_mask_handler_cont_end:
+
+Routine Size: 16 bytes,    Routine Base: main_TEXT + 0010
+
+No disassembly errors
+

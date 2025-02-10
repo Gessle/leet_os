@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <malloc.h>
 
 void outbyte(unsigned port, unsigned char byte);
 #pragma aux outbyte = \
@@ -41,3 +42,15 @@ void draw_borders(unsigned int x, unsigned int y, unsigned int width, unsigned i
 #include "graphics.c"
 #include "kbdint.c"
 //#include "int10h.c"
+
+int findfirst(const char * const path, unsigned char const attrib, struct find_t *const fileinfo)
+{
+  _bheapshrink(_NULLSEG);
+  return _dos_findfirst(path, attrib, fileinfo);
+}
+
+int findnext(struct find_t * const fileinfo)
+{
+  _bheapshrink(_NULLSEG);
+  return _dos_findnext(fileinfo);
+}

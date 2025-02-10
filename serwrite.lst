@@ -1,0 +1,113 @@
+Module: D:\LEETSRC\490\vpu\serwrite.c
+GROUP: 'DGROUP' CONST,CONST2,_DATA
+
+Segment: serwrite_TEXT BYTE USE16 000000BB bytes
+0000                          serial_flow_control_send_:
+0000    53                        push        bx 
+0001    52                        push        dx 
+0002    56                        push        si 
+0003    0F B6 D8                  movzx       bx,al 
+0006    BA 00 00                  mov         dx,seg _serport_buffer 
+0009    C1 E3 02                  shl         bx,0x02 
+000C    8E DA                     mov         ds,dx 
+000E    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+0012    8B 94 04 01               mov         dx,word ptr 0x104[si] 
+0016    89 D3                     mov         bx,dx 
+0018    80 E3 03                  and         bl,0x03 
+001B    F6 C3 01                  test        bl,0x01 
+001E    74 09                     je          L$2 
+0020    F6 C2 04                  test        dl,0x04 
+0023    74 04                     je          L$2 
+0025                          L$1:
+0025    B0 01                     mov         al,0x01 
+0027    EB 37                     jmp         L$4 
+0029                          L$2:
+0029    0F B6 D0                  movzx       dx,al 
+002C    BE 00 00                  mov         si,seg _serport_buffer 
+002F    89 D3                     mov         bx,dx 
+0031    8E DE                     mov         ds,si 
+0033    C1 E3 02                  shl         bx,0x02 
+0036    C5 B7 00 00               lds         si,dword ptr _serport_buffer[bx] 
+003A    8B 9C 04 01               mov         bx,word ptr 0x104[si] 
+003E    80 E3 03                  and         bl,0x03 
+0041    F6 C3 02                  test        bl,0x02 
+0044    74 18                     je          L$3 
+0046    36 8B 1E 00 00            mov         bx,word ptr ss:_serialbase 
+004B    01 D2                     add         dx,dx 
+004D    36 8E 1E 02 00            mov         ds,word ptr ss:_serialbase+0x2 
+0052    01 D3                     add         bx,dx 
+0054    8B 17                     mov         dx,word ptr [bx] 
+0056    83 C2 06                  add         dx,0x0006 
+0059    EC                        in          al,dx 
+005A    A8 10                     test        al,0x10 
+005C    74 C7                     je          L$1 
+005E                          L$3:
+005E    30 C0                     xor         al,al 
+0060                          L$4:
+0060    5E                        pop         si 
+0061    5A                        pop         dx 
+0062    5B                        pop         bx 
+0063    C3                        ret         
+
+Routine Size: 100 bytes,    Routine Base: serwrite_TEXT + 0000
+
+0064                          serial_write_:
+0064    53                        push        bx 
+0065    51                        push        cx 
+0066    56                        push        si 
+0067    57                        push        di 
+0068    55                        push        bp 
+0069    31 ED                     xor         bp,bp 
+006B    88 C5                     mov         ch,al 
+006D    88 D1                     mov         cl,dl 
+006F    0F B6 FD                  movzx       di,ch 
+0072                          L$5:
+0072    89 FB                     mov         bx,di 
+0074    8B B6 00 00               mov         si,word ptr _serialbase[bp] 
+0078    01 FB                     add         bx,di 
+007A    8E 9E 02 00               mov         ds,word ptr _serialbase+0x2[bp] 
+007E    01 DE                     add         si,bx 
+0080    8B 14                     mov         dx,word ptr [si] 
+0082    83 C2 05                  add         dx,0x0005 
+0085    EC                        in          al,dx 
+0086    A8 20                     test        al,0x20 
+0088    74 E8                     je          L$5 
+008A    89 F8                     mov         ax,di 
+008C    E8 00 00                  call        serial_flow_control_send_ 
+008F    84 C0                     test        al,al 
+0091    74 04                     je          L$7 
+0093                          L$6:
+0093    B0 01                     mov         al,0x01 
+0095    EB 1E                     jmp         L$8 
+0097                          L$7:
+0097    C5 B6 00 00               lds         si,dword ptr _serialbase[bp] 
+009B    01 DE                     add         si,bx 
+009D    0F B6 C1                  movzx       ax,cl 
+00A0    8B 14                     mov         dx,word ptr [si] 
+00A2    EE                        out         dx,al 
+00A3    C5 96 00 00               lds         dx,dword ptr _serialbase[bp] 
+00A7    01 D3                     add         bx,dx 
+00A9    8B 17                     mov         dx,word ptr [bx] 
+00AB    83 C2 05                  add         dx,0x0005 
+00AE    EC                        in          al,dx 
+00AF    A8 02                     test        al,0x02 
+00B1    75 E0                     jne         L$6 
+00B3    30 C0                     xor         al,al 
+00B5                          L$8:
+00B5    5D                        pop         bp 
+00B6    5F                        pop         di 
+00B7    5E                        pop         si 
+00B8    59                        pop         cx 
+00B9    5B                        pop         bx 
+00BA    CB                        retf        
+
+Routine Size: 87 bytes,    Routine Base: serwrite_TEXT + 0064
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000000 bytes
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000000 bytes
+

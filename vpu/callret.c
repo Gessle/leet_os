@@ -15,7 +15,7 @@ static int vpu_instr_call(struct vpu *vpu, unsigned flags)
     {
       putstr(segfaulterror);
       send_vpu_signal(vpu, SIGSEGV);    
-      return 0;
+      return 4;
     }
     vpu->ip += 2;
     if(debug)
@@ -54,7 +54,7 @@ static int vpu_instr_ret(struct vpu *vpu, unsigned flags)
     putstr(stackunderflowerror);
     vpu->flags.stackv = 1;
     send_vpu_signal(vpu, SIGSEGV);        
-    return 0;
+    return 4;
   }
   vpu->code_segment = vpu->stack[++vpu->sp];
   vpu->ip = vpu->stack[++vpu->sp];

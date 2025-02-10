@@ -1,0 +1,257 @@
+Module: D:\LEETSRC\490\drvmod\drvinst.c
+GROUP: 'DGROUP' CONST,CONST2,_DATA
+
+Segment: drvinst_TEXT BYTE USE16 00000269 bytes
+0000                          allocate_new_driver_:
+0000    53                        push        bx 
+0001    51                        push        cx 
+0002    52                        push        dx 
+0003    57                        push        di 
+0004    B8 00 00                  mov         ax,DGROUP:CONST 
+0007    8E D8                     mov         ds,ax 
+0009    FF 06 00 00               inc         word ptr _driver_count 
+000D    A1 00 00                  mov         ax,word ptr _driver_count 
+0010    3D 01 00                  cmp         ax,0x0001 
+0013    75 29                     jne         L$2 
+0015    BA 2E 00                  mov         dx,0x002e 
+0018    BB 00 00                  mov         bx,DGROUP:CONST 
+001B    9A 00 00 00 00            call        calloc_ 
+0020    8E DB                     mov         ds,bx 
+0022    A3 00 00                  mov         word ptr _drivers,ax 
+0025    89 16 02 00               mov         word ptr _drivers+0x2,dx 
+0029    85 D2                     test        dx,dx 
+002B    75 4B                     jne         L$4 
+002D    85 C0                     test        ax,ax 
+002F    75 47                     jne         L$4 
+0031                          L$1:
+0031    BA 00 00                  mov         dx,DGROUP:CONST 
+0034    8E DA                     mov         ds,dx 
+0036    31 C0                     xor         ax,ax 
+0038    FF 0E 00 00               dec         word ptr _driver_count 
+003C    EB 42                     jmp         L$5 
+003E                          L$2:
+003E    6B D8 2E                  imul        bx,ax,0x002e 
+0041    8B 16 02 00               mov         dx,word ptr _drivers+0x2 
+0045    A1 00 00                  mov         ax,word ptr _drivers 
+0048    9A 00 00 00 00            call        realloc_ 
+004D    85 D2                     test        dx,dx 
+004F    75 04                     jne         L$3 
+0051    85 C0                     test        ax,ax 
+0053    74 DC                     je          L$1 
+0055                          L$3:
+0055    BB 00 00                  mov         bx,DGROUP:CONST 
+0058    8E DB                     mov         ds,bx 
+005A    8B 1E 00 00               mov         bx,word ptr _driver_count 
+005E    4B                        dec         bx 
+005F    6B DB 2E                  imul        bx,0x002e 
+0062    B9 2E 00                  mov         cx,0x002e 
+0065    89 C7                     mov         di,ax 
+0067    A3 00 00                  mov         word ptr _drivers,ax 
+006A    89 16 02 00               mov         word ptr _drivers+0x2,dx 
+006E    8E C2                     mov         es,dx 
+0070    30 C0                     xor         al,al 
+0072    01 DF                     add         di,bx 
+0074    57                        push        di 
+0075    F3 AA                     rep stosb   
+0077    5F                        pop         di 
+0078                          L$4:
+0078    B8 00 00                  mov         ax,DGROUP:CONST 
+007B    8E D8                     mov         ds,ax 
+007D    A1 00 00                  mov         ax,word ptr _driver_count 
+0080                          L$5:
+0080    5F                        pop         di 
+0081    5A                        pop         dx 
+0082    59                        pop         cx 
+0083    5B                        pop         bx 
+0084    C3                        ret         
+0085                          install_display_driver_:
+0085    53                        push        bx 
+0086    51                        push        cx 
+0087    89 C3                     mov         bx,ax 
+0089    8E DA                     mov         ds,dx 
+008B    BA 00 00                  mov         dx,DGROUP:CONST 
+008E    8B 0F                     mov         cx,word ptr [bx] 
+0090    8B 47 02                  mov         ax,word ptr 0x2[bx] 
+0093    8E C2                     mov         es,dx 
+0095    26 89 0E 00 00            mov         word ptr es:_put_pixel_screen,cx 
+009A    26 A3 02 00               mov         word ptr es:_put_pixel_screen+0x2,ax 
+009E    8B 57 04                  mov         dx,word ptr 0x4[bx] 
+00A1    8B 47 06                  mov         ax,word ptr 0x6[bx] 
+00A4    26 89 16 00 00            mov         word ptr es:_get_pixel_screen,dx 
+00A9    26 A3 02 00               mov         word ptr es:_get_pixel_screen+0x2,ax 
+00AD    8B 57 08                  mov         dx,word ptr 0x8[bx] 
+00B0    8B 47 0A                  mov         ax,word ptr 0xa[bx] 
+00B3    26 89 16 00 00            mov         word ptr es:_draw_rectangle_screen,dx 
+00B8    26 A3 02 00               mov         word ptr es:_draw_rectangle_screen+0x2,ax 
+00BC    8B 57 0C                  mov         dx,word ptr 0xc[bx] 
+00BF    8B 47 0E                  mov         ax,word ptr 0xe[bx] 
+00C2    26 89 16 00 00            mov         word ptr es:_fill_screen_color,dx 
+00C7    26 A3 02 00               mov         word ptr es:_fill_screen_color+0x2,ax 
+00CB    8B 57 10                  mov         dx,word ptr 0x10[bx] 
+00CE    8B 47 12                  mov         ax,word ptr 0x12[bx] 
+00D1    26 89 16 00 00            mov         word ptr es:_update_screen,dx 
+00D6    26 A3 02 00               mov         word ptr es:_update_screen+0x2,ax 
+00DA    8B 57 14                  mov         dx,word ptr 0x14[bx] 
+00DD    8B 47 16                  mov         ax,word ptr 0x16[bx] 
+00E0    26 89 16 00 00            mov         word ptr es:_video_memcpy,dx 
+00E5    26 A3 02 00               mov         word ptr es:_video_memcpy+0x2,ax 
+00E9    8B 47 18                  mov         ax,word ptr 0x18[bx] 
+00EC    8B 57 1A                  mov         dx,word ptr 0x1a[bx] 
+00EF    26 A3 00 00               mov         word ptr es:_driver_videomode,ax 
+00F3    26 89 16 02 00            mov         word ptr es:_driver_videomode+0x2,dx 
+00F8    8B 47 1C                  mov         ax,word ptr 0x1c[bx] 
+00FB    26 A3 00 00               mov         word ptr es:__RES_X,ax 
+00FF    8B 47 1E                  mov         ax,word ptr 0x1e[bx] 
+0102    26 A3 00 00               mov         word ptr es:__RES_Y,ax 
+0106    8B 47 22                  mov         ax,word ptr 0x22[bx] 
+0109    26 A2 00 00               mov         byte ptr es:__VIDEO_MODE,al 
+010D    26 A2 00 00               mov         byte ptr es:_video,al 
+0111    8A 47 20                  mov         al,byte ptr 0x20[bx] 
+0114    06                        push        es 
+0115    1F                        pop         ds 
+0116    A2 00 00                  mov         byte ptr __FONT_HEIGHT,al 
+0119    59                        pop         cx 
+011A    5B                        pop         bx 
+011B    C3                        ret         
+
+Routine Size: 284 bytes,    Routine Base: drvinst_TEXT + 0000
+
+011C                          driver_installer_:
+011C    60                        pusha       
+011D    1E                        push        ds 
+011E    06                        push        es 
+011F    0F A0                     push        fs 
+0121    0F A8                     push        gs 
+0123    89 E5                     mov         bp,sp 
+0125    83 EC 32                  sub         sp,0x0032 
+0128    FC                        cld         
+0129    8B 46 16                  mov         ax,word ptr 0x16[bp] 
+012C    8B 76 10                  mov         si,word ptr 0x10[bp] 
+012F    8B 56 0A                  mov         dx,word ptr 0xa[bp] 
+0132    89 46 FE                  mov         word ptr -0x2[bp],ax 
+0135    8B 46 14                  mov         ax,word ptr 0x14[bp] 
+0138    89 F1                     mov         cx,si 
+013A    89 46 F6                  mov         word ptr -0xa[bp],ax 
+013D    8B 46 12                  mov         ax,word ptr 0x12[bp] 
+0140    89 56 F8                  mov         word ptr -0x8[bp],dx 
+0143    89 46 F4                  mov         word ptr -0xc[bp],ax 
+0146    B8 00 00                  mov         ax,DGROUP:CONST 
+0149    8B 5E FE                  mov         bx,word ptr -0x2[bp] 
+014C    8E D8                     mov         ds,ax 
+014E    31 D2                     xor         dx,dx 
+0150    A1 00 00                  mov         ax,word ptr _driver_count 
+0153    89 5E FC                  mov         word ptr -0x4[bp],bx 
+0156    89 46 FA                  mov         word ptr -0x6[bp],ax 
+0159    E8 00 00                  call        allocate_new_driver_ 
+015C    85 C0                     test        ax,ax 
+015E    75 10                     jne         L$6 
+0160    B8 03 00                  mov         ax,0x0003 
+0163    9A 00 00 00 00            call        video_mode_ 
+0168    C7 46 16 FF FF            mov         word ptr 0x16[bp],0xffff 
+016D    E9 EF 00                  jmp         L$9 
+0170                          L$6:
+0170    6B 46 FA 2E               imul        ax,word ptr -0x6[bp],0x002e 
+0174    89 46 F2                  mov         word ptr -0xe[bp],ax 
+0177    B8 00 00                  mov         ax,DGROUP:CONST 
+017A    8E D8                     mov         ds,ax 
+017C    8B 1E 00 00               mov         bx,word ptr _drivers 
+0180    A1 02 00                  mov         ax,word ptr _drivers+0x2 
+0183    8E 5E FE                  mov         ds,word ptr -0x2[bp] 
+0186    03 5E F2                  add         bx,word ptr -0xe[bp] 
+0189    89 46 D0                  mov         word ptr -0x30[bp],ax 
+018C    8D 7F 28                  lea         di,0x28[bx] 
+018F    89 46 D4                  mov         word ptr -0x2c[bp],ax 
+0192    89 7E CE                  mov         word ptr -0x32[bp],di 
+0195    8D 7F 08                  lea         di,0x8[bx] 
+0198    89 46 D8                  mov         word ptr -0x28[bp],ax 
+019B    89 7E D2                  mov         word ptr -0x2e[bp],di 
+019E    8D 7F 0C                  lea         di,0xc[bx] 
+01A1    89 46 DC                  mov         word ptr -0x24[bp],ax 
+01A4    89 7E D6                  mov         word ptr -0x2a[bp],di 
+01A7    8D 7F 10                  lea         di,0x10[bx] 
+01AA    89 46 E0                  mov         word ptr -0x20[bp],ax 
+01AD    89 7E DA                  mov         word ptr -0x26[bp],di 
+01B0    8D 7F 14                  lea         di,0x14[bx] 
+01B3    89 46 E4                  mov         word ptr -0x1c[bp],ax 
+01B6    89 7E DE                  mov         word ptr -0x22[bp],di 
+01B9    8D 7F 18                  lea         di,0x18[bx] 
+01BC    89 46 E8                  mov         word ptr -0x18[bp],ax 
+01BF    89 7E E2                  mov         word ptr -0x1e[bp],di 
+01C2    8D 7F 1C                  lea         di,0x1c[bx] 
+01C5    89 46 EC                  mov         word ptr -0x14[bp],ax 
+01C8    89 7E E6                  mov         word ptr -0x1a[bp],di 
+01CB    8D 7F 20                  lea         di,0x20[bx] 
+01CE    89 46 F0                  mov         word ptr -0x10[bp],ax 
+01D1    83 C3 24                  add         bx,0x0024 
+01D4    89 7E EA                  mov         word ptr -0x16[bp],di 
+01D7    89 5E EE                  mov         word ptr -0x12[bp],bx 
+01DA    89 F3                     mov         bx,si 
+01DC                          L$7:
+01DC    89 D6                     mov         si,dx 
+01DE    C1 E6 02                  shl         si,0x02 
+01E1    C4 7A CE                  les         di,dword ptr -0x32[bp+si] 
+01E4    8B 07                     mov         ax,word ptr [bx] 
+01E6    8B 77 02                  mov         si,word ptr 0x2[bx] 
+01E9    26 89 05                  mov         word ptr es:[di],ax 
+01EC    83 C3 04                  add         bx,0x0004 
+01EF    26 89 75 02               mov         word ptr es:0x2[di],si 
+01F3    42                        inc         dx 
+01F4    8B 77 02                  mov         si,word ptr 0x2[bx] 
+01F7    8B 07                     mov         ax,word ptr [bx] 
+01F9    83 FE FF                  cmp         si,0xffff 
+01FC    75 DE                     jne         L$7 
+01FE    3D FF FF                  cmp         ax,0xffff 
+0201    75 D9                     jne         L$7 
+0203    6B 46 FA 2E               imul        ax,word ptr -0x6[bp],0x002e 
+0207    8E 46 FC                  mov         es,word ptr -0x4[bp] 
+020A    42                        inc         dx 
+020B    BE 00 00                  mov         si,DGROUP:CONST 
+020E    89 D3                     mov         bx,dx 
+0210    8E DE                     mov         ds,si 
+0212    C1 E3 02                  shl         bx,0x02 
+0215    42                        inc         dx 
+0216    8B 36 00 00               mov         si,word ptr _drivers 
+021A    01 CB                     add         bx,cx 
+021C    8E 1E 02 00               mov         ds,word ptr _drivers+0x2 
+0220    26 8B 1F                  mov         bx,word ptr es:[bx] 
+0223    01 C6                     add         si,ax 
+0225    C1 E2 02                  shl         dx,0x02 
+0228    89 5C 2C                  mov         word ptr 0x2c[si],bx 
+022B    89 CB                     mov         bx,cx 
+022D    01 D3                     add         bx,dx 
+022F    BA 00 00                  mov         dx,DGROUP:CONST 
+0232    8E DA                     mov         ds,dx 
+0234    C5 36 00 00               lds         si,dword ptr _drivers 
+0238    01 C6                     add         si,ax 
+023A    26 8B 07                  mov         ax,word ptr es:[bx] 
+023D    89 44 06                  mov         word ptr 0x6[si],ax 
+0240    83 7E F6 01               cmp         word ptr -0xa[bp],0x0001 
+0244    75 14                     jne         L$8 
+0246    8B 46 F8                  mov         ax,word ptr -0x8[bp] 
+0249    8B 56 F4                  mov         dx,word ptr -0xc[bp] 
+024C    E8 00 00                  call        install_display_driver_ 
+024F    B8 00 00                  mov         ax,DGROUP:CONST 
+0252    8E D8                     mov         ds,ax 
+0254    A1 00 00                  mov         ax,word ptr _driver_count 
+0257    A3 00 00                  mov         word ptr _videodriver,ax 
+025A                          L$8:
+025A    C7 46 16 00 00            mov         word ptr 0x16[bp],0x0000 
+025F                          L$9:
+025F    89 EC                     mov         sp,bp 
+0261    0F A9                     pop         gs 
+0263    0F A1                     pop         fs 
+0265    07                        pop         es 
+0266    1F                        pop         ds 
+0267    61                        popa        
+0268    CF                        iret        
+
+Routine Size: 333 bytes,    Routine Base: drvinst_TEXT + 011C
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000000 bytes
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 00000000 bytes
+

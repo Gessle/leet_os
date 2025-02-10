@@ -90,7 +90,7 @@ static int vpu_instr_iret(struct vpu *vpu, unsigned flags)
     putstr(stackunderflowerror);
     vpu->flags.stackv = 1;
     send_vpu_signal(vpu, SIGSEGV);        
-    return 0;
+    return 4;
   }
 
   vpu->code_segment = vpu->stack[++vpu->sp];
@@ -111,20 +111,23 @@ static int vpu_instr_iret(struct vpu *vpu, unsigned flags)
 
 static int vpu_instr_setint(struct vpu *vpu, unsigned flags)
 {
-  unsigned short operand0 = *(unsigned short*)&vpu->code[vpu->code_segment][vpu->ip];
-  unsigned short operand1, operand2;
-  vpu->ip+=2;
+/*  unsigned short operand0;// = *(unsigned short*)&vpu->code[vpu->code_segment][vpu->ip];
+  unsigned short operand1, operand2;*/
+/*  vpu->ip+=2;
   operand1 = *(unsigned short*)&vpu->code[vpu->code_segment][vpu->ip];
   vpu->ip+=2;
   operand2 = *(unsigned short*)&vpu->code[vpu->code_segment][vpu->ip];
-  vpu->ip+=2;
+  vpu->ip+=2;*/
+  unsigned operand0 = vpu_next_code_word(vpu);
+  unsigned operand1 = vpu_next_code_word(vpu);
+  unsigned operand2 = vpu_next_code_word(vpu);
 
   if(operand0 >= vpu->interrupt_count)
   {
     sprintf(message, "Program tried to set interrupt vector %u but interrupt table is only %u long!\n", operand0, vpu->interrupt_count);
     putstr(message);
     send_vpu_signal(vpu, SIGSEGV);        
-    return 0;
+    return 4;
   }
 
   if(debug)

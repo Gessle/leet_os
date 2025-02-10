@@ -10,15 +10,14 @@ inline int pixel_is_inside_window(int x, int y, struct prog_window *window)
 
 unsigned char windowpos_visible(struct prog_window *window, int x, int y)
 {
-  unsigned n = window_count;
+  unsigned n;// = window_count;
 
 //  if(!ttys[tty].windowed) return 0;
 
   if(draw_window_box)
   {
-    if(pixel_is_inside_window(x, y, draw_window_box))
-      return 1;
-    return 0;
+    if(!pixel_is_inside_window(x, y, draw_window_box))
+      return 0;
   }
 
   if(!window) return 1;    
@@ -26,7 +25,7 @@ unsigned char windowpos_visible(struct prog_window *window, int x, int y)
   if(window != (void*)-1)
   {
     if(window->vt) return 0;
-    if(windows[active_window] != window && (windows[active_window]->fullscreen || windows[active_window]->maximized))
+    if(windows[active_window] != window && !windows[active_window]->hidden && (windows[active_window]->fullscreen || windows[active_window]->maximized))
       return 0;
     if((window->fullscreen || window->maximized) && windows[active_window] == window)
       return 1;
@@ -34,7 +33,8 @@ unsigned char windowpos_visible(struct prog_window *window, int x, int y)
       return 0;
   }
   
-  while(n--)
+//  while(n--)
+  for(n=window_count;n--;)
   {
     if(window != (void*)-1 && windows[window_visibility_order[n]] == window) return 1;
     if(!windows[window_visibility_order[n]]->minimized && !windows[window_visibility_order[n]]->hidden

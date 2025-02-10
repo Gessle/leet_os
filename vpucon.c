@@ -30,51 +30,53 @@ void vpucon_caret(unsigned row, unsigned col, unsigned char remove)
       running_console->y+running_console->window_grid[0]->y+(2+row)*(_FONT_HEIGHT+2), linecolor);    
 }
 
-inline void vpuconsole_hiderow(struct prog_window *window, unsigned row)
+inline void vpuconsole_hiderow(unsigned row)
 {
-  if(!window->vt)
-    draw_rectangle(window->x+window->window_grid[0]->x,
-    window->y+window->window_grid[0]->y+_FONT_HEIGHT+2+row*(_FONT_HEIGHT+2),
-    strlen(window->window_grid[0]->items[row])*MONOSPACE_WIDTH+MONOSPACE_WIDTH,
+  struct window_element *elem = running_console->window_grid[0];
+  if(!running_console->vt)
+    draw_rectangle(running_console->x+elem->x,
+    running_console->y+elem->y+_FONT_HEIGHT+2+row*(_FONT_HEIGHT+2),
+    strlen(elem->items[row])*MONOSPACE_WIDTH+MONOSPACE_WIDTH,
     _FONT_HEIGHT+3, _TEXTBOX_BGCOLOR);
 }
 
-inline void vpuconsole_clearrow(struct prog_window *window, unsigned row)
+inline void vpuconsole_clearrow(unsigned row)
 {
-  vpuconsole_hiderow(window, row);
-  memset(((struct console_struct*)window->function_status)->con_lines[row], 0, VPUCON_COLS);
+  vpuconsole_hiderow(row);
+  memset(((struct console_struct*)running_console->function_status)->con_lines[row], 0, VPUCON_COLS);
 }
 
 void clear_row(unsigned row)
 {
-  vpuconsole_clearrow(running_console, row);
+  vpuconsole_clearrow(row);
 }
 
-static void vpuconsole_printchar(struct prog_window *window, unsigned char chr);
+static void vpuconsole_printchar(unsigned char chr);
 
-inline void vpuconsole_clearchar(struct prog_window *window)
+inline void vpuconsole_clearchar(void)
 {
-  struct console_struct *console_status = window->function_status;      
+  struct console_struct *console_status = running_console->function_status;      
+  struct window_element *elem = running_console->window_grid[0];
 
-  if(!window->vt)
-    draw_rectangle(window->x+window->window_grid[0]->x+(*cursor_col)*MONOSPACE_WIDTH+2,
-    window->y+window->window_grid[0]->y+_FONT_HEIGHT+2+(*cursor_row)*(_FONT_HEIGHT+2),
+  if(!running_console->vt)
+    draw_rectangle(running_console->x+elem->x+(*cursor_col)*MONOSPACE_WIDTH+2,
+    running_console->y+elem->y+_FONT_HEIGHT+2+(*cursor_row)*(_FONT_HEIGHT+2),
       MONOSPACE_WIDTH*2, _FONT_HEIGHT+3, _TEXTBOX_BGCOLOR);
     
-  ((struct console_struct*)window->function_status)->con_lines[console_status->row][console_status->col] = ' ';
+  console_status->con_lines[console_status->row][console_status->col] = ' ';
 }
 
 static void clear_char()
 {
-  vpuconsole_clearchar(running_console);
+  vpuconsole_clearchar();
 }
 
-inline void vpuconsole_clearscr(struct prog_window *window)
+inline void vpuconsole_clearscr(void)
 {
-  struct console_struct *console_status = window->function_status;      
+  struct console_struct *console_status = running_console->function_status;      
   unsigned n = console_status->lines;
   while(n--)
-    vpuconsole_clearrow(window, n);
+    vpuconsole_clearrow(n);
     
   console_status->row=0;
   console_status->col=0;
@@ -82,7 +84,7 @@ inline void vpuconsole_clearscr(struct prog_window *window)
 
 void clear_console(void)
 {
-  vpuconsole_clearscr(running_console);
+  vpuconsole_clearscr();
 }
 
 inline unsigned mul_80(unsigned num)
@@ -90,16 +92,18 @@ inline unsigned mul_80(unsigned num)
   return (num << 6) + (num << 4);
 }
 
-inline void fastscroll(struct prog_window *window)
+inline void fastscroll(void)
 {
-  int top = window->y+_FONT_HEIGHT+2+window->window_grid[0]->y;
-  int left = window->x+window->window_grid[0]->x;
+  struct window_element *elem = running_console->window_grid[0];
+  int top = running_console->y+_FONT_HEIGHT+2+elem->y;
+  int left = running_console->x+elem->x;
   int scroll_width = VPUCON_COLS*MONOSPACE_WIDTH;
-  int scroll_height = window->window_grid[0]->height-_FONT_HEIGHT-3;
+  int scroll_height = elem->height-_FONT_HEIGHT-3;
   register unsigned row, n;
   char __far *dstbuff, *srcbuff;
   int right;
-  struct console_struct *console_status = window->function_status;        
+  struct console_struct *console_status = running_console->function_status;        
+  unsigned char pixbuff[8];
 
   if(left<0)
   {
@@ -119,7 +123,7 @@ inline void fastscroll(struct prog_window *window)
 
   right = left+scroll_width;
 
-  hide_mouse_if_in_box(left, top, scroll_width, window->window_grid[0]->height);
+  hide_mouse_if_in_box(left, top, scroll_width, elem->height);
 
   if(videodriver != -1)
   {
@@ -135,9 +139,13 @@ inline void fastscroll(struct prog_window *window)
   for(row=0;row<scroll_height;row++)
   {
     for(n=7-(left&7);n;n--)
-      put_pixel(left+n, top+row, get_pixel(left+n, top+row+_FONT_HEIGHT+2));
+      pixbuff[n] = get_pixel(left+n, top+row+_FONT_HEIGHT+2);
+    for(n=7-(left&7);n;n--)
+      put_pixel(left+n, top+row, pixbuff[n]);
     for(n=right&7;n;n--)
-      put_pixel(right-n, top+row, get_pixel(right-n, top+row+_FONT_HEIGHT+2));      
+      pixbuff[n] = get_pixel(right-n, top+row+_FONT_HEIGHT+2);
+    for(n=right&7;n;n--)
+      put_pixel(right-n, top+row, pixbuff[n]);
   }
 
   left >>= 3;    
@@ -147,12 +155,14 @@ inline void fastscroll(struct prog_window *window)
   {
     if(_VIDEO_MODE == 0x10 || _VIDEO_MODE == 0x12)
     {
-      outbyte(0x03CE, 0x05);
-      outbyte(0x03CF, 0x02);
+      if(ega4_lastoperation)
+      {
+        outword(0x3CE, 0x0205);
   
-      outbyte(0x03CE, 0x08);
-    
-      outbyte(0x03CF, 0x00);
+        outbyte(0x3CE, 0x08);
+        ega4_lastoperation = 0;
+      }
+      outbyte(0x3CF, 0x00);
     }    
     for(row=0;row<scroll_height;row++)
     {
@@ -178,30 +188,30 @@ inline void fastscroll(struct prog_window *window)
     }
   }
   
-  ega4_lastoperation=-1;
+//  ega4_lastoperation=-1;
 //  vpuconsole_clearrow(window, console_status->lines-1);
 
 }
 
-inline void vpuconsole_scrollup(struct prog_window *window)
+inline void vpuconsole_scrollup(void)
 {
   unsigned row;
-  struct console_struct *console_status = window->function_status;      
+  struct console_struct *console_status = running_console->function_status;      
   unsigned element_x, element_y;
   struct window_element *element;
 
   if(!tty)
-    if(windows[active_window] == window && _VIDEO_MODE != 0x13)
-      fastscroll(window);
+    if(windows[active_window] == running_console && _VIDEO_MODE != 0x13)
+      fastscroll();
     else
       if(!windows[active_window]->fullscreen)
       {
-        element = window->window_grid[0];
-        element_x = window->x+element->x+2;
-        element_y = window->y+_FONT_HEIGHT+2+element->y;
+        element = running_console->window_grid[0];
+        element_x = running_console->x+element->x+2;
+        element_y = running_console->y+_FONT_HEIGHT+2+element->y;
         for(row=0;row < console_status->lines-1;row++)
         {
-          vpuconsole_hiderow(window, row);
+          vpuconsole_hiderow(row);
           gprint_text(element_x, element_y+2+row*(_FONT_HEIGHT+2),
                       element->items[row+1], 0, _FONT_HEIGHT, _RES_X, 1);
         }
@@ -212,21 +222,21 @@ inline void vpuconsole_scrollup(struct prog_window *window)
 
   row = 0;
   do
-    strcpy(((struct console_struct*)window->function_status)->con_lines[row], ((struct console_struct*)window->function_status)->con_lines[row+1]);
+    strcpy(console_status->con_lines[row], console_status->con_lines[row+1]);
   while(++row < console_status->lines-1);
 
-  vpuconsole_clearrow(window, console_status->lines-1);
+  vpuconsole_clearrow(console_status->lines-1);
 }
 
-inline void vpuconsole_incrow(struct prog_window *window)
+inline void vpuconsole_incrow(void)
 {
-  struct console_struct *console_status = window->function_status;
+  struct console_struct *console_status = running_console->function_status;
   if(console_status->col < VPUCON_COLS)
     vpucon_caret(console_status->row, console_status->col, 1);  
   if(++console_status->row == console_status->lines)
   {
     console_status->row--;
-    vpuconsole_scrollup(window);
+    vpuconsole_scrollup();
   }
   console_status->col=0;
 //  window_drawelement(running_console, 0);    
@@ -234,7 +244,7 @@ inline void vpuconsole_incrow(struct prog_window *window)
 
 void inc_row(void)
 {
-  vpuconsole_incrow(running_console);
+  vpuconsole_incrow();
 }
 
 void move(unsigned row, unsigned col)
@@ -247,37 +257,39 @@ void move(unsigned row, unsigned col)
   console_status->col = col;
 }
 
-static void vpuconsole_printchar(struct prog_window *window, unsigned char chr)
+static void vpuconsole_printchar(unsigned char chr)
 {
-  struct console_struct *console_status = window->function_status;
+  struct console_struct *console_status = running_console->function_status;
 //  unsigned line_len = strlen(((struct console_struct*)window->function_status)->con_lines[console_status->row]);
   unsigned line_len;
+  struct window_element *elem = running_console->window_grid[0];
+
   vpucon_caret(console_status->row, console_status->col, 1);
 
   // if line already continues over the current caret position, draw whitespace over the current character in the position
 //  if(console_status->col < line_len)
-  if(!window->vt)
-    if(((struct console_struct*)window->function_status)->con_lines[console_status->row][console_status->col])
-    draw_rectangle(running_console->x+running_console->window_grid[0]->x+(console_status->col)*MONOSPACE_WIDTH+2,
-      running_console->y+running_console->window_grid[0]->y+_FONT_HEIGHT+2+(console_status->row)*(_FONT_HEIGHT+2),
+  if(!running_console->vt)
+    if(((struct console_struct*)running_console->function_status)->con_lines[console_status->row][console_status->col])
+    draw_rectangle(running_console->x+elem->x+(console_status->col)*MONOSPACE_WIDTH+2,
+      running_console->y+elem->y+_FONT_HEIGHT+2+(console_status->row)*(_FONT_HEIGHT+2),
         8, _FONT_HEIGHT+3, _TEXTBOX_BGCOLOR);
 
   // if the length of the current line does not reach the current caret position, fill the space with whitespaces
-    else if(console_status->col && !((struct console_struct*)window->function_status)->con_lines[console_status->row][console_status->col-1])
+    else if(console_status->col && !((struct console_struct*)running_console->function_status)->con_lines[console_status->row][console_status->col-1])
     {
-      line_len = strlen(((struct console_struct*)window->function_status)->con_lines[console_status->row]);
-      memset(&((struct console_struct*)window->function_status)->con_lines[console_status->row][line_len], ' ', console_status->col-line_len);
+      line_len = strlen(((struct console_struct*)running_console->function_status)->con_lines[console_status->row]);
+      memset(&((struct console_struct*)running_console->function_status)->con_lines[console_status->row][line_len], ' ', console_status->col-line_len);
     }
 
 //  else
-    draw_char(chr, window->x+window->window_grid[0]->x+console_status->col*MONOSPACE_WIDTH+2, window->y+_FONT_HEIGHT+4+window->window_grid[0]->y+console_status->row*(_FONT_HEIGHT+2),
+    draw_char(chr, running_console->x+elem->x+console_status->col*MONOSPACE_WIDTH+2, running_console->y+_FONT_HEIGHT+4+elem->y+console_status->row*(_FONT_HEIGHT+2),
       _TEXTBOX_TEXTCOLOR, _FONT_HEIGHT, monospace_font);
 
-  ((struct console_struct*)window->function_status)->con_lines[console_status->row][console_status->col++] = chr;
+  console_status->con_lines[console_status->row][console_status->col++] = chr;
 //  ((struct console_struct*)window->function_status)->con_lines[console_status->row][console_status->col] = 0;
   
   if(console_status->col == VPUCON_COLS)
-    vpuconsole_incrow(window);
+    vpuconsole_incrow();
 }
 
 static void mvaddch(unsigned row, unsigned col, unsigned char chr)
@@ -285,14 +297,14 @@ static void mvaddch(unsigned row, unsigned col, unsigned char chr)
   unsigned oldrow = *cursor_row;
   unsigned oldcol = *cursor_col;
   move(row, col);
-  vpuconsole_printchar(running_console, chr);
+  vpuconsole_printchar(chr);
   move(oldrow, oldcol);
 }
 
-static void vpuconsole_printtxt(struct prog_window *window, unsigned char *string)
+static void vpuconsole_printtxt(unsigned char *string)
 {
   while(*string)
-      vpuconsole_printchar(window, *string++);
+      vpuconsole_printchar(*string++);
 }
 
 static void save_cursor_position(void)
@@ -424,7 +436,7 @@ void flush_stdout(void)
       }
     }
     else
-      vpuconsole_printchar(running_console, *string);
+      vpuconsole_printchar(*string);
     string++;
   }
 }
@@ -432,23 +444,23 @@ void flush_stdout(void)
 void print_text(unsigned row, unsigned col, unsigned char *str)
 {
   move(row, col);
-  vpuconsole_printtxt(running_console, str);    
+  vpuconsole_printtxt(str);    
 }
 
 static void con_printstr(unsigned char *str)
 {
-    vpuconsole_printtxt(running_console, str);
+  vpuconsole_printtxt(str);
 }
 
-inline void vpuconsole_putstr(struct prog_window *window, unsigned char *string)
+inline void vpuconsole_putstr(unsigned char *string)
 {
-  vpuconsole_printtxt(window, string);
-  vpuconsole_incrow(window);
+  vpuconsole_printtxt(string);
+  vpuconsole_incrow();
 }
 
 void putstr(unsigned char *string)
 {
-  vpuconsole_putstr(running_console, string);
+  vpuconsole_putstr(string);
 }
 
 void refresh(void)
@@ -458,12 +470,12 @@ void refresh(void)
 
 void scroll_up(void)
 {
-  vpuconsole_scrollup(running_console);
+  vpuconsole_scrollup();
 }
 
 static void printchar(unsigned char chr)
 {
-  vpuconsole_printchar(running_console, chr);
+  vpuconsole_printchar(chr);
 }
 
 int vpuconsole_getch(void)

@@ -1,15 +1,30 @@
+static unsigned char vpu_next_code_byte(struct vpu *vpu)
+{
+  return vpu->code[vpu->code_segment][vpu->ip++];
+}
+
+static unsigned vpu_next_code_word(struct vpu *vpu)
+{
+  unsigned retval = *(unsigned *)&vpu->code[vpu->code_segment][vpu->ip];
+  vpu->ip += 2;
+  return retval;
+}
+
+
 inline void *vpu_instr_mov_po(struct vpu *vpu, unsigned char operand_type)
 {
   unsigned short operand;
   
-  operand = vpu->code[vpu->code_segment][vpu->ip++];
+//  operand = vpu->code[vpu->code_segment][vpu->ip++];
+  operand = vpu_next_code_byte(vpu);
 
   switch(operand_type & 0x0C)
   {
     // if operand is not an immediate number
     case 0: case 4:
       if(operand_type & 0x03)
-        operand |= vpu->code[vpu->code_segment][vpu->ip++] << 8;
+//        operand |= vpu->code[vpu->code_segment][vpu->ip++] << 8;
+        operand |= vpu_next_code_byte(vpu) << 8;
       switch(operand_type & 0x03)
       {
         // register
@@ -99,7 +114,8 @@ static int vpu_instr_mov(struct vpu *vpu, unsigned flags)
   // Bit 0x04 = wide bit
   // 0x08 = operand is a register that contains a pointer to dereference
   // If bits 0x08 and 0x04 are both set, the operand is immediate number. In that case 0x01 is the wide bit
-  unsigned char operand_types = vpu->code[vpu->code_segment][vpu->ip++];
+//  unsigned char operand_types = vpu->code[vpu->code_segment][vpu->ip++];
+  unsigned char operand_types = vpu_next_code_byte(vpu);
   unsigned char n=0;
   void *operand_as_pointer[2];
 
@@ -109,7 +125,7 @@ static int vpu_instr_mov(struct vpu *vpu, unsigned flags)
     if(!operand_as_pointer[n])
     {
 //  putstr("    MOV operand is too big!\n");
-      return 0;
+      return 4;
     }
   }
   while(++n < 2);

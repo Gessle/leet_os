@@ -1,13 +1,17 @@
 #define IMM_FLAG 0x80
 #define IMM_W_FLAG 0x40
 
+#define DATA_FLAG 0x10
+#define STK_FLAG 0x20
+#define DATA_WORD_FLAG 0x20
+
 #include "ringcopy.c"
 #include "sigdef.c"
 #include "debug.c"
 #include "unixtime.c"
 #include "jump.c"
-#include "printstr.c"
 #include "mov.c"
+#include "printstr.c"
 #include "math_imm.c"
 #include "incdec.c"
 #include "stack.c"
@@ -21,7 +25,7 @@
 #include "intiret.c"
 #include "vpustr.c"
 #include "inout.c"
-#include "wait.c"
+//#include "wait.c"
 #include "setflags.c"
 #include "signconv.c"
 #include "getstr.c"
@@ -39,8 +43,9 @@
 #include "block.c"
 
 #include "functbl.c"
+#include "wait.c"
 
-const unsigned instruction_count = sizeof(INSTR) / sizeof(char*);
+#define instruction_count (sizeof(instruction_func_ptr) / sizeof(&vpu_instr_wait))
 
 static void vpu_console_instr(struct vpu *vpu, unsigned char *instr)
 {
@@ -217,7 +222,7 @@ static void vpu_step_debugoutput(struct vpu *vpu)
   sprintf(message, "PID: %u, Instruction pointer: 0x%.4X,\
  Instruction opcode: 0x%.2X", vpu->pid, vpu->ip, vpu->code[vpu->code_segment][vpu->ip]);
   output_debug_info(message);
-  if((vpu->code[vpu->code_segment][vpu->ip] & 0x3F) < instruction_count)
+//  if((vpu->code[vpu->code_segment][vpu->ip] & 0x3F) < instruction_count)
     vpu_step_debuginfo(vpu, vpu->code[vpu->code_segment][vpu->ip] & 0x3F);
 }
 
@@ -272,8 +277,10 @@ unsigned char vpu_run(struct vpu *con_vpu)
 
 static int vpu_step(struct vpu *vpu)
 {
-  unsigned instruction;
-  unsigned flags;
+  unsigned char instruction;
+  unsigned char flags;
+  unsigned ssteps;
+  int rc;
 
   if(vpu->signal)
   {
@@ -309,21 +316,32 @@ static int vpu_step(struct vpu *vpu)
     return 3;
   }
 
-  if(vpu->ip >= vpu->code_size)
+  for(ssteps = 64;ssteps--;)
   {
-    send_vpu_signal(vpu, SIGSEGV);
-    sprintf(message, "PID %u: Code offset violation!", vpu->pid);
-    putstr(message);
-    return 0;
+    if(vpu->ip >= vpu->code_size)
+    {
+      send_vpu_signal(vpu, SIGSEGV);
+      sprintf(message, "PID %u: Code offset violation!", vpu->pid);
+      putstr(message);
+      return 0;
+    }
+//    else instruction = flags = vpu->code[vpu->code_segment][vpu->ip++];
+    else instruction = flags = vpu_next_code_byte(vpu);
+    instruction &= 0x3F;
+    flags &= 0xC0;
+
+/*    if(instruction >= instruction_count)
+    {
+      send_vpu_signal(vpu, SIGILL);
+      rc = 3;
+    }
+    else*/
+    {
+      rc = (*instruction_func_ptr[instruction])(vpu, flags);
+      if(rc) break;
+    }
   }
-  else instruction = flags = vpu->code[vpu->code_segment][vpu->ip++];
-  instruction &= 0x3F;
 
-  if(instruction >= instruction_count)
-    send_vpu_signal(vpu, SIGILL);
-  else
-    return (*instruction_func_ptr[instruction])(vpu, flags);
-
-  return 0;
+  return rc;
 }
 

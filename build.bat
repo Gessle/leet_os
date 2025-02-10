@@ -4,6 +4,7 @@ echo Building the main program...
 wasm -q vpu\vpudint.asm
 wasm -q timerrtn.asm
 wasm -q int28hdl\idlehdl.asm
+wasm -q vgadraw.asm
 
 if "%1"=="debug" goto debug_build
 

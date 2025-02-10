@@ -1,6 +1,6 @@
 static int vpu_instr_dseg(struct vpu *vpu, unsigned flags)
 {
-  unsigned short new_segment = vpu->regs[vpu->code[vpu->code_segment][vpu->ip++] & 0x0F];
+  unsigned short new_segment = vpu->regs[vpu_next_code_byte(vpu) & 0x0F];
   if(!vpu_segment_in_use(vpu, new_segment))
   {
 //    sprintf(message, "Data segment %u is unallocated!\n", new_segment);
@@ -8,7 +8,7 @@ static int vpu_instr_dseg(struct vpu *vpu, unsigned flags)
     vpu->flags.dsegv = 1;
     putstr(segfaulterror);    
     send_vpu_signal(vpu, SIGSEGV);    
-    return 0;
+    return 4;
   }
   vpu->data_segment = new_segment;
   if(debug)

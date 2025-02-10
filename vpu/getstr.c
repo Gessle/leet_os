@@ -2,8 +2,8 @@ static int con_stdin_read(void);
 
 static int vpu_instr_getstr(struct vpu *vpu, unsigned flags)
 {
-  unsigned short data_pointer = vpu->regs[vpu->code[vpu->code_segment][vpu->ip++] & 0x07];
-  unsigned short stringlen = vpu->regs[vpu->code[vpu->code_segment][vpu->ip++] & 0x07];
+  unsigned short data_pointer = vpu->regs[vpu_next_code_byte(vpu) & 0x07];
+  unsigned short stringlen = vpu->regs[vpu_next_code_byte(vpu) & 0x07];
   int c;
   unsigned n = 0;
 
@@ -12,7 +12,7 @@ static int vpu_instr_getstr(struct vpu *vpu, unsigned flags)
   if(!memory_allowed(vpu, (long)data_pointer+stringlen))
   {
     vpu->flags.dsegv = 1;
-    return 0;
+    return 4;
   }
 
   if((c = con_stdin_read()) == -1)

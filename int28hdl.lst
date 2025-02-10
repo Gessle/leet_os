@@ -1,120 +1,138 @@
-Module: D:\LEETSRC\483\int28hdl\int28hdl.c
+Module: D:\LEETSRC\490\int28hdl\int28hdl.c
 GROUP: 'DGROUP' CONST,CONST2,_DATA
 
-Segment: int28hdl_TEXT BYTE USE16 0000012F bytes
+Segment: int28hdl_TEXT BYTE USE16 00000162 bytes
 0000                          int28h_hdl_:
 0000    53                        push        bx 
 0001    51                        push        cx 
 0002    52                        push        dx 
 0003    56                        push        si 
 0004    57                        push        di 
-0005    55                        push        bp 
-0006    89 E5                     mov         bp,sp 
-0008    50                        push        ax 
-0009    50                        push        ax 
-000A    36 8B 3E 00 00            mov         di,word ptr ss:_next_tty 
-000F    36 8B 36 00 00            mov         si,word ptr ss:_next_window 
-0014    36 A1 00 00               mov         ax,word ptr ss:_running_console 
-0018    36 8B 0E 00 00            mov         cx,word ptr ss:_mouse_cursor 
-001D    89 46 FC                  mov         word ptr -0x4[bp],ax 
-0020    36 A1 02 00               mov         ax,word ptr ss:_running_console+0x2 
-0024    36 8B 16 02 00            mov         dx,word ptr ss:_mouse_cursor+0x2 
-0029    89 46 FE                  mov         word ptr -0x2[bp],ax 
-002C    36 A1 02 00               mov         ax,word ptr ss:_normal_cursor+0x2 
-0030    36 8B 1E 00 00            mov         bx,word ptr ss:_normal_cursor 
-0035    39 C2                     cmp         dx,ax 
-0037    75 1B                     jne         L$1 
-0039    39 D9                     cmp         cx,bx 
-003B    75 17                     jne         L$1 
-003D    9A 00 00 00 00            call        hide_mouse_cursor_ 
-0042    36 A1 00 00               mov         ax,word ptr ss:_busy_cursor 
-0046    36 8B 16 02 00            mov         dx,word ptr ss:_busy_cursor+0x2 
-004B    36 A3 00 00               mov         word ptr ss:_mouse_cursor,ax 
-004F    36 89 16 02 00            mov         word ptr ss:_mouse_cursor+0x2,dx 
-0054                          L$1:
-0054    9A 00 00 00 00            call        redraw_mouse_cursor_ 
-0059    36 A1 00 00               mov         ax,word ptr ss:L$3 
-005D    36 FF 36 02 00            push        word ptr ss:_running_window+0x2 
-0062    31 DB                     xor         bx,bx 
-0064    36 A3 00 00               mov         word ptr ss:_next_tty,ax 
-0068    36 A1 02 00               mov         ax,word ptr ss:L$4 
-006C    31 D2                     xor         dx,dx 
-006E    36 A3 00 00               mov         word ptr ss:_next_window,ax 
-0072    31 C0                     xor         ax,ax 
-0074    36 FF 36 00 00            push        word ptr ss:_running_window 
-0079    36 A3 00 00               mov         word ptr ss:_running_console,ax 
-007D    36 A3 02 00               mov         word ptr ss:_running_console+0x2,ax 
-0081    9A 00 00 00 00            call        mtask_win_ 
-0086    36 A1 00 00               mov         ax,word ptr ss:_next_tty 
-008A    36 A3 00 00               mov         word ptr ss:L$3,ax 
-008E    36 A1 00 00               mov         ax,word ptr ss:_next_window 
-0092    36 A3 02 00               mov         word ptr ss:L$4,ax 
-0096    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
-0099    36 89 3E 00 00            mov         word ptr ss:_next_tty,di 
-009E    36 A3 00 00               mov         word ptr ss:_running_console,ax 
-00A2    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
-00A5    36 89 36 00 00            mov         word ptr ss:_next_window,si 
-00AA    36 A3 02 00               mov         word ptr ss:_running_console+0x2,ax 
-00AE    89 EC                     mov         sp,bp 
-00B0    5D                        pop         bp 
-00B1    5F                        pop         di 
-00B2    5E                        pop         si 
-00B3                          L$2:
-00B3    5A                        pop         dx 
-00B4    59                        pop         cx 
-00B5    5B                        pop         bx 
-00B6    CB                        retf        
+0005    C8 04 00 00               enter       0x0004,0x00 
+0009    36 8B 36 00 00            mov         si,word ptr ss:_next_tty 
+000E    36 8B 3E 00 00            mov         di,word ptr ss:_next_window 
+0013    36 A1 00 00               mov         ax,word ptr ss:_running_console 
+0017    36 8B 0E 00 00            mov         cx,word ptr ss:_mouse_cursor 
+001C    89 46 FC                  mov         word ptr -0x4[bp],ax 
+001F    36 A1 02 00               mov         ax,word ptr ss:_running_console+0x2 
+0023    36 8B 16 02 00            mov         dx,word ptr ss:_mouse_cursor+0x2 
+0028    89 46 FE                  mov         word ptr -0x2[bp],ax 
+002B    36 A1 02 00               mov         ax,word ptr ss:_normal_cursor+0x2 
+002F    36 8B 1E 00 00            mov         bx,word ptr ss:_normal_cursor 
+0034    39 C2                     cmp         dx,ax 
+0036    75 1B                     jne         L$1 
+0038    39 D9                     cmp         cx,bx 
+003A    75 17                     jne         L$1 
+003C    9A 00 00 00 00            call        hide_mouse_cursor_ 
+0041    36 A1 00 00               mov         ax,word ptr ss:_busy_cursor 
+0045    36 8B 16 02 00            mov         dx,word ptr ss:_busy_cursor+0x2 
+004A    36 A3 00 00               mov         word ptr ss:_mouse_cursor,ax 
+004E    36 89 16 02 00            mov         word ptr ss:_mouse_cursor+0x2,dx 
+0053                          L$1:
+0053    9A 00 00 00 00            call        redraw_mouse_cursor_ 
+0058    36 83 3E 00 00 FF         cmp         word ptr ss:L$6,0xffff 
+005E    7D 07                     jge         L$2 
+0060    36 C7 06 00 00 04 00      mov         word ptr ss:L$6,0x0004 
+0067                          L$2:
+0067    36 83 3E 02 00 FF         cmp         word ptr ss:L$7,0xffff 
+006D    7D 08                     jge         L$3 
+006F    36 A1 00 00               mov         ax,word ptr ss:_window_count 
+0073    36 A3 02 00               mov         word ptr ss:L$7,ax 
+0077                          L$3:
+0077    36 A1 00 00               mov         ax,word ptr ss:L$6 
+007B    36 FF 36 02 00            push        word ptr ss:_running_window+0x2 
+0080    31 DB                     xor         bx,bx 
+0082    36 A3 00 00               mov         word ptr ss:_next_tty,ax 
+0086    36 A1 02 00               mov         ax,word ptr ss:L$7 
+008A    31 D2                     xor         dx,dx 
+008C    36 A3 00 00               mov         word ptr ss:_next_window,ax 
+0090    31 C0                     xor         ax,ax 
+0092    36 FF 36 00 00            push        word ptr ss:_running_window 
+0097    36 A3 00 00               mov         word ptr ss:_running_console,ax 
+009B    36 A3 02 00               mov         word ptr ss:_running_console+0x2,ax 
+009F    9A 00 00 00 00            call        mtask_win_ 
+00A4    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
+00A7    36 FF 0E 02 00            dec         word ptr ss:L$7 
+00AC    36 FF 0E 00 00            dec         word ptr ss:L$6 
+00B1    36 89 3E 00 00            mov         word ptr ss:_next_window,di 
+00B6    36 A3 00 00               mov         word ptr ss:_running_console,ax 
+00BA    8B 46 FE                  mov         ax,word ptr -0x2[bp] 
+00BD    36 89 36 00 00            mov         word ptr ss:_next_tty,si 
+00C2    36 A3 02 00               mov         word ptr ss:_running_console+0x2,ax 
+00C6    C9                        leave       
+00C7    5F                        pop         di 
+00C8    5E                        pop         si 
+00C9                          L$4:
+00C9    5A                        pop         dx 
+00CA    59                        pop         cx 
+00CB    5B                        pop         bx 
+00CC    CB                        retf        
 
-Routine Size: 183 bytes,    Routine Base: int28hdl_TEXT + 0000
+Routine Size: 205 bytes,    Routine Base: int28hdl_TEXT + 0000
 
-00B7                          set_dosidle_handler_:
-00B7    53                        push        bx 
-00B8    51                        push        cx 
-00B9    52                        push        dx 
-00BA    B8 28 00                  mov         ax,0x0028 
-00BD    BB 00 00                  mov         bx,seg _old_dosidle_handler 
-00C0    B9 00 00                  mov         cx,seg dosidle_handler_ 
-00C3    9A 00 00 00 00            call        _dos_getvect_ 
-00C8    8E DB                     mov         ds,bx 
-00CA    BB 00 00                  mov         bx,offset dosidle_handler_ 
-00CD    A3 00 00                  mov         word ptr _old_dosidle_handler,ax 
-00D0    B8 28 00                  mov         ax,0x0028 
-00D3    89 16 02 00               mov         word ptr _old_dosidle_handler+0x2,dx 
-00D7    9A 00 00 00 00            call        _dos_setvect_ 
-00DC    B8 21 00                  mov         ax,0x0021 
-00DF    BB 00 00                  mov         bx,seg _old_int21hdl 
-00E2    B9 00 00                  mov         cx,seg int21wrp_ 
-00E5    9A 00 00 00 00            call        _dos_getvect_ 
-00EA    8E DB                     mov         ds,bx 
-00EC    BB 00 00                  mov         bx,offset int21wrp_ 
-00EF    A3 00 00                  mov         word ptr _old_int21hdl,ax 
-00F2    B8 21 00                  mov         ax,0x0021 
-00F5    89 16 02 00               mov         word ptr _old_int21hdl+0x2,dx 
-00F9    9A 00 00 00 00            call        _dos_setvect_ 
-00FE    EB B3                     jmp         L$2 
+00CD                          set_dosidle_handler_:
+00CD    53                        push        bx 
+00CE    51                        push        cx 
+00CF    BB 00 00                  mov         bx,offset dosidle_handler_ 
+00D2    B9 00 00                  mov         cx,seg dosidle_handler_ 
+00D5    B8 28 00                  mov         ax,0x0028 
+00D8    9A 00 00 00 00            call        _dos_setvect_ 
+00DD    BB 00 00                  mov         bx,offset int21wrp_ 
+00E0    B9 00 00                  mov         cx,seg int21wrp_ 
+00E3    B8 21 00                  mov         ax,0x0021 
+00E6                          L$5:
+00E6    9A 00 00 00 00            call        _dos_setvect_ 
+00EB    59                        pop         cx 
+00EC    5B                        pop         bx 
+00ED    CB                        retf        
 
-Routine Size: 73 bytes,    Routine Base: int28hdl_TEXT + 00B7
+Routine Size: 33 bytes,    Routine Base: int28hdl_TEXT + 00CD
 
-0100                          reset_dosidle_handler_:
-0100    53                        push        bx 
-0101    51                        push        cx 
-0102    BB 00 00                  mov         bx,seg _old_int21hdl 
-0105    8E DB                     mov         ds,bx 
-0107    B8 21 00                  mov         ax,0x0021 
-010A    8B 1E 00 00               mov         bx,word ptr _old_int21hdl 
-010E    8B 0E 02 00               mov         cx,word ptr _old_int21hdl+0x2 
-0112    9A 00 00 00 00            call        _dos_setvect_ 
-0117    BB 00 00                  mov         bx,seg _old_dosidle_handler 
-011A    8E DB                     mov         ds,bx 
-011C    B8 28 00                  mov         ax,0x0028 
-011F    8B 1E 00 00               mov         bx,word ptr _old_dosidle_handler 
-0123    8B 0E 02 00               mov         cx,word ptr _old_dosidle_handler+0x2 
-0127    9A 00 00 00 00            call        _dos_setvect_ 
-012C    59                        pop         cx 
-012D    5B                        pop         bx 
-012E    CB                        retf        
+00EE                          save_dosidle_handler_:
+00EE    53                        push        bx 
+00EF    51                        push        cx 
+00F0    52                        push        dx 
+00F1    B8 28 00                  mov         ax,0x0028 
+00F4    BB 00 00                  mov         bx,seg _old_dosidle_handler 
+00F7    9A 00 00 00 00            call        _dos_getvect_ 
+00FC    8E DB                     mov         ds,bx 
+00FE    B9 00 00                  mov         cx,seg dosidle_handler_ 
+0101    A3 00 00                  mov         word ptr _old_dosidle_handler,ax 
+0104    B8 21 00                  mov         ax,0x0021 
+0107    89 16 02 00               mov         word ptr _old_dosidle_handler+0x2,dx 
+010B    9A 00 00 00 00            call        _dos_getvect_ 
+0110    8E DB                     mov         ds,bx 
+0112    BB 00 00                  mov         bx,offset dosidle_handler_ 
+0115    A3 00 00                  mov         word ptr _old_int21hdl,ax 
+0118    89 16 02 00               mov         word ptr _old_int21hdl+0x2,dx 
+011C    9A 00 00 00 00            call        save_stack_seg_ 
+0121    B8 28 00                  mov         ax,0x0028 
+0124    9A 00 00 00 00            call        _dos_setvect_ 
+0129    BB 00 00                  mov         bx,offset int21wrp_ 
+012C    B9 00 00                  mov         cx,seg int21wrp_ 
+012F    B8 21 00                  mov         ax,0x0021 
+0132    9A 00 00 00 00            call        _dos_setvect_ 
+0137    EB 90                     jmp         L$4 
 
-Routine Size: 47 bytes,    Routine Base: int28hdl_TEXT + 0100
+Routine Size: 75 bytes,    Routine Base: int28hdl_TEXT + 00EE
+
+0139                          reset_dosidle_handler_:
+0139    53                        push        bx 
+013A    51                        push        cx 
+013B    BB 00 00                  mov         bx,seg _old_int21hdl 
+013E    8E DB                     mov         ds,bx 
+0140    B8 21 00                  mov         ax,0x0021 
+0143    8B 1E 00 00               mov         bx,word ptr _old_int21hdl 
+0147    8B 0E 02 00               mov         cx,word ptr _old_int21hdl+0x2 
+014B    9A 00 00 00 00            call        _dos_setvect_ 
+0150    BB 00 00                  mov         bx,seg _old_dosidle_handler 
+0153    8E DB                     mov         ds,bx 
+0155    B8 28 00                  mov         ax,0x0028 
+0158    8B 1E 00 00               mov         bx,word ptr _old_dosidle_handler 
+015C    8B 0E 02 00               mov         cx,word ptr _old_dosidle_handler+0x2 
+0160    EB 84                     jmp         L$5 
+
+Routine Size: 41 bytes,    Routine Base: int28hdl_TEXT + 0139
 
 No disassembly errors
 
@@ -123,9 +141,9 @@ Segment: CONST WORD USE16 00000000 bytes
 Segment: CONST2 WORD USE16 00000000 bytes
 
 Segment: _DATA WORD USE16 00000004 bytes
-0000                          L$3:
+0000                          L$6:
 0000    FF FF                                           ..
-0002                          L$4:
+0002                          L$7:
 0002    FF FF                                           ..
 
 Segment: _TEXT WORD USE16 00000000 bytes

@@ -1,0 +1,551 @@
+Module: D:\LEETSRC\490\vpu\86serpar.c
+GROUP: 'DGROUP' CONST,CONST2,_DATA,_BSS
+
+Segment: 86serpar_TEXT BYTE USE16 00000486 bytes
+0000                          serial_send_:
+0000    53                        push        bx 
+0001    51                        push        cx 
+0002    56                        push        si 
+0003    55                        push        bp 
+0004    31 ED                     xor         bp,bp 
+0006    88 C5                     mov         ch,al 
+0008    88 D1                     mov         cl,dl 
+000A                          L$1:
+000A    0F B6 DD                  movzx       bx,ch 
+000D    8B B6 00 00               mov         si,word ptr _serialbase[bp] 
+0011    01 DB                     add         bx,bx 
+0013    8E 9E 02 00               mov         ds,word ptr _serialbase+0x2[bp] 
+0017    01 DE                     add         si,bx 
+0019    8B 14                     mov         dx,word ptr [si] 
+001B    83 C2 05                  add         dx,0x0005 
+001E    EC                        in          al,dx 
+001F    A8 20                     test        al,0x20 
+0021    74 E7                     je          L$1 
+0023    C5 B6 00 00               lds         si,dword ptr _serialbase[bp] 
+0027    01 DE                     add         si,bx 
+0029    0F B6 C1                  movzx       ax,cl 
+002C    8B 14                     mov         dx,word ptr [si] 
+002E    EE                        out         dx,al 
+002F    C5 86 00 00               lds         ax,dword ptr _serialbase[bp] 
+0033    01 C3                     add         bx,ax 
+0035    8B 17                     mov         dx,word ptr [bx] 
+0037    83 C2 05                  add         dx,0x0005 
+003A    EC                        in          al,dx 
+003B    A8 02                     test        al,0x02 
+003D    0F 95 C0                  setne       al 
+0040    30 E4                     xor         ah,ah 
+0042    5D                        pop         bp 
+0043    5E                        pop         si 
+0044    59                        pop         cx 
+0045    5B                        pop         bx 
+0046    C3                        ret         
+0047                          serial_flow_control_read_:
+0047    53                        push        bx 
+0048    51                        push        cx 
+0049    52                        push        dx 
+004A    56                        push        si 
+004B    88 C1                     mov         cl,al 
+004D    0F B6 C1                  movzx       ax,cl 
+0050    89 C3                     mov         bx,ax 
+0052    C1 E3 02                  shl         bx,0x02 
+0055    36 C5 B7 00 00            lds         si,dword ptr ss:_serport_buffer[bx] 
+005A    8B 94 04 01               mov         dx,word ptr 0x104[si] 
+005E    80 E2 03                  and         dl,0x03 
+0061    F6 C2 01                  test        dl,0x01 
+0064    74 14                     je          L$2 
+0066    BA 11 00                  mov         dx,0x0011 
+0069    E8 00 00                  call        serial_send_ 
+006C    85 C0                     test        ax,ax 
+006E    75 0A                     jne         L$2 
+0070    36 C5 B7 00 00            lds         si,dword ptr ss:_serport_buffer[bx] 
+0075    80 A4 04 01 F7            and         byte ptr 0x104[si],0xf7 
+007A                          L$2:
+007A    0F B6 C1                  movzx       ax,cl 
+007D    89 C3                     mov         bx,ax 
+007F    C1 E3 02                  shl         bx,0x02 
+0082    36 C5 B7 00 00            lds         si,dword ptr ss:_serport_buffer[bx] 
+0087    8B 94 04 01               mov         dx,word ptr 0x104[si] 
+008B    80 E2 03                  and         dl,0x03 
+008E    F6 C2 02                  test        dl,0x02 
+0091    74 19                     je          L$3 
+0093    89 C3                     mov         bx,ax 
+0095    36 8B 16 00 00            mov         dx,word ptr ss:_serialbase 
+009A    01 C3                     add         bx,ax 
+009C    36 8E 1E 02 00            mov         ds,word ptr ss:_serialbase+0x2 
+00A1    01 D3                     add         bx,dx 
+00A3    8B 17                     mov         dx,word ptr [bx] 
+00A5    B8 0B 00                  mov         ax,0x000b 
+00A8    83 C2 04                  add         dx,0x0004 
+00AB    EE                        out         dx,al 
+00AC                          L$3:
+00AC    5E                        pop         si 
+00AD    5A                        pop         dx 
+00AE    59                        pop         cx 
+00AF    5B                        pop         bx 
+00B0    C3                        ret         
+
+Routine Size: 177 bytes,    Routine Base: 86serpar_TEXT + 0000
+
+00B1                          serial_read_:
+00B1    53                        push        bx 
+00B2    51                        push        cx 
+00B3    52                        push        dx 
+00B4    56                        push        si 
+00B5    55                        push        bp 
+00B6    31 ED                     xor         bp,bp 
+00B8    88 C2                     mov         dl,al 
+00BA    0F B6 C2                  movzx       ax,dl 
+00BD    89 C6                     mov         si,ax 
+00BF    C1 E6 02                  shl         si,0x02 
+00C2    C5 9A 00 00               lds         bx,dword ptr _serport_buffer[bp+si] 
+00C6    8A 8F 02 01               mov         cl,byte ptr 0x102[bx] 
+00CA    84 C9                     test        cl,cl 
+00CC    74 32                     je          L$7 
+00CE    F6 C1 01                  test        cl,0x01 
+00D1    74 0A                     je          L$4 
+00D3    B8 00 00                  mov         ax,offset DGROUP:L$31 
+00D6    8C D2                     mov         dx,ss 
+00D8    9A 00 00 00 00            call        log_error_ 
+00DD                          L$4:
+00DD    F6 C1 02                  test        cl,0x02 
+00E0    74 0A                     je          L$5 
+00E2    B8 12 00                  mov         ax,offset DGROUP:L$32 
+00E5    8C D2                     mov         dx,ss 
+00E7    9A 00 00 00 00            call        log_error_ 
+00EC                          L$5:
+00EC    F6 C1 04                  test        cl,0x04 
+00EF    74 0A                     je          L$6 
+00F1    B8 25 00                  mov         ax,offset DGROUP:L$33 
+00F4    8C D2                     mov         dx,ss 
+00F6    9A 00 00 00 00            call        log_error_ 
+00FB                          L$6:
+00FB    B8 FE FF                  mov         ax,0xfffe 
+00FE    EB 47                     jmp         L$10 
+0100                          L$7:
+0100    F6 87 04 01 08            test        byte ptr 0x104[bx],0x08 
+0105    74 15                     je          L$8 
+0107    0F B6 B7 00 01            movzx       si,byte ptr 0x100[bx] 
+010C    0F B6 9F 01 01            movzx       bx,byte ptr 0x101[bx] 
+0111    29 DE                     sub         si,bx 
+0113    81 FE 80 00               cmp         si,0x0080 
+0117    7D 03                     jge         L$8 
+0119    E8 00 00                  call        serial_flow_control_read_ 
+011C                          L$8:
+011C    0F B6 F2                  movzx       si,dl 
+011F    C1 E6 02                  shl         si,0x02 
+0122    C5 9A 00 00               lds         bx,dword ptr _serport_buffer[bp+si] 
+0126    8A 87 01 01               mov         al,byte ptr 0x101[bx] 
+012A    3A 87 00 01               cmp         al,byte ptr 0x100[bx] 
+012E    75 05                     jne         L$9 
+0130    B8 FF FF                  mov         ax,0xffff 
+0133    EB 12                     jmp         L$10 
+0135                          L$9:
+0135    0F B6 D0                  movzx       dx,al 
+0138    FE C0                     inc         al 
+013A    88 87 01 01               mov         byte ptr 0x101[bx],al 
+013E    C5 9A 00 00               lds         bx,dword ptr _serport_buffer[bp+si] 
+0142    01 D3                     add         bx,dx 
+0144    0F B6 07                  movzx       ax,byte ptr [bx] 
+0147                          L$10:
+0147    5D                        pop         bp 
+0148    5E                        pop         si 
+0149                          L$11:
+0149    5A                        pop         dx 
+014A    59                        pop         cx 
+014B    5B                        pop         bx 
+014C    CB                        retf        
+
+Routine Size: 156 bytes,    Routine Base: 86serpar_TEXT + 00B1
+
+014D                          serial_init_:
+014D    53                        push        bx 
+014E    51                        push        cx 
+014F    56                        push        si 
+0150    57                        push        di 
+0151    C8 04 00 00               enter       0x0004,0x00 
+0155    88 46 FE                  mov         byte ptr -0x2[bp],al 
+0158    89 56 FC                  mov         word ptr -0x4[bp],dx 
+015B    89 D7                     mov         di,dx 
+015D    0F B6 D8                  movzx       bx,al 
+0160    C1 EF 08                  shr         di,0x08 
+0163    C1 E3 02                  shl         bx,0x02 
+0166    83 E7 0F                  and         di,0x000f 
+0169    36 8B 97 02 00            mov         dx,word ptr ss:_serport_buffer+0x2[bx] 
+016E    36 8B 87 00 00            mov         ax,word ptr ss:_serport_buffer[bx] 
+0173    85 D2                     test        dx,dx 
+0175    75 04                     jne         L$12 
+0177    85 C0                     test        ax,ax 
+0179    74 06                     je          L$13 
+017B                          L$12:
+017B    B8 01 00                  mov         ax,0x0001 
+017E    E9 59 01                  jmp         L$19 
+0181                          L$13:
+0181    83 FF 1A                  cmp         di,0x001a 
+0184    73 F5                     jae         L$12 
+0186    BA 06 01                  mov         dx,0x0106 
+0189    B8 01 00                  mov         ax,0x0001 
+018C    9A 00 00 00 00            call        calloc_ 
+0191    36 89 87 00 00            mov         word ptr ss:_serport_buffer[bx],ax 
+0196    36 89 97 02 00            mov         word ptr ss:_serport_buffer+0x2[bx],dx 
+019B    89 D0                     mov         ax,dx 
+019D    36 8B B7 00 00            mov         si,word ptr ss:_serport_buffer[bx] 
+01A2    85 D2                     test        dx,dx 
+01A4    75 0B                     jne         L$14 
+01A6    85 F6                     test        si,si 
+01A8    75 07                     jne         L$14 
+01AA    9A 00 00 00 00            call        nomemory_ 
+01AF    EB CA                     jmp         L$12 
+01B1                          L$14:
+01B1    8B 46 FC                  mov         ax,word ptr -0x4[bp] 
+01B4    C1 E8 0E                  shr         ax,0x0e 
+01B7    8E DA                     mov         ds,dx 
+01B9    30 E4                     xor         ah,ah 
+01BB    80 A4 04 01 FC            and         byte ptr 0x104[si],0xfc 
+01C0    24 03                     and         al,0x03 
+01C2    09 84 04 01               or          word ptr 0x104[si],ax 
+01C6    F6 46 FE 01               test        byte ptr -0x2[bp],0x01 
+01CA    74 42                     je          L$16 
+01CC    36 8B 16 02 00            mov         dx,word ptr ss:_prev_int_b+0x2 
+01D1    36 A1 00 00               mov         ax,word ptr ss:_prev_int_b 
+01D5    85 D2                     test        dx,dx 
+01D7    75 15                     jne         L$15 
+01D9    85 C0                     test        ax,ax 
+01DB    75 11                     jne         L$15 
+01DD    B8 0B 00                  mov         ax,0x000b 
+01E0    9A 00 00 00 00            call        _dos_getvect_ 
+01E5    36 A3 00 00               mov         word ptr ss:_prev_int_b,ax 
+01E9    36 89 16 02 00            mov         word ptr ss:_prev_int_b+0x2,dx 
+01EE                          L$15:
+01EE    BB 00 00                  mov         bx,offset serial_int_handler_ 
+01F1    B9 00 00                  mov         cx,seg serial_int_handler_ 
+01F4    B8 0B 00                  mov         ax,0x000b 
+01F7    BA 21 00                  mov         dx,0x0021 
+01FA    9A 00 00 00 00            call        _dos_setvect_ 
+01FF    EC                        in          al,dx 
+0200    36 A2 00 00               mov         byte ptr ss:_old_int_mask,al 
+0204    24 F7                     and         al,0xf7 
+0206    BA 21 00                  mov         dx,0x0021 
+0209    30 E4                     xor         ah,ah 
+020B    EE                        out         dx,al 
+020C    EB 40                     jmp         L$18 
+020E                          L$16:
+020E    36 A1 02 00               mov         ax,word ptr ss:_prev_int_c+0x2 
+0212    36 8B 16 00 00            mov         dx,word ptr ss:_prev_int_c 
+0217    85 C0                     test        ax,ax 
+0219    75 15                     jne         L$17 
+021B    85 D2                     test        dx,dx 
+021D    75 11                     jne         L$17 
+021F    B8 0C 00                  mov         ax,0x000c 
+0222    9A 00 00 00 00            call        _dos_getvect_ 
+0227    36 A3 00 00               mov         word ptr ss:_prev_int_c,ax 
+022B    36 89 16 02 00            mov         word ptr ss:_prev_int_c+0x2,dx 
+0230                          L$17:
+0230    BB 00 00                  mov         bx,offset serial_int_handler_ 
+0233    B9 00 00                  mov         cx,seg serial_int_handler_ 
+0236    B8 0C 00                  mov         ax,0x000c 
+0239    BA 21 00                  mov         dx,0x0021 
+023C    9A 00 00 00 00            call        _dos_setvect_ 
+0241    EC                        in          al,dx 
+0242    36 A2 01 00               mov         byte ptr ss:_old_int_mask+0x1,al 
+0246    24 EF                     and         al,0xef 
+0248    BA 21 00                  mov         dx,0x0021 
+024B    30 E4                     xor         ah,ah 
+024D    EE                        out         dx,al 
+024E                          L$18:
+024E    0F B6 5E FE               movzx       bx,byte ptr -0x2[bp] 
+0252    36 8B 36 00 00            mov         si,word ptr ss:_serialbase 
+0257    01 DB                     add         bx,bx 
+0259    36 8E 1E 02 00            mov         ds,word ptr ss:_serialbase+0x2 
+025E    01 DE                     add         si,bx 
+0260    8B 14                     mov         dx,word ptr [si] 
+0262    B8 80 00                  mov         ax,0x0080 
+0265    83 C2 03                  add         dx,0x0003 
+0268    89 FE                     mov         si,di 
+026A    EE                        out         dx,al 
+026B    01 FE                     add         si,di 
+026D    36 8B 3E 00 00            mov         di,word ptr ss:_serialbase 
+0272    36 8A 84 00 00            mov         al,byte ptr ss:_baud_divisors[si] 
+0277    36 8E 1E 02 00            mov         ds,word ptr ss:_serialbase+0x2 
+027C    01 DF                     add         di,bx 
+027E    30 E4                     xor         ah,ah 
+0280    8B 15                     mov         dx,word ptr [di] 
+0282    EE                        out         dx,al 
+0283    36 8B 84 00 00            mov         ax,word ptr ss:_baud_divisors[si] 
+0288    36 C5 36 00 00            lds         si,dword ptr ss:_serialbase 
+028D    01 DE                     add         si,bx 
+028F    C1 E8 08                  shr         ax,0x08 
+0292    8B 14                     mov         dx,word ptr [si] 
+0294    30 E4                     xor         ah,ah 
+0296    42                        inc         dx 
+0297    EE                        out         dx,al 
+0298    8A 46 FC                  mov         al,byte ptr -0x4[bp] 
+029B    36 C5 36 00 00            lds         si,dword ptr ss:_serialbase 
+02A0    01 DE                     add         si,bx 
+02A2    24 7F                     and         al,0x7f 
+02A4    8B 14                     mov         dx,word ptr [si] 
+02A6    30 E4                     xor         ah,ah 
+02A8    83 C2 03                  add         dx,0x0003 
+02AB    EE                        out         dx,al 
+02AC    36 C5 36 00 00            lds         si,dword ptr ss:_serialbase 
+02B1    01 DE                     add         si,bx 
+02B3    8B 14                     mov         dx,word ptr [si] 
+02B5    31 C0                     xor         ax,ax 
+02B7    42                        inc         dx 
+02B8    42                        inc         dx 
+02B9    EE                        out         dx,al 
+02BA    36 C5 36 00 00            lds         si,dword ptr ss:_serialbase 
+02BF    01 DE                     add         si,bx 
+02C1    8B 14                     mov         dx,word ptr [si] 
+02C3    B8 01 00                  mov         ax,0x0001 
+02C6    42                        inc         dx 
+02C7    EE                        out         dx,al 
+02C8    36 C5 06 00 00            lds         ax,dword ptr ss:_serialbase 
+02CD    01 C3                     add         bx,ax 
+02CF    8B 17                     mov         dx,word ptr [bx] 
+02D1    B8 0B 00                  mov         ax,0x000b 
+02D4    83 C2 04                  add         dx,0x0004 
+02D7    EE                        out         dx,al 
+02D8    31 C0                     xor         ax,ax 
+02DA                          L$19:
+02DA    C9                        leave       
+02DB    5F                        pop         di 
+02DC                          L$20:
+02DC    5E                        pop         si 
+02DD    59                        pop         cx 
+02DE    5B                        pop         bx 
+02DF    CB                        retf        
+
+Routine Size: 403 bytes,    Routine Base: 86serpar_TEXT + 014D
+
+02E0                          close_serialport_:
+02E0    53                        push        bx 
+02E1    51                        push        cx 
+02E2    52                        push        dx 
+02E3    55                        push        bp 
+02E4    31 ED                     xor         bp,bp 
+02E6    88 C1                     mov         cl,al 
+02E8    0F B6 D8                  movzx       bx,al 
+02EB    C1 E3 02                  shl         bx,0x02 
+02EE    36 8B 87 00 00            mov         ax,word ptr ss:_serport_buffer[bx] 
+02F3    36 8B 97 02 00            mov         dx,word ptr ss:_serport_buffer+0x2[bx] 
+02F8    9A 00 00 00 00            call        free_ 
+02FD    31 C0                     xor         ax,ax 
+02FF    36 89 87 00 00            mov         word ptr ss:_serport_buffer[bx],ax 
+0304    36 89 87 02 00            mov         word ptr ss:_serport_buffer+0x2[bx],ax 
+0309    F6 C1 01                  test        cl,0x01 
+030C    74 3D                     je          L$21 
+030E    36 A1 0E 00               mov         ax,word ptr ss:_serport_buffer+0xe 
+0312    8B 96 0C 00               mov         dx,word ptr _serport_buffer+0xc[bp] 
+0316    85 C0                     test        ax,ax 
+0318    75 31                     jne         L$21 
+031A    85 D2                     test        dx,dx 
+031C    75 2D                     jne         L$21 
+031E    36 A1 06 00               mov         ax,word ptr ss:_serport_buffer+0x6 
+0322    8B 96 04 00               mov         dx,word ptr _serport_buffer+0x4[bp] 
+0326    85 C0                     test        ax,ax 
+0328    75 21                     jne         L$21 
+032A    85 D2                     test        dx,dx 
+032C    75 1D                     jne         L$21 
+032E    B8 0B 00                  mov         ax,0x000b 
+0331    8B 9E 00 00               mov         bx,word ptr _prev_int_b[bp] 
+0335    8B 8E 02 00               mov         cx,word ptr _prev_int_b+0x2[bp] 
+0339    9A 00 00 00 00            call        _dos_setvect_ 
+033E    8A 9E 00 00               mov         bl,byte ptr _old_int_mask[bp] 
+0342    BA 21 00                  mov         dx,0x0021 
+0345    0F B6 C3                  movzx       ax,bl 
+0348    EE                        out         dx,al 
+0349    EB 3B                     jmp         L$22 
+034B                          L$21:
+034B    36 A1 0A 00               mov         ax,word ptr ss:_serport_buffer+0xa 
+034F    8B 96 08 00               mov         dx,word ptr _serport_buffer+0x8[bp] 
+0353    85 C0                     test        ax,ax 
+0355    75 2F                     jne         L$22 
+0357    85 D2                     test        dx,dx 
+0359    75 2B                     jne         L$22 
+035B    36 A1 02 00               mov         ax,word ptr ss:_serport_buffer+0x2 
+035F    8B 96 00 00               mov         dx,word ptr _serport_buffer[bp] 
+0363    85 C0                     test        ax,ax 
+0365    75 1F                     jne         L$22 
+0367    85 D2                     test        dx,dx 
+0369    75 1B                     jne         L$22 
+036B    B8 0C 00                  mov         ax,0x000c 
+036E    8B 9E 00 00               mov         bx,word ptr _prev_int_c[bp] 
+0372    8B 8E 02 00               mov         cx,word ptr _prev_int_c+0x2[bp] 
+0376    9A 00 00 00 00            call        _dos_setvect_ 
+037B    8A 9E 01 00               mov         bl,byte ptr _old_int_mask+0x1[bp] 
+037F    BA 21 00                  mov         dx,0x0021 
+0382    0F B6 C3                  movzx       ax,bl 
+0385    EE                        out         dx,al 
+0386                          L$22:
+0386    5D                        pop         bp 
+0387    E9 BF FD                  jmp         L$11 
+
+Routine Size: 170 bytes,    Routine Base: 86serpar_TEXT + 02E0
+
+038A                          parallel_init_:
+038A    53                        push        bx 
+038B    51                        push        cx 
+038C    56                        push        si 
+038D    89 D1                     mov         cx,dx 
+038F    36 8B 36 00 00            mov         si,word ptr ss:_parallelbase 
+0394    01 C0                     add         ax,ax 
+0396    36 8E 1E 02 00            mov         ds,word ptr ss:_parallelbase+0x2 
+039B    01 C6                     add         si,ax 
+039D    8B 1C                     mov         bx,word ptr [si] 
+039F    43                        inc         bx 
+03A0    43                        inc         bx 
+03A1    83 3C 00                  cmp         word ptr [si],0x0000 
+03A4    75 05                     jne         L$23 
+03A6    B0 01                     mov         al,0x01 
+03A8    E9 31 FF                  jmp         L$20 
+03AB                          L$23:
+03AB    89 DA                     mov         dx,bx 
+03AD    EC                        in          al,dx 
+03AE    24 EF                     and         al,0xef 
+03B0    89 DA                     mov         dx,bx 
+03B2    30 E4                     xor         ah,ah 
+03B4    EE                        out         dx,al 
+03B5    89 DA                     mov         dx,bx 
+03B7    EC                        in          al,dx 
+03B8    24 DB                     and         al,0xdb 
+03BA    89 DA                     mov         dx,bx 
+03BC    30 E4                     xor         ah,ah 
+03BE    EE                        out         dx,al 
+03BF    B8 32 00                  mov         ax,0x0032 
+03C2    89 DA                     mov         dx,bx 
+03C4    9A 00 00 00 00            call        delay_ 
+03C9    EC                        in          al,dx 
+03CA    0C 0C                     or          al,0x0c 
+03CC    89 DA                     mov         dx,bx 
+03CE    30 E4                     xor         ah,ah 
+03D0    EE                        out         dx,al 
+03D1    F6 C1 FF                  test        cl,0xff 
+03D4    74 0A                     je          L$24 
+03D6    89 DA                     mov         dx,bx 
+03D8    EC                        in          al,dx 
+03D9    0C 02                     or          al,0x02 
+03DB    89 DA                     mov         dx,bx 
+03DD    30 E4                     xor         ah,ah 
+03DF    EE                        out         dx,al 
+03E0                          L$24:
+03E0    B8 E8 03                  mov         ax,0x03e8 
+03E3    9A 00 00 00 00            call        delay_ 
+03E8    30 C0                     xor         al,al 
+03EA    E9 EF FE                  jmp         L$20 
+
+Routine Size: 99 bytes,    Routine Base: 86serpar_TEXT + 038A
+
+03ED                          parallel_write_:
+03ED    53                        push        bx 
+03EE    51                        push        cx 
+03EF    56                        push        si 
+03F0    57                        push        di 
+03F1    C8 02 00 00               enter       0x0002,0x00 
+03F5    88 56 FE                  mov         byte ptr -0x2[bp],dl 
+03F8    36 8B 1E 00 00            mov         bx,word ptr ss:_parallelbase 
+03FD    01 C0                     add         ax,ax 
+03FF    36 8E 1E 02 00            mov         ds,word ptr ss:_parallelbase+0x2 
+0404    01 C3                     add         bx,ax 
+0406    8B 37                     mov         si,word ptr [bx] 
+0408    8B 0F                     mov         cx,word ptr [bx] 
+040A    8D 5C 01                  lea         bx,0x1[si] 
+040D    31 FF                     xor         di,di 
+040F    89 DA                     mov         dx,bx 
+0411    41                        inc         cx 
+0412    41                        inc         cx 
+0413    EC                        in          al,dx 
+0414    A8 20                     test        al,0x20 
+0416    74 05                     je          L$25 
+0418    B0 01                     mov         al,0x01 
+041A    E9 BD FE                  jmp         L$19 
+041D                          L$25:
+041D    0F B6 46 FE               movzx       ax,byte ptr -0x2[bp] 
+0421    89 F2                     mov         dx,si 
+0423    EE                        out         dx,al 
+0424                          L$26:
+0424    89 DA                     mov         dx,bx 
+0426    EC                        in          al,dx 
+0427    A8 80                     test        al,0x80 
+0429    75 0F                     jne         L$27 
+042B    47                        inc         di 
+042C    74 0C                     je          L$27 
+042E    B8 01 00                  mov         ax,0x0001 
+0431    31 D2                     xor         dx,dx 
+0433    9A 00 00 00 00            call        shortdelay_ 
+0438    EB EA                     jmp         L$26 
+043A                          L$27:
+043A    B8 01 00                  mov         ax,0x0001 
+043D    31 D2                     xor         dx,dx 
+043F    9A 00 00 00 00            call        shortdelay_ 
+0444    B8 0D 00                  mov         ax,0x000d 
+0447    89 CA                     mov         dx,cx 
+0449    EE                        out         dx,al 
+044A    B8 01 00                  mov         ax,0x0001 
+044D    31 D2                     xor         dx,dx 
+044F    9A 00 00 00 00            call        shortdelay_ 
+0454    B8 0C 00                  mov         ax,0x000c 
+0457    89 CA                     mov         dx,cx 
+0459    EE                        out         dx,al 
+045A    89 DA                     mov         dx,bx 
+045C    31 F6                     xor         si,si 
+045E    EC                        in          al,dx 
+045F                          L$28:
+045F    89 DA                     mov         dx,bx 
+0461    EC                        in          al,dx 
+0462    A8 80                     test        al,0x80 
+0464    75 0F                     jne         L$29 
+0466    46                        inc         si 
+0467    74 0C                     je          L$29 
+0469    B8 01 00                  mov         ax,0x0001 
+046C    31 D2                     xor         dx,dx 
+046E    9A 00 00 00 00            call        shortdelay_ 
+0473    EB EA                     jmp         L$28 
+0475                          L$29:
+0475    89 DA                     mov         dx,bx 
+0477    EC                        in          al,dx 
+0478    A8 08                     test        al,0x08 
+047A    75 05                     jne         L$30 
+047C    B0 02                     mov         al,0x02 
+047E    E9 59 FE                  jmp         L$19 
+0481                          L$30:
+0481    30 C0                     xor         al,al 
+0483    E9 54 FE                  jmp         L$19 
+
+Routine Size: 153 bytes,    Routine Base: 86serpar_TEXT + 03ED
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000049 bytes
+0000                          L$31:
+0000    43 4F 4D 20 50 61 72 69 74 79 20 65 72 72 6F 72 COM Parity error
+0010    21 00                                           !.
+0012                          L$32:
+0012    43 4F 4D 20 46 72 61 6D 69 6E 67 20 65 72 72 6F COM Framing erro
+0022    72 21 00                                        r!.
+0025                          L$33:
+0025    43 4F 4D 20 52 65 63 65 69 76 65 64 20 62 79 74 COM Received byt
+0035    65 20 77 68 65 6E 20 62 75 66 66 65 72 20 66 75 e when buffer fu
+0045    6C 6C 21 00                                     ll!.
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 0000003A bytes
+0000                          _serialbase:
+0000    00 00 40 00                                     ..@.
+0004                          _serport_buffer:
+0004    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+0014                          _prev_int_b:
+0014    00 00 00 00                                     ....
+0018                          _prev_int_c:
+0018    00 00 00 00                                     ....
+001C                          _baud_divisors:
+001C    00 09 10 04 00 03 80 01 C0 00 60 00 30 00 18 00 ..........`.0...
+002C    0C 00 06 00 03 00 02 00 01 00                   ..........
+0036                          _parallelbase:
+0036    08 00 40 00                                     ..@.
+
+Segment: _BSS WORD USE16 00000002 bytes
+0000                          _old_int_mask:
+
+BSS Size: 2 bytes
+

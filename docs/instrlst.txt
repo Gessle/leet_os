@@ -1,4 +1,8 @@
     VPU Instruction list by opcode
+
+An immediate operand for arithmetic instructions can also be replaced with
+data address (example: $variable) or a stack address in a register (example:
+,bx).
    
 
   0x00 WAIT
@@ -97,10 +101,20 @@ Copies value from 16-bit register [reg] to data segment register.
   
 Multiplies the value of [reg0] by [reg1].
 
+  0x3C LMUL [reg0] [reg1] [reg2]/[imm]
+
+Multiplies the value of [reg0]:[reg1] by [reg2]. The result is 48 bits long.
+If the third operand is a register, the overflowing 16 bits are stored there.
+
   0x0D DIV [reg0] [reg1]/[imm]
   
 Divides the value of [reg0] by [reg1]. The quotient is returned into [reg0]
 and the remainder into [reg1]. The numbers are treated as unsigned integers.
+
+  0x3D LDIV [reg0] [reg1] [reg2]/[imm]
+
+Divides the value of [reg0][reg1] by [reg2]. The remainder is returned into [reg2].
+The numbers are treated as unsigned integers.
 
   0x0E PRINTUINT [reg]
   
@@ -118,8 +132,17 @@ Inverts the value of [reg].
 
   0x13 SHL [reg0] [reg1]/[imm]
   0x14 SHR [reg0] [reg1]/[imm]
+  0x36 ROL [reg0] [reg1]/[imm]
+  0x37 ROR [reg0] [reg1]/[imm]
 
-Shifts the value of [reg0] left or right by the value of [reg1]. 
+Shifts or rotates the value of [reg0] left or right by the value of [reg1]. 
+
+  0x38 SHCL [reg0] [reg1]/[imm]
+  0x39 SHCR [reg0] [reg1]/[imm]
+  0x3A RCL [reg0] [reg1]/[imm]
+  0x3B RCR [reg0] [reg1]/[imm]
+
+Shift or rotates with carry.
   
   0x15 CALL [label]
   
@@ -275,3 +298,7 @@ DX: Data segment 1
 EX: start offset 1
 
 Decrements CX and increments BX and EX until they point to different values.
+
+  0x35 XCHG [reg0] [reg1]
+
+Exchanges the values between two registers.

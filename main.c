@@ -16,6 +16,7 @@
 #include "constrct.c"
 #include "structs.c"
 #include "globals.c"
+#include "pm.c"
 #include "vpu\vpustrct.c"
 #include "settings.c"
 #include "path.c"
@@ -71,6 +72,8 @@ inline void start_program(void)
   puts("Setting environment variables...");
   update_envvars();
 
+  init_power_manager();
+
   puts("Preparing desktop...");
   init_desktop();
 
@@ -106,6 +109,7 @@ inline void start_program(void)
 
 inline void end_program(void)
 {
+  restore_cpu_clock();
   unload_drivers();
   reset_dosidle_handler();
   reset_vpu_interrupt_handlers();  
@@ -199,7 +203,7 @@ inline unsigned main_kbd_handler(int *c)
 {
   unsigned n;
   
-  screensaver_timer = 0;
+  zero_screensaver_timer();
 
   // if a function key (c==0)
   if(!(*c = getch()))
@@ -384,6 +388,8 @@ inline void wm_action(unsigned *action)
 static int mouseclick(void)
 {
   if(!mouse) return 0;
+
+  get_mouse_movement();
   
   return mouse->left_pressed | mouse->right_pressed;
 }
@@ -465,7 +471,8 @@ void main(unsigned argc, char **argv)
     a = mtask_win(&c, a, 0);
 
     draw_mouse_cursor();
-    if(all_proc_blocking()) halt();
+    if(all_proc_blocking()) throttle_cpu();
+    else restore_cpu_clock();
 
     if(tty)
     {

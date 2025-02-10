@@ -51,3 +51,15 @@
 #define OPCODE_TEST 0x32
 #define OPCODE_MEMCHR 0x33
 #define OPCODE_MEMCMP 0x34
+#define OPCODE_XCHG 0x35
+#define OPCODE_ROL 0x36
+#define OPCODE_ROR 0x37
+#define OPCODE_SHCR 0x38
+#define OPCODE_SHCL 0x39
+#define OPCODE_RCL 0x3A
+#define OPCODE_RCR 0x3B
+#define OPCODE_LMUL 0x3C
+#define OPCODE_LDIV 0x3D
+#define OPCODE_ADC 0x3E
+#define OPCODE_SBB 0x3F
+

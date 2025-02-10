@@ -807,12 +807,12 @@ static int mouse_handler(struct prog_window *window)
   int a;
   if(get_mouse_movement())
   {
-    screensaver_timer = 0;
+    zero_screensaver_timer();
   }
   // if a window is active and the left button is pressed      
   if(menu_selected < 0 && mouse->left_pressed)
   {
-    screensaver_timer = 0;
+    zero_screensaver_timer();
     if(!(a = mleft_handler(window))) return ~WM_WINPROGACT;
     // a==1 -> mouse over titlebar
     else if(a == -1)

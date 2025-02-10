@@ -1,7 +1,7 @@
 ; load RANDOM module
 
 str driver "drivers\\random.exe"
-str name "random"
+str name "rand"
 
 ; load module
 mov ax 28

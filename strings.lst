@@ -1,0 +1,169 @@
+Module: E:\OHJELM~1\FREEDO~1\392\strings.asm
+GROUP: 'DGROUP' _DATA
+
+Segment: strings_TEXT WORD USE16 00000000 bytes
+
+Routine Size: 0 bytes,    Routine Base: strings_TEXT + 0000
+
+No disassembly errors
+
+Segment: _DATA WORD USE16 00000000 bytes
+
+Segment: _TEXT BYTE USE16 000000D7 bytes
+0000                          copymem_:
+0000    9C                        pushf       
+0001    FC                        cld         
+0002    53                        push        bx 
+0003    55                        push        bp 
+0004    51                        push        cx 
+0005    8B EC                     mov         bp,sp 
+0007    57                        push        di 
+0008    06                        push        es 
+0009    8B DF                     mov         bx,di 
+000B    B1 04                     mov         cl,0x04 
+000D    D3 EB                     shr         bx,cl 
+000F    8C C1                     mov         cx,es 
+0011    03 CB                     add         cx,bx 
+0013    8E C1                     mov         es,cx 
+0015    83 E7 0F                  and         di,0x000f 
+0018    56                        push        si 
+0019    1E                        push        ds 
+001A    8B DE                     mov         bx,si 
+001C    B1 04                     mov         cl,0x04 
+001E    D3 EB                     shr         bx,cl 
+0020    8C D9                     mov         cx,ds 
+0022    03 CB                     add         cx,bx 
+0024    8E D9                     mov         ds,cx 
+0026    83 E6 0F                  and         si,0x000f 
+0029    8B 4E 00                  mov         cx,word ptr [bp] 
+002C    50                        push        ax 
+002D    8C D8                     mov         ax,ds 
+002F    3D 00 A0                  cmp         ax,0xa000 
+0032    58                        pop         ax 
+0033    7D 1C                     jge         L$2 
+0035    F7 C1 01 00               test        cx,0x0001 
+0039    74 10                     je          L$1 
+003B    57                        push        di 
+003C    56                        push        si 
+003D    50                        push        ax 
+003E    49                        dec         cx 
+003F    03 F1                     add         si,cx 
+0041    03 F9                     add         di,cx 
+0043    8A 04                     mov         al,byte ptr [si] 
+0045    26 88 05                  mov         byte ptr es:[di],al 
+0048    58                        pop         ax 
+0049    5E                        pop         si 
+004A    5F                        pop         di 
+004B                          L$1:
+004B    D1 E9                     shr         cx,0x01 
+004D    F3 A5                     rep movsw   
+004F    EB 02                     jmp         L$3 
+0051                          L$2:
+0051    F3 A4                     rep movsb   
+0053                          L$3:
+0053    1F                        pop         ds 
+0054    5E                        pop         si 
+0055    07                        pop         es 
+0056    5F                        pop         di 
+0057    59                        pop         cx 
+0058    5D                        pop         bp 
+0059    5B                        pop         bx 
+005A    9D                        popf        
+005B    CB                        retf        
+
+Routine Size: 92 bytes,    Routine Base: _TEXT + 0000
+
+005C                          setmem_:
+005C    9C                        pushf       
+005D    FC                        cld         
+005E    55                        push        bp 
+005F    51                        push        cx 
+0060    8B EC                     mov         bp,sp 
+0062    53                        push        bx 
+0063    57                        push        di 
+0064    06                        push        es 
+0065    8B DF                     mov         bx,di 
+0067    B1 04                     mov         cl,0x04 
+0069    D3 EB                     shr         bx,cl 
+006B    8C C1                     mov         cx,es 
+006D    03 CB                     add         cx,bx 
+006F    8E C1                     mov         es,cx 
+0071    83 E7 0F                  and         di,0x000f 
+0074    8B 4E 00                  mov         cx,word ptr [bp] 
+0077    F7 C1 01 00               test        cx,0x0001 
+007B    74 08                     je          L$4 
+007D    49                        dec         cx 
+007E    57                        push        di 
+007F    03 F9                     add         di,cx 
+0081    26 88 05                  mov         byte ptr es:[di],al 
+0084    5F                        pop         di 
+0085                          L$4:
+0085    8A E0                     mov         ah,al 
+0087    D1 E9                     shr         cx,0x01 
+0089    F3 AB                     rep stosw   
+008B    07                        pop         es 
+008C    5F                        pop         di 
+008D    5B                        pop         bx 
+008E    59                        pop         cx 
+008F    5D                        pop         bp 
+0090    9D                        popf        
+0091    CB                        retf        
+
+Routine Size: 54 bytes,    Routine Base: _TEXT + 005C
+
+0092                          lenstr_:
+0092    9C                        pushf       
+0093    FC                        cld         
+0094    51                        push        cx 
+0095    53                        push        bx 
+0096    57                        push        di 
+0097    06                        push        es 
+0098    8B DF                     mov         bx,di 
+009A    B1 04                     mov         cl,0x04 
+009C    D3 EB                     shr         bx,cl 
+009E    8C C1                     mov         cx,es 
+00A0    03 CB                     add         cx,bx 
+00A2    8E C1                     mov         es,cx 
+00A4    83 E7 0F                  and         di,0x000f 
+00A7    B9 FF FF                  mov         cx,0xffff 
+00AA    2B CF                     sub         cx,di 
+00AC    B0 00                     mov         al,0x00 
+00AE    57                        push        di 
+00AF    F2 AE                     repne scasb 
+00B1    8B C7                     mov         ax,di 
+00B3    48                        dec         ax 
+00B4    5F                        pop         di 
+00B5    2B C7                     sub         ax,di 
+00B7    07                        pop         es 
+00B8    5F                        pop         di 
+00B9    5B                        pop         bx 
+00BA    59                        pop         cx 
+00BB    9D                        popf        
+00BC    CB                        retf        
+
+Routine Size: 43 bytes,    Routine Base: _TEXT + 0092
+
+00BD                          copystr_:
+00BD    50                        push        ax 
+00BE    51                        push        cx 
+00BF    06                        push        es 
+00C0    57                        push        di 
+00C1    8B FE                     mov         di,si 
+00C3    8C D8                     mov         ax,ds 
+00C5    8E C0                     mov         es,ax 
+00C7    0E                        push        cs 
+00C8    E8 C7 FF                  call        lenstr_ 
+00CB    5F                        pop         di 
+00CC    07                        pop         es 
+00CD    8B C8                     mov         cx,ax 
+00CF    41                        inc         cx 
+00D0    0E                        push        cs 
+00D1    E8 2C FF                  call        copymem_ 
+00D4    59                        pop         cx 
+00D5    58                        pop         ax 
+00D6    CB                        retf        
+
+Routine Size: 26 bytes,    Routine Base: _TEXT + 00BD
+
+No disassembly errors
+

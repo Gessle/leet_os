@@ -73,7 +73,8 @@ struct prog_window *running_window = 0;
 // this is the console window that is running bytecode.
 struct prog_window *running_console = 0;
 
-
+int findfirst(const char * const, unsigned char const, struct find_t * const);
+int findnext(struct find_t *const);
 extern unsigned char __based(__segname("_TEXT")) diskio_in_progress;
 void __interrupt dosidle_handler(void);
 extern void __far *old_dosindle_handler;
@@ -153,6 +154,8 @@ unsigned int shortcut_count = 0;
 unsigned int screensaver_timer;
 unsigned int screensaver_delay = 0;
 
+static void zero_screensaver_timer(void);
+
 char screensaver_program[13];
 char wallpaper[13];
 struct xpm_bitmap wallpaper_struct;
@@ -185,7 +188,7 @@ unsigned old_xres, old_yres;
 
 extern void _far *fill_screen_color;
 extern unsigned char _VIDEO_MODE;
-extern int ega4_lastoperation;
+extern unsigned char __based(__segname("main_TEXT")) ega4_lastoperation;
 void put_pixel(unsigned int x, unsigned int y, unsigned color);
 void scrmemcpy(unsigned x, unsigned y, unsigned width, unsigned height, int dx, int dy);
 unsigned char get_pixel(unsigned int x, unsigned int y);
@@ -225,7 +228,12 @@ unsigned char inbyte(unsigned port);
 void outbyte(unsigned port, unsigned char byte);
 #pragma aux outbyte = \
   "out dx, al" \
-  parm [dx] [ax];
+  parm [dx] [ax] modify exact [];
+
+void outword(unsigned port, unsigned word);
+#pragma aux outword = \
+  "out dx, ax" \
+  parm [dx] [ax] modify exact [];
 
 int all_proc_blocking(void);
 
@@ -301,4 +309,4 @@ char caret_visible = 0;
   #define CPUBUILDSTR BUILDSTR686
 #endif
 
-static unsigned char versioninfo[] = "lEEt/OS 0.9.490 "CPUBUILDSTR" - (c) Sami Tikkanen 2024";
+static unsigned char versioninfo[] = "lEEt/OS 0.9.499 "CPUBUILDSTR" - (c) Sami Tikkanen 2024";

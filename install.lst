@@ -1,0 +1,834 @@
+Module: D:\LEETSRC\490\INSTALL.C
+GROUP: 'DGROUP' CONST,CONST2,_DATA
+
+Segment: _TEXT BYTE USE16 00000361 bytes
+0000                          copy_file_:
+0000    53                        push        bx 
+0001    51                        push        cx 
+0002    56                        push        si 
+0003    89 D1                     mov         cx,dx 
+0005    BA 65 04                  mov         dx,offset DGROUP:L$119 
+0008    E8 00 00                  call        fopen_ 
+000B    BA 68 04                  mov         dx,offset DGROUP:L$120 
+000E    89 C6                     mov         si,ax 
+0010    89 C3                     mov         bx,ax 
+0012    89 C8                     mov         ax,cx 
+0014    E8 00 00                  call        fopen_ 
+0017    89 C1                     mov         cx,ax 
+0019    85 F6                     test        si,si 
+001B    74 04                     je          L$1 
+001D    85 C0                     test        ax,ax 
+001F    75 05                     jne         L$2 
+0021                          L$1:
+0021    B8 01 00                  mov         ax,0x0001 
+0024    EB 1D                     jmp         L$4 
+0026                          L$2:
+0026    89 D8                     mov         ax,bx 
+0028    E8 00 00                  call        fgetc_ 
+002B    3D FF FF                  cmp         ax,0xffff 
+002E    74 07                     je          L$3 
+0030    89 CA                     mov         dx,cx 
+0032    E8 00 00                  call        fputc_ 
+0035    EB EF                     jmp         L$2 
+0037                          L$3:
+0037    89 D8                     mov         ax,bx 
+0039    E8 00 00                  call        fclose_ 
+003C    89 C8                     mov         ax,cx 
+003E    E8 00 00                  call        fclose_ 
+0041    31 C0                     xor         ax,ax 
+0043                          L$4:
+0043    5E                        pop         si 
+0044    59                        pop         cx 
+0045    5B                        pop         bx 
+0046    C3                        ret         
+
+Routine Size: 71 bytes,    Routine Base: _TEXT + 0000
+
+0047                          copy_files_:
+0047    51                        push        cx 
+0048    56                        push        si 
+0049    55                        push        bp 
+004A    89 E5                     mov         bp,sp 
+004C    83 EC 64                  sub         sp,0x0064 
+004F    89 D9                     mov         cx,bx 
+0051    D1 E3                     shl         bx,0x01 
+0053    89 C6                     mov         si,ax 
+0055    01 D3                     add         bx,dx 
+0057                          L$5:
+0057    49                        dec         cx 
+0058    4B                        dec         bx 
+0059    4B                        dec         bx 
+005A    83 F9 FF                  cmp         cx,0xffff 
+005D    74 30                     je          L$6 
+005F    FF 37                     push        word ptr [bx] 
+0061    56                        push        si 
+0062    B8 6B 04                  mov         ax,offset DGROUP:L$121 
+0065    50                        push        ax 
+0066    8D 46 9C                  lea         ax,-0x64[bp] 
+0069    50                        push        ax 
+006A    E8 00 00                  call        sprintf_ 
+006D    83 C4 08                  add         sp,0x0008 
+0070    8D 46 9C                  lea         ax,-0x64[bp] 
+0073    50                        push        ax 
+0074    B8 71 04                  mov         ax,offset DGROUP:L$122 
+0077    50                        push        ax 
+0078    8D 56 9C                  lea         dx,-0x64[bp] 
+007B    E8 00 00                  call        printf_ 
+007E    83 C4 04                  add         sp,0x0004 
+0081    8B 07                     mov         ax,word ptr [bx] 
+0083    E8 00 00                  call        copy_file_ 
+0086    85 C0                     test        ax,ax 
+0088    74 CD                     je          L$5 
+008A    B8 01 00                  mov         ax,0x0001 
+008D    EB 02                     jmp         L$7 
+008F                          L$6:
+008F    31 C0                     xor         ax,ax 
+0091                          L$7:
+0091    89 EC                     mov         sp,bp 
+0093    5D                        pop         bp 
+0094    5E                        pop         si 
+0095    59                        pop         cx 
+0096    C3                        ret         
+
+Routine Size: 80 bytes,    Routine Base: _TEXT + 0047
+
+0097                          create_dirs_:
+0097    53                        push        bx 
+0098    51                        push        cx 
+0099    52                        push        dx 
+009A    56                        push        si 
+009B    55                        push        bp 
+009C    89 E5                     mov         bp,sp 
+009E    83 EC 64                  sub         sp,0x0064 
+00A1    89 C2                     mov         dx,ax 
+00A3    E8 00 00                  call        mkdir_ 
+00A6    85 C0                     test        ax,ax 
+00A8    74 0F                     je          L$9 
+00AA    E8 00 00                  call        __get_errno_ptr_ 
+00AD    89 C3                     mov         bx,ax 
+00AF    83 3F 06                  cmp         word ptr [bx],0x0006 
+00B2    74 05                     je          L$9 
+00B4                          L$8:
+00B4    B8 01 00                  mov         ax,0x0001 
+00B7    EB 47                     jmp         L$13 
+00B9                          L$9:
+00B9    31 C9                     xor         cx,cx 
+00BB    31 DB                     xor         bx,bx 
+00BD    EB 08                     jmp         L$11 
+00BF                          L$10:
+00BF    41                        inc         cx 
+00C0    43                        inc         bx 
+00C1    43                        inc         bx 
+00C2    83 F9 08                  cmp         cx,0x0008 
+00C5    73 37                     jae         L$12 
+00C7                          L$11:
+00C7    FF B7 00 00               push        word ptr _dir_list[bx] 
+00CB    52                        push        dx 
+00CC    B8 6B 04                  mov         ax,offset DGROUP:L$121 
+00CF    50                        push        ax 
+00D0    8D 46 9C                  lea         ax,-0x64[bp] 
+00D3    50                        push        ax 
+00D4    E8 00 00                  call        sprintf_ 
+00D7    83 C4 08                  add         sp,0x0008 
+00DA    8D 46 9C                  lea         ax,-0x64[bp] 
+00DD    50                        push        ax 
+00DE    B8 82 04                  mov         ax,offset DGROUP:L$123 
+00E1    50                        push        ax 
+00E2    E8 00 00                  call        printf_ 
+00E5    83 C4 04                  add         sp,0x0004 
+00E8    8D 46 9C                  lea         ax,-0x64[bp] 
+00EB    E8 00 00                  call        mkdir_ 
+00EE    85 C0                     test        ax,ax 
+00F0    74 CD                     je          L$10 
+00F2    E8 00 00                  call        __get_errno_ptr_ 
+00F5    89 C6                     mov         si,ax 
+00F7    83 3C 06                  cmp         word ptr [si],0x0006 
+00FA    74 C3                     je          L$10 
+00FC    EB B6                     jmp         L$8 
+00FE                          L$12:
+00FE    31 C0                     xor         ax,ax 
+0100                          L$13:
+0100    89 EC                     mov         sp,bp 
+0102    5D                        pop         bp 
+0103                          L$14:
+0103    5E                        pop         si 
+0104    5A                        pop         dx 
+0105    59                        pop         cx 
+0106    5B                        pop         bx 
+0107    C3                        ret         
+
+Routine Size: 113 bytes,    Routine Base: _TEXT + 0097
+
+0108                          autoexec_append_:
+0108    53                        push        bx 
+0109    52                        push        dx 
+010A    56                        push        si 
+010B    55                        push        bp 
+010C    89 E5                     mov         bp,sp 
+010E    81 EC C8 00               sub         sp,0x00c8 
+0112    81 ED E2 00               sub         bp,0x00e2 
+0116    89 C6                     mov         si,ax 
+0118    8A 04                     mov         al,byte ptr [si] 
+011A    30 E4                     xor         ah,ah 
+011C    50                        push        ax 
+011D    B8 99 04                  mov         ax,offset DGROUP:L$124 
+0120    50                        push        ax 
+0121    8D 46 7E                  lea         ax,0x7e[bp] 
+0124    50                        push        ax 
+0125    BA AA 04                  mov         dx,offset DGROUP:L$125 
+0128    E8 00 00                  call        sprintf_ 
+012B    83 C4 06                  add         sp,0x0006 
+012E    8D 46 7E                  lea         ax,0x7e[bp] 
+0131    E8 00 00                  call        fopen_ 
+0134    89 C3                     mov         bx,ax 
+0136    85 C0                     test        ax,ax 
+0138    75 3A                     jne         L$15 
+013A    8D 46 7E                  lea         ax,0x7e[bp] 
+013D    50                        push        ax 
+013E    B8 AC 04                  mov         ax,offset DGROUP:L$126 
+0141    50                        push        ax 
+0142    8D 46 1A                  lea         ax,0x1a[bp] 
+0145    50                        push        ax 
+0146    E8 00 00                  call        sprintf_ 
+0149    83 C4 06                  add         sp,0x0006 
+014C    8D 46 1A                  lea         ax,0x1a[bp] 
+014F    E8 00 00                  call        puts_ 
+0152    B8 D7 04                  mov         ax,offset DGROUP:L$127 
+0155    50                        push        ax 
+0156    8D 46 7E                  lea         ax,0x7e[bp] 
+0159    50                        push        ax 
+015A    BA AA 04                  mov         dx,offset DGROUP:L$125 
+015D    E8 00 00                  call        sprintf_ 
+0160    83 C4 04                  add         sp,0x0004 
+0163    8D 46 7E                  lea         ax,0x7e[bp] 
+0166    E8 00 00                  call        fopen_ 
+0169    89 C3                     mov         bx,ax 
+016B    85 C0                     test        ax,ax 
+016D    75 05                     jne         L$15 
+016F    B8 01 00                  mov         ax,0x0001 
+0172    EB 3E                     jmp         L$17 
+0174                          L$15:
+0174    89 D8                     mov         ax,bx 
+0176    BA E7 04                  mov         dx,offset DGROUP:L$128 
+0179    E8 00 00                  call        fclose_ 
+017C    8D 46 7E                  lea         ax,0x7e[bp] 
+017F    E8 00 00                  call        fopen_ 
+0182    89 C3                     mov         bx,ax 
+0184    83 3E 00 00 00            cmp         word ptr _utilities_installed,0x0000 
+0189    74 0C                     je          L$16 
+018B    56                        push        si 
+018C    BA E9 04                  mov         dx,offset DGROUP:L$129 
+018F    52                        push        dx 
+0190    50                        push        ax 
+0191    E8 00 00                  call        fprintf_ 
+0194    83 C4 06                  add         sp,0x0006 
+0197                          L$16:
+0197    56                        push        si 
+0198    B8 03 05                  mov         ax,offset DGROUP:L$130 
+019B    50                        push        ax 
+019C    53                        push        bx 
+019D    89 DA                     mov         dx,bx 
+019F    E8 00 00                  call        fprintf_ 
+01A2    83 C4 06                  add         sp,0x0006 
+01A5    B8 0B 05                  mov         ax,offset DGROUP:L$131 
+01A8    E8 00 00                  call        fputs_ 
+01AB    89 D8                     mov         ax,bx 
+01AD    E8 00 00                  call        fclose_ 
+01B0    31 C0                     xor         ax,ax 
+01B2                          L$17:
+01B2    8D A6 E2 00               lea         sp,0xe2[bp] 
+01B6    5D                        pop         bp 
+01B7    5E                        pop         si 
+01B8    5A                        pop         dx 
+01B9    5B                        pop         bx 
+01BA    C3                        ret         
+
+Routine Size: 179 bytes,    Routine Base: _TEXT + 0108
+
+01BB                          main_:
+01BB    53                        push        bx 
+01BC    51                        push        cx 
+01BD    52                        push        dx 
+01BE    56                        push        si 
+01BF    57                        push        di 
+01C0    55                        push        bp 
+01C1    89 E5                     mov         bp,sp 
+01C3    81 EC C8 00               sub         sp,0x00c8 
+01C7    81 ED E2 00               sub         bp,0x00e2 
+01CB    B9 32 00                  mov         cx,0x0032 
+01CE    8D 7E 1A                  lea         di,0x1a[bp] 
+01D1    1E                        push        ds 
+01D2    07                        pop         es 
+01D3    BE AA 00                  mov         si,offset DGROUP:L$149 
+01D6    B8 15 05                  mov         ax,offset DGROUP:L$132 
+01D9    F3 A5                     rep movsw   
+01DB    E8 00 00                  call        puts_ 
+01DE    B8 33 05                  mov         ax,offset DGROUP:L$133 
+01E1    BB 00 00                  mov         bx,offset ___iob 
+01E4    E8 00 00                  call        puts_ 
+01E7    B8 72 05                  mov         ax,offset DGROUP:L$134 
+01EA    BA 64 00                  mov         dx,0x0064 
+01ED    E8 00 00                  call        puts_ 
+01F0    8D 46 7E                  lea         ax,0x7e[bp] 
+01F3    E8 00 00                  call        fgets_ 
+01F6    80 7E 7E 0A               cmp         byte ptr 0x7e[bp],0x0a 
+01FA    74 27                     je          L$19 
+01FC    8D 76 7E                  lea         si,0x7e[bp] 
+01FF    8D 7E 1A                  lea         di,0x1a[bp] 
+0202    57                        push        di 
+0203                          L$18:
+0203    AC                        lodsb       
+0204    88 05                     mov         byte ptr [di],al 
+0206    47                        inc         di 
+0207    3C 00                     cmp         al,0x00 
+0209    75 F8                     jne         L$18 
+020B    5F                        pop         di 
+020C    8D 7E 1A                  lea         di,0x1a[bp] 
+020F    8C D8                     mov         ax,ds 
+0211    8E C0                     mov         es,ax 
+0213    B9 FF FF                  mov         cx,0xffff 
+0216    33 C0                     xor         ax,ax 
+0218    F2 AE                     repne scasb 
+021A    F7 D1                     not         cx 
+021C    49                        dec         cx 
+021D    89 CE                     mov         si,cx 
+021F    C6 42 19 00               mov         byte ptr 0x19[bp+si],0x00 
+0223                          L$19:
+0223    8D 46 1A                  lea         ax,0x1a[bp] 
+0226    50                        push        ax 
+0227    B8 AC 05                  mov         ax,offset DGROUP:L$135 
+022A    50                        push        ax 
+022B    E8 00 00                  call        printf_ 
+022E    83 C4 04                  add         sp,0x0004 
+0231    B8 BE 05                  mov         ax,offset DGROUP:L$136 
+0234    E8 00 00                  call        puts_ 
+0237    8D 46 1A                  lea         ax,0x1a[bp] 
+023A    E8 00 00                  call        create_dirs_ 
+023D    85 C0                     test        ax,ax 
+023F    74 1B                     je          L$20 
+0241    E8 00 00                  call        __get_errno_ptr_ 
+0244    89 C6                     mov         si,ax 
+0246    8B 04                     mov         ax,word ptr [si] 
+0248    E8 00 00                  call        strerror_ 
+024B    50                        push        ax 
+024C    B8 D3 05                  mov         ax,offset DGROUP:L$137 
+024F    50                        push        ax 
+0250    E8 00 00                  call        printf_ 
+0253    B8 01 00                  mov         ax,0x0001 
+0256    83 C4 04                  add         sp,0x0004 
+0259    E9 FC 00                  jmp         L$34 
+025C                          L$20:
+025C    B8 F8 05                  mov         ax,offset DGROUP:L$138 
+025F    BB 1A 00                  mov         bx,0x001a 
+0262    BA 00 00                  mov         dx,offset _base_system_files 
+0265    E8 00 00                  call        puts_ 
+0268    8D 46 1A                  lea         ax,0x1a[bp] 
+026B    E8 00 00                  call        copy_files_ 
+026E    85 C0                     test        ax,ax 
+0270    74 0C                     je          L$21 
+0272    B8 12 06                  mov         ax,offset DGROUP:L$139 
+0275    E8 00 00                  call        puts_ 
+0278    B8 01 00                  mov         ax,0x0001 
+027B    E9 DA 00                  jmp         L$34 
+027E                          L$21:
+027E    B8 2D 06                  mov         ax,offset DGROUP:L$140 
+0281    E8 00 00                  call        puts_ 
+0284    B8 34 06                  mov         ax,offset DGROUP:L$141 
+0287    E8 00 00                  call        puts_ 
+028A    B8 00 00                  mov         ax,offset ___iob 
+028D    E8 00 00                  call        fgetc_ 
+0290    89 C6                     mov         si,ax 
+0292    3D 0A 00                  cmp         ax,0x000a 
+0295    74 06                     je          L$22 
+0297    B8 00 00                  mov         ax,offset ___iob 
+029A    E8 00 00                  call        fgetc_ 
+029D                          L$22:
+029D    89 F0                     mov         ax,si 
+029F    25 1F 00                  and         ax,0x001f 
+02A2    3D 0E 00                  cmp         ax,0x000e 
+02A5    74 1B                     je          L$25 
+02A7    BB 0F 00                  mov         bx,0x000f 
+02AA    BA 00 00                  mov         dx,offset _doc_files 
+02AD    8D 46 1A                  lea         ax,0x1a[bp] 
+02B0    E8 00 00                  call        copy_files_ 
+02B3    85 C0                     test        ax,ax 
+02B5    74 05                     je          L$23 
+02B7    B8 5E 06                  mov         ax,offset DGROUP:L$142 
+02BA    EB 03                     jmp         L$24 
+02BC                          L$23:
+02BC    B8 2D 06                  mov         ax,offset DGROUP:L$140 
+02BF                          L$24:
+02BF    E8 00 00                  call        puts_ 
+02C2                          L$25:
+02C2    B8 81 06                  mov         ax,offset DGROUP:L$143 
+02C5    E8 00 00                  call        puts_ 
+02C8    B8 00 00                  mov         ax,offset ___iob 
+02CB    E8 00 00                  call        fgetc_ 
+02CE    89 C6                     mov         si,ax 
+02D0    3D 0A 00                  cmp         ax,0x000a 
+02D3    74 06                     je          L$26 
+02D5    B8 00 00                  mov         ax,offset ___iob 
+02D8    E8 00 00                  call        fgetc_ 
+02DB                          L$26:
+02DB    89 F0                     mov         ax,si 
+02DD    30 E4                     xor         ah,ah 
+02DF    24 1F                     and         al,0x1f 
+02E1    3D 0E 00                  cmp         ax,0x000e 
+02E4    74 1F                     je          L$29 
+02E6    BB 23 00                  mov         bx,0x0023 
+02E9    BA 00 00                  mov         dx,offset _utilities 
+02EC    8D 46 1A                  lea         ax,0x1a[bp] 
+02EF    F7 16 00 00               not         word ptr _utilities_installed 
+02F3    E8 00 00                  call        copy_files_ 
+02F6    85 C0                     test        ax,ax 
+02F8    74 05                     je          L$27 
+02FA    B8 A7 06                  mov         ax,offset DGROUP:L$144 
+02FD    EB 03                     jmp         L$28 
+02FF                          L$27:
+02FF    B8 2D 06                  mov         ax,offset DGROUP:L$140 
+0302                          L$28:
+0302    E8 00 00                  call        puts_ 
+0305                          L$29:
+0305    B8 C6 06                  mov         ax,offset DGROUP:L$145 
+0308    E8 00 00                  call        puts_ 
+030B    B8 00 00                  mov         ax,offset ___iob 
+030E    E8 00 00                  call        fgetc_ 
+0311    89 C6                     mov         si,ax 
+0313    3D 0A 00                  cmp         ax,0x000a 
+0316    74 06                     je          L$30 
+0318    B8 00 00                  mov         ax,offset ___iob 
+031B    E8 00 00                  call        fgetc_ 
+031E                          L$30:
+031E    89 F0                     mov         ax,si 
+0320    30 E4                     xor         ah,ah 
+0322    24 1F                     and         al,0x1f 
+0324    3D 0E 00                  cmp         ax,0x000e 
+0327    74 15                     je          L$33 
+0329    8D 46 1A                  lea         ax,0x1a[bp] 
+032C    E8 00 00                  call        autoexec_append_ 
+032F    85 C0                     test        ax,ax 
+0331    74 05                     je          L$31 
+0333    B8 28 07                  mov         ax,offset DGROUP:L$146 
+0336    EB 03                     jmp         L$32 
+0338                          L$31:
+0338    B8 2E 07                  mov         ax,offset DGROUP:L$147 
+033B                          L$32:
+033B    E8 00 00                  call        puts_ 
+033E                          L$33:
+033E    8D 46 1A                  lea         ax,0x1a[bp] 
+0341    50                        push        ax 
+0342    B8 33 07                  mov         ax,offset DGROUP:L$148 
+0345    50                        push        ax 
+0346    8D 46 7E                  lea         ax,0x7e[bp] 
+0349    50                        push        ax 
+034A    E8 00 00                  call        sprintf_ 
+034D    83 C4 06                  add         sp,0x0006 
+0350    8D 46 7E                  lea         ax,0x7e[bp] 
+0353    E8 00 00                  call        puts_ 
+0356    31 C0                     xor         ax,ax 
+0358                          L$34:
+0358    8D A6 E2 00               lea         sp,0xe2[bp] 
+035C    5D                        pop         bp 
+035D    5F                        pop         di 
+035E    E9 A2 FD                  jmp         L$14 
+
+Routine Size: 422 bytes,    Routine Base: _TEXT + 01BB
+
+No disassembly errors
+
+Segment: CONST WORD USE16 00000775 bytes
+0000                          L$35:
+0000    4D 41 49 4E 2E 45 58 45 00                      MAIN.EXE.
+0009                          L$36:
+0009    41 53 43 53 46 58 2E 43 4F 4D 00                ASCSFX.COM.
+0014                          L$37:
+0014    53 43 45 44 49 54 4F 52 2E 43 4F 4D 00          SCEDITOR.COM.
+0021                          L$38:
+0021    43 4F 4E 46 49 47 2E 43 4F 4D 00                CONFIG.COM.
+002C                          L$39:
+002C    53 45 54 55 50 2E 49 4E 49 00                   SETUP.INI.
+0036                          L$40:
+0036    46 49 4C 45 41 53 53 43 2E 44 41 54 00          FILEASSC.DAT.
+0043                          L$41:
+0043    53 43 52 4E 53 56 52 53 5C 4D 41 54 52 49 58 2E SCRNSVRS\MATRIX.
+0053    43 4F 4D 00                                     COM.
+0057                          L$42:
+0057    53 43 52 4E 53 56 52 53 5C 56 47 41 53 54 41 52 SCRNSVRS\VGASTAR
+0067    53 2E 43 4F 4D 00                               S.COM.
+006D                          L$43:
+006D    53 43 52 4E 53 56 52 53 5C 43 47 41 53 54 41 52 SCRNSVRS\CGASTAR
+007D    53 2E 43 4F 4D 00                               S.COM.
+0083                          L$44:
+0083    4E 4F 52 4D 41 4C 2E 43 55 52 00                NORMAL.CUR.
+008E                          L$45:
+008E    48 4F 55 52 47 4C 41 53 2E 43 55 52 00          HOURGLAS.CUR.
+009B                          L$46:
+009B    46 4F 4E 54 53 5C 43 47 41 2E 46 4F 4E 00       FONTS\CGA.FON.
+00A9                          L$47:
+00A9    46 4F 4E 54 53 5C 43 47 41 4D 4F 4E 2E 46 4F 4E FONTS\CGAMON.FON
+00B9    00                                              .
+00BA                          L$48:
+00BA    46 4F 4E 54 53 5C 56 47 41 2E 46 4F 4E 00       FONTS\VGA.FON.
+00C8                          L$49:
+00C8    46 4F 4E 54 53 5C 56 47 41 4D 4F 4E 2E 46 4F 4E FONTS\VGAMON.FON
+00D8    00                                              .
+00D9                          L$50:
+00D9    49 43 4F 4E 53 5C 43 4C 4F 43 4B 2E 49 43 4F 00 ICONS\CLOCK.ICO.
+00E9                          L$51:
+00E9    49 43 4F 4E 53 5C 46 49 4C 45 4D 41 4E 2E 49 43 ICONS\FILEMAN.IC
+00F9    4F 00                                           O.
+00FB                          L$52:
+00FB    49 43 4F 4E 53 5C 41 53 43 53 46 58 2E 49 43 4F ICONS\ASCSFX.ICO
+010B    00                                              .
+010C                          L$53:
+010C    49 43 4F 4E 53 5C 43 4F 4D 4D 41 4E 44 2E 49 43 ICONS\COMMAND.IC
+011C    4F 00                                           O.
+011E                          L$54:
+011E    49 43 4F 4E 53 5C 43 50 41 4E 45 4C 2E 49 43 4F ICONS\CPANEL.ICO
+012E    00                                              .
+012F                          L$55:
+012F    49 43 4F 4E 53 5C 53 43 45 44 49 54 4F 52 2E 49 ICONS\SCEDITOR.I
+013F    43 4F 00                                        CO.
+0142                          L$56:
+0142    49 43 4F 4E 53 5C 57 4E 44 57 44 46 4C 54 2E 49 ICONS\WNDWDFLT.I
+0152    43 4F 00                                        CO.
+0155                          L$57:
+0155    49 43 4F 4E 53 5C 56 50 55 43 4F 4E 2E 49 43 4F ICONS\VPUCON.ICO
+0165    00                                              .
+0166                          L$58:
+0166    49 43 4F 4E 53 5C 52 55 4E 50 52 4D 50 54 2E 49 ICONS\RUNPRMPT.I
+0176    43 4F 00                                        CO.
+0179                          L$59:
+0179    49 43 4F 4E 53 5C 43 4F 4E 46 49 47 2E 49 43 4F ICONS\CONFIG.ICO
+0189    00                                              .
+018A                          L$60:
+018A    44 45 53 4B 54 4F 50 5C 43 4F 4D 4D 41 4E 44 2E DESKTOP\COMMAND.
+019A    4C 4E 4B 00                                     LNK.
+019E                          L$61:
+019E    44 4F 43 53 5C 41 53 43 53 46 58 2E 54 58 54 00 DOCS\ASCSFX.TXT.
+01AE                          L$62:
+01AE    44 4F 43 53 5C 43 4F 4E 46 49 47 2E 54 58 54 00 DOCS\CONFIG.TXT.
+01BE                          L$63:
+01BE    44 4F 43 53 5C 43 55 52 45 44 49 54 2E 54 58 54 DOCS\CUREDIT.TXT
+01CE    00                                              .
+01CF                          L$64:
+01CF    44 4F 43 53 5C 46 4F 4E 54 45 44 49 54 2E 54 58 DOCS\FONTEDIT.TX
+01DF    54 00                                           T.
+01E1                          L$65:
+01E1    44 4F 43 53 5C 49 43 4F 4E 45 44 49 54 2E 54 58 DOCS\ICONEDIT.TX
+01F1    54 00                                           T.
+01F3                          L$66:
+01F3    44 4F 43 53 5C 49 4E 53 54 52 4C 53 54 2E 54 58 DOCS\INSTRLST.TX
+0203    54 00                                           T.
+0205                          L$67:
+0205    44 4F 43 53 5C 4B 45 59 42 4F 41 52 44 2E 54 58 DOCS\KEYBOARD.TX
+0215    54 00                                           T.
+0217                          L$68:
+0217    44 4F 43 53 5C 4D 41 4E 55 41 4C 2E 54 58 54 00 DOCS\MANUAL.TXT.
+0227                          L$69:
+0227    44 4F 43 53 5C 52 45 41 44 4D 45 2E 54 58 54 00 DOCS\README.TXT.
+0237                          L$70:
+0237    44 4F 43 53 5C 53 43 45 44 49 54 4F 52 2E 54 58 DOCS\SCEDITOR.TX
+0247    54 00                                           T.
+0249                          L$71:
+0249    44 4F 43 53 5C 53 43 52 43 41 4C 4C 53 2E 54 58 DOCS\SCRCALLS.TX
+0259    54 00                                           T.
+025B                          L$72:
+025B    44 4F 43 53 5C 53 48 4F 52 54 43 55 54 2E 54 58 DOCS\SHORTCUT.TX
+026B    54 00                                           T.
+026D                          L$73:
+026D    44 4F 43 53 5C 53 49 47 4E 41 4C 53 2E 54 58 54 DOCS\SIGNALS.TXT
+027D    00                                              .
+027E                          L$74:
+027E    44 4F 43 53 5C 53 54 53 48 45 4C 4C 2E 54 58 54 DOCS\STSHELL.TXT
+028E    00                                              .
+028F                          L$75:
+028F    44 4F 43 53 5C 53 59 53 43 41 4C 4C 53 2E 54 58 DOCS\SYSCALLS.TX
+029F    54 00                                           T.
+02A1                          L$76:
+02A1    49 43 4F 4E 45 44 49 54 2E 43 4F 4D 00          ICONEDIT.COM.
+02AE                          L$77:
+02AE    46 4F 4E 54 45 44 49 54 2E 43 4F 4D 00          FONTEDIT.COM.
+02BB                          L$78:
+02BB    43 55 52 45 44 49 54 2E 43 4F 4D 00             CUREDIT.COM.
+02C7                          L$79:
+02C7    41 53 53 45 4D 42 4C 45 2E 45 58 45 00          ASSEMBLE.EXE.
+02D4                          L$80:
+02D4    32 58 50 4D 32 2E 45 58 45 00                   2XPM2.EXE.
+02DE                          L$81:
+02DE    54 45 58 54 45 44 49 54 2E 43 4F 4D 00          TEXTEDIT.COM.
+02EB                          L$82:
+02EB    44 45 53 4B 54 4F 50 5C 54 45 58 54 45 44 49 54 DESKTOP\TEXTEDIT
+02FB    2E 4C 4E 4B 00                                  .LNK.
+0300                          L$83:
+0300    53 54 53 48 45 4C 4C 2E 43 4F 4D 00             STSHELL.COM.
+030C                          L$84:
+030C    58 50 4D 56 49 45 57 2E 41 50 50 00             XPMVIEW.APP.
+0318                          L$85:
+0318    58 50 4D 56 49 45 57 2E 41 53 4D 00             XPMVIEW.ASM.
+0324                          L$86:
+0324    44 4F 53 48 2E 41 50 50 00                      DOSH.APP.
+032D                          L$87:
+032D    44 4F 53 48 2E 41 53 4D 00                      DOSH.ASM.
+0336                          L$88:
+0336    44 45 53 4B 54 4F 50 5C 43 4F 4E 53 4F 4C 45 2E DESKTOP\CONSOLE.
+0346    4C 4E 4B 00                                     LNK.
+034A                          L$89:
+034A    44 4F 53 48 5C 4C 53 00                         DOSH\LS.
+0352                          L$90:
+0352    4C 53 2E 41 53 4D 00                            LS.ASM.
+0359                          L$91:
+0359    44 4F 53 48 5C 43 41 54 00                      DOSH\CAT.
+0362                          L$92:
+0362    43 41 54 2E 41 53 4D 00                         CAT.ASM.
+036A                          L$93:
+036A    44 4F 53 48 5C 54 4F 4C 4F 57 45 52 00          DOSH\TOLOWER.
+0377                          L$94:
+0377    54 4F 4C 4F 57 45 52 2E 41 53 4D 00             TOLOWER.ASM.
+0383                          L$95:
+0383    41 4C 41 52 4D 2E 41 50 50 00                   ALARM.APP.
+038D                          L$96:
+038D    41 4C 41 52 4D 2E 41 53 4D 00                   ALARM.ASM.
+0397                          L$97:
+0397    44 4F 53 48 5C 42 45 4E 43 48 00                DOSH\BENCH.
+03A2                          L$98:
+03A2    42 45 4E 43 48 2E 41 53 4D 00                   BENCH.ASM.
+03AC                          L$99:
+03AC    44 4F 53 48 5C 45 43 48 4F 00                   DOSH\ECHO.
+03B6                          L$100:
+03B6    45 43 48 4F 2E 41 53 4D 00                      ECHO.ASM.
+03BF                          L$101:
+03BF    44 4F 53 48 5C 50 52 4F 43 49 4E 46 4F 00       DOSH\PROCINFO.
+03CD                          L$102:
+03CD    50 52 4F 43 49 4E 46 4F 2E 41 53 4D 00          PROCINFO.ASM.
+03DA                          L$103:
+03DA    44 4F 53 48 5C 4D 4F 52 45 00                   DOSH\MORE.
+03E4                          L$104:
+03E4    4D 4F 52 45 2E 41 53 4D 00                      MORE.ASM.
+03ED                          L$105:
+03ED    44 4F 53 48 5C 47 52 45 50 00                   DOSH\GREP.
+03F7                          L$106:
+03F7    47 52 45 50 2E 41 53 4D 00                      GREP.ASM.
+0400                          L$107:
+0400    4E 4F 54 45 50 41 44 2E 41 50 50 00             NOTEPAD.APP.
+040C                          L$108:
+040C    44 4F 53 48 5C 55 50 54 49 4D 45 00             DOSH\UPTIME.
+0418                          L$109:
+0418    44 4F 53 48 5C 4B 49 4C 4C 00                   DOSH\KILL.
+0422                          L$110:
+0422    44 4F 53 48 5C 55 4E 4C 4F 41 44 00             DOSH\UNLOAD.
+042E                          L$111:
+042E    53 43 52 4E 53 56 52 53 00                      SCRNSVRS.
+0437                          L$112:
+0437    46 4F 4E 54 53 00                               FONTS.
+043D                          L$113:
+043D    44 45 53 4B 54 4F 50 00                         DESKTOP.
+0445                          L$114:
+0445    49 43 4F 4E 53 00                               ICONS.
+044B                          L$115:
+044B    44 52 49 56 45 52 53 00                         DRIVERS.
+0453                          L$116:
+0453    53 54 41 52 54 55 50 00                         STARTUP.
+045B                          L$117:
+045B    44 4F 43 53 00                                  DOCS.
+0460                          L$118:
+0460    44 4F 53 48 00                                  DOSH.
+0465                          L$119:
+0465    72 62 00                                        rb.
+0468                          L$120:
+0468    77 62 00                                        wb.
+046B                          L$121:
+046B    25 73 5C 25 73 00                               %s\%s.
+0471                          L$122:
+0471    43 6F 70 79 69 6E 67 20 66 69 6C 65 20 25 73 0A Copying file %s.
+0481    00                                              .
+0482                          L$123:
+0482    43 72 65 61 74 69 6E 67 20 64 69 72 65 63 74 6F Creating directo
+0492    72 79 20 25 73 0A 00                            ry %s..
+0499                          L$124:
+0499    25 63 3A 5C 41 55 54 4F 45 58 45 43 2E 42 41 54 %c:\AUTOEXEC.BAT
+04A9    00                                              .
+04AA                          L$125:
+04AA    72 00                                           r.
+04AC                          L$126:
+04AC    46 61 69 6C 65 64 20 6F 70 65 6E 69 6E 67 20 25 Failed opening %
+04BC    73 2C 20 74 72 79 69 6E 67 20 43 3A 5C 41 55 54 s, trying C:\AUT
+04CC    4F 45 58 45 43 2E 42 41 54 0A 00                OEXEC.BAT..
+04D7                          L$127:
+04D7    43 3A 5C 41 55 54 4F 45 58 45 43 2E 42 41 54 00 C:\AUTOEXEC.BAT.
+04E7                          L$128:
+04E7    61 00                                           a.
+04E9                          L$129:
+04E9    53 45 54 20 50 41 54 48 3D 25 73 5C 44 4F 53 48 SET PATH=%s\DOSH
+04F9    3B 25 25 50 41 54 48 25 25 00                   ;%%PATH%%.
+0503                          L$130:
+0503    0A 43 44 20 25 73 0A 00                         .CD %s..
+050B                          L$131:
+050B    4D 41 49 4E 2E 45 58 45 0A 00                   MAIN.EXE..
+0515                          L$132:
+0515    57 65 6C 63 6F 6D 65 20 74 6F 20 6C 45 45 74 2F Welcome to lEEt/
+0525    4F 53 20 69 6E 73 74 61 6C 6C 65 72 21 00       OS installer!.
+0533                          L$133:
+0533    50 72 65 73 73 20 43 54 52 4C 2B 43 20 74 6F 20 Press CTRL+C to 
+0543    65 78 69 74 20 74 68 65 20 69 6E 73 74 61 6C 6C exit the install
+0553    65 72 20 77 69 74 68 6F 75 74 20 69 6E 73 74 61 er without insta
+0563    6C 6C 69 6E 67 20 6C 45 45 74 2F 4F 53 2E 00    lling lEEt/OS..
+0572                          L$134:
+0572    45 6E 74 65 72 20 66 75 6C 6C 20 70 61 74 68 20 Enter full path 
+0582    74 6F 20 69 6E 73 74 61 6C 6C 20 64 69 72 65 63 to install direc
+0592    74 6F 72 79 20 28 64 65 66 61 75 6C 74 3A 20 43 tory (default: C
+05A2    3A 5C 6C 65 65 74 6F 73 29 00                   :\leetos).
+05AC                          L$135:
+05AC    49 6E 73 74 61 6C 6C 69 6E 67 20 74 6F 20 25 73 Installing to %s
+05BC    0A 00                                           ..
+05BE                          L$136:
+05BE    43 72 65 61 74 69 6E 67 20 64 69 72 65 63 74 6F Creating directo
+05CE    72 69 65 73 00                                  ries.
+05D3                          L$137:
+05D3    45 72 72 6F 72 20 77 68 69 6C 65 20 63 72 65 61 Error while crea
+05E3    74 69 6E 67 20 64 69 72 65 63 74 6F 72 69 65 73 ting directories
+05F3    3A 20 25 73 00                                  : %s.
+05F8                          L$138:
+05F8    43 6F 70 79 69 6E 67 20 62 61 73 65 20 73 79 73 Copying base sys
+0608    74 65 6D 20 66 69 6C 65 73 00                   tem files.
+0612                          L$139:
+0612    45 72 72 6F 72 20 77 68 69 6C 65 20 63 6F 70 79 Error while copy
+0622    69 6E 67 20 66 69 6C 65 73 2E 00                ing files..
+062D                          L$140:
+062D    52 65 61 64 79 21 00                            Ready!.
+0634                          L$141:
+0634    44 6F 20 79 6F 75 20 77 61 6E 74 20 74 6F 20 69 Do you want to i
+0644    6E 73 74 61 6C 6C 20 64 6F 63 75 6D 65 6E 74 61 nstall documenta
+0654    74 69 6F 6E 3F 20 59 2F 6E 00                   tion? Y/n.
+065E                          L$142:
+065E    45 72 72 6F 72 20 77 68 69 6C 65 20 63 6F 70 79 Error while copy
+066E    69 6E 67 20 64 6F 63 75 6D 65 6E 74 61 74 69 6F ing documentatio
+067E    6E 2E 00                                        n..
+0681                          L$143:
+0681    44 6F 20 79 6F 75 20 77 61 6E 74 20 74 6F 20 69 Do you want to i
+0691    6E 73 74 61 6C 6C 20 75 74 69 6C 69 74 69 65 73 nstall utilities
+06A1    3F 20 59 2F 6E 00                               ? Y/n.
+06A7                          L$144:
+06A7    45 72 72 6F 72 20 77 68 69 6C 65 20 63 6F 70 79 Error while copy
+06B7    69 6E 67 20 75 74 69 6C 69 74 69 65 73 2E 00    ing utilities..
+06C6                          L$145:
+06C6    4D 61 6B 65 20 63 68 61 6E 67 65 73 20 74 6F 20 Make changes to 
+06D6    41 55 54 4F 45 58 45 43 2E 42 41 54 20 73 6F 20 AUTOEXEC.BAT so 
+06E6    74 68 61 74 20 6C 45 45 74 2F 4F 53 20 73 74 61 that lEEt/OS sta
+06F6    72 74 73 20 75 70 20 61 75 74 6F 6D 61 74 69 63 rts up automatic
+0706    61 6C 6C 79 20 77 68 65 6E 20 74 68 65 20 63 6F ally when the co
+0716    6D 70 75 74 65 72 20 62 6F 6F 74 73 3F 20 59 2F mputer boots? Y/
+0726    6E 00                                           n.
+0728                          L$146:
+0728    45 72 72 6F 72 00                               Error.
+072E                          L$147:
+072E    44 6F 6E 65 00                                  Done.
+0733                          L$148:
+0733    52 75 6E 20 25 73 5C 43 4F 4E 46 49 47 2E 43 4F Run %s\CONFIG.CO
+0743    4D 20 69 66 20 79 6F 75 20 65 78 70 65 72 69 65 M if you experie
+0753    6E 63 65 20 70 72 6F 62 6C 65 6D 73 20 77 69 74 nce problems wit
+0763    68 20 76 69 64 65 6F 20 73 65 74 74 69 6E 67 73 h video settings
+0773    2E 00                                           ..
+
+Segment: CONST2 WORD USE16 00000000 bytes
+
+Segment: _DATA WORD USE16 0000010E bytes
+0000                          _base_system_files:
+0000    00 00                                           DW	offset DGROUP:L$35
+0002    09 00                                           DW	offset DGROUP:L$36
+0004    14 00                                           DW	offset DGROUP:L$37
+0006    21 00                                           DW	offset DGROUP:L$38
+0008    2C 00                                           DW	offset DGROUP:L$39
+000A    36 00                                           DW	offset DGROUP:L$40
+000C    43 00                                           DW	offset DGROUP:L$41
+000E    57 00                                           DW	offset DGROUP:L$42
+0010    6D 00                                           DW	offset DGROUP:L$43
+0012    83 00                                           DW	offset DGROUP:L$44
+0014    8E 00                                           DW	offset DGROUP:L$45
+0016    9B 00                                           DW	offset DGROUP:L$46
+0018    A9 00                                           DW	offset DGROUP:L$47
+001A    BA 00                                           DW	offset DGROUP:L$48
+001C    C8 00                                           DW	offset DGROUP:L$49
+001E    D9 00                                           DW	offset DGROUP:L$50
+0020    E9 00                                           DW	offset DGROUP:L$51
+0022    FB 00                                           DW	offset DGROUP:L$52
+0024    0C 01                                           DW	offset DGROUP:L$53
+0026    1E 01                                           DW	offset DGROUP:L$54
+0028    2F 01                                           DW	offset DGROUP:L$55
+002A    42 01                                           DW	offset DGROUP:L$56
+002C    55 01                                           DW	offset DGROUP:L$57
+002E    66 01                                           DW	offset DGROUP:L$58
+0030    79 01                                           DW	offset DGROUP:L$59
+0032    8A 01                                           DW	offset DGROUP:L$60
+0034                          _doc_files:
+0034    9E 01                                           DW	offset DGROUP:L$61
+0036    AE 01                                           DW	offset DGROUP:L$62
+0038    BE 01                                           DW	offset DGROUP:L$63
+003A    CF 01                                           DW	offset DGROUP:L$64
+003C    E1 01                                           DW	offset DGROUP:L$65
+003E    F3 01                                           DW	offset DGROUP:L$66
+0040    05 02                                           DW	offset DGROUP:L$67
+0042    17 02                                           DW	offset DGROUP:L$68
+0044    27 02                                           DW	offset DGROUP:L$69
+0046    37 02                                           DW	offset DGROUP:L$70
+0048    49 02                                           DW	offset DGROUP:L$71
+004A    5B 02                                           DW	offset DGROUP:L$72
+004C    6D 02                                           DW	offset DGROUP:L$73
+004E    7E 02                                           DW	offset DGROUP:L$74
+0050    8F 02                                           DW	offset DGROUP:L$75
+0052                          _utilities:
+0052    A1 02                                           DW	offset DGROUP:L$76
+0054    AE 02                                           DW	offset DGROUP:L$77
+0056    BB 02                                           DW	offset DGROUP:L$78
+0058    C7 02                                           DW	offset DGROUP:L$79
+005A    D4 02                                           DW	offset DGROUP:L$80
+005C    DE 02                                           DW	offset DGROUP:L$81
+005E    EB 02                                           DW	offset DGROUP:L$82
+0060    00 03                                           DW	offset DGROUP:L$83
+0062    0C 03                                           DW	offset DGROUP:L$84
+0064    18 03                                           DW	offset DGROUP:L$85
+0066    24 03                                           DW	offset DGROUP:L$86
+0068    2D 03                                           DW	offset DGROUP:L$87
+006A    36 03                                           DW	offset DGROUP:L$88
+006C    4A 03                                           DW	offset DGROUP:L$89
+006E    52 03                                           DW	offset DGROUP:L$90
+0070    59 03                                           DW	offset DGROUP:L$91
+0072    62 03                                           DW	offset DGROUP:L$92
+0074    6A 03                                           DW	offset DGROUP:L$93
+0076    77 03                                           DW	offset DGROUP:L$94
+0078    83 03                                           DW	offset DGROUP:L$95
+007A    8D 03                                           DW	offset DGROUP:L$96
+007C    97 03                                           DW	offset DGROUP:L$97
+007E    A2 03                                           DW	offset DGROUP:L$98
+0080    AC 03                                           DW	offset DGROUP:L$99
+0082    B6 03                                           DW	offset DGROUP:L$100
+0084    BF 03                                           DW	offset DGROUP:L$101
+0086    CD 03                                           DW	offset DGROUP:L$102
+0088    DA 03                                           DW	offset DGROUP:L$103
+008A    E4 03                                           DW	offset DGROUP:L$104
+008C    ED 03                                           DW	offset DGROUP:L$105
+008E    F7 03                                           DW	offset DGROUP:L$106
+0090    00 04                                           DW	offset DGROUP:L$107
+0092    0C 04                                           DW	offset DGROUP:L$108
+0094    18 04                                           DW	offset DGROUP:L$109
+0096    22 04                                           DW	offset DGROUP:L$110
+0098                          _dir_list:
+0098    2E 04                                           DW	offset DGROUP:L$111
+009A    37 04                                           DW	offset DGROUP:L$112
+009C    3D 04                                           DW	offset DGROUP:L$113
+009E    45 04                                           DW	offset DGROUP:L$114
+00A0    4B 04                                           DW	offset DGROUP:L$115
+00A2    53 04                                           DW	offset DGROUP:L$116
+00A4    5B 04                                           DW	offset DGROUP:L$117
+00A6    60 04                                           DW	offset DGROUP:L$118
+00A8                          _utilities_installed:
+00A8    00 00                                           ..
+00AA                          L$149:
+00AA    43 3A 5C 4C 45 45 54 4F 53 00 00 00 00 00 00 00 C:\LEETOS.......
+00BA    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+00CA    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+00DA    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+00EA    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+00FA    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ................
+010A    00 00 00 00                                     ....
+

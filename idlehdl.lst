@@ -1,4 +1,4 @@
-Module: D:\LEETSRC\483\int28hdl\idlehdl.asm
+Module: D:\LEETSRC\490\int28hdl\idlehdl.asm
 GROUP: 'DGROUP' _DATA
 
 Segment: idlehdl_TEXT WORD USE16 00000000 bytes
@@ -9,90 +9,113 @@ No disassembly errors
 
 Segment: _DATA WORD USE16 00000000 bytes
 
-Segment: _TEXT BYTE USE16 0000009C bytes
+Segment: _TEXT BYTE USE16 000000C3 bytes
 0000                          _diskio_in_progress:
 0000    00                                              .
 0001                          L$1:
-0001    00 00                                           ..
-0003                          L$2:
-0003    00 00                                           ..
-0005                          L$3:
-0005    00 00                                           ..
-0007                          L$4:
-0007    00 00                                           ..
-0009                          L$5:
-0009    00 00                                           ..
-000B                          L$6:
-000B    00 00                                           ..
+0001    00                                              .
+0002                          L$2:
+0002    00 00                                           ..
+0004                          L$3:
+0004    00 00                                           ..
+0006                          L$4:
+0006    00 00                                           ..
+0008                          L$5:
+0008    00 00                                           ..
+000A                          L$6:
+000A    00 00                                           ..
 
-Routine Size: 13 bytes,    Routine Base: _TEXT + 0000
+Routine Size: 12 bytes,    Routine Base: _TEXT + 0000
 
-000D                          dosidle_handler_:
-000D    2E 8C 16 09 00            mov         word ptr cs:L$5,ss 
-0012    2E 89 26 0B 00            mov         word ptr cs:L$6,sp 
-0017    2E 8E 16 01 00            mov         ss,word ptr cs:L$1 
-001C    2E 8B 26 03 00            mov         sp,word ptr cs:L$2 
-0021    83 EC 10                  sub         sp,0x0010 
-0024    2E C6 06 00 00 01         mov         byte ptr cs:_diskio_in_progress,0x01 
-002A    50                        push        ax 
-002B    53                        push        bx 
-002C    51                        push        cx 
-002D    52                        push        dx 
-002E    57                        push        di 
-002F    56                        push        si 
-0030    06                        push        es 
-0031    1E                        push        ds 
-0032    55                        push        bp 
+000C                          save_stack_seg_:
+000C    2E 8C 16 02 00            mov         word ptr cs:L$2,ss 
+0011    CB                        retf        
+
+Routine Size: 6 bytes,    Routine Base: _TEXT + 000C
+
+0012                          dosidle_handler_:
+0012    2E 8C 16 08 00            mov         word ptr cs:L$5,ss 
+0017    2E 89 26 0A 00            mov         word ptr cs:L$6,sp 
+001C    FA                        cli         
+001D    2E 8E 16 02 00            mov         ss,word ptr cs:L$2 
+0022    2E 8B 26 04 00            mov         sp,word ptr cs:L$3 
+0027    83 EC 20                  sub         sp,0x0020 
+002A    FB                        sti         
+002B    2E FE 06 00 00            inc         byte ptr cs:_diskio_in_progress 
+0030    50                        push        ax 
+0031    06                        push        es 
+0032    1E                        push        ds 
 0033    9A 00 00 00 00            call        int28h_hdl_ 
-0038    5D                        pop         bp 
-0039    1F                        pop         ds 
-003A    07                        pop         es 
-003B    5E                        pop         si 
-003C    5F                        pop         di 
-003D    5A                        pop         dx 
-003E    59                        pop         cx 
-003F    5B                        pop         bx 
-0040    58                        pop         ax 
-0041    2E C6 06 00 00 00         mov         byte ptr cs:_diskio_in_progress,0x00 
-0047    2E 8E 16 09 00            mov         ss,word ptr cs:L$5 
-004C    2E 8B 26 0B 00            mov         sp,word ptr cs:L$6 
-0051    EA                                              .
-0052                          _old_dosidle_handler:
-0052    00 00 00 00                                     ....
+0038    1F                        pop         ds 
+0039    07                        pop         es 
+003A    58                        pop         ax 
+003B    2E FE 0E 00 00            dec         byte ptr cs:_diskio_in_progress 
+0040    2E 8E 16 08 00            mov         ss,word ptr cs:L$5 
+0045    2E 8B 26 0A 00            mov         sp,word ptr cs:L$6 
+004A    EA                                              .
+004B                          _old_dosidle_handler:
+004B    00 00 00 00                                     ....
 
-Routine Size: 73 bytes,    Routine Base: _TEXT + 000D
+Routine Size: 61 bytes,    Routine Base: _TEXT + 0012
 
-0056                          int21wrp_:
-0056    2E 8C 16 05 00            mov         word ptr cs:L$3,ss 
-005B    2E 89 26 07 00            mov         word ptr cs:L$4,sp 
-0060    9C                        pushf       
-0061    2E F6 06 00 00 FF         test        byte ptr cs:_diskio_in_progress,0xff 
-0067    75 0C                     jne         L$7 
-0069    2E 8C 16 01 00            mov         word ptr cs:L$1,ss 
-006E    2E 89 26 03 00            mov         word ptr cs:L$2,sp 
-0073    EB 0A                     jmp         L$8 
-0075                          L$7:
-0075    2E 8E 16 09 00            mov         ss,word ptr cs:L$5 
-007A    2E 8B 26 0B 00            mov         sp,word ptr cs:L$6 
-007F                          L$8:
-007F    9D                        popf        
-0080    9C                        pushf       
-0081    9A                                              .
-0082                          _old_int21hdl:
-0082    00 00 00 00                                     ....
-0086    2E 8E 16 05 00            mov         ss,word ptr cs:L$3 
-008B    2E 8B 26 07 00            mov         sp,word ptr cs:L$4 
-0090    55                        push        bp 
-0091    50                        push        ax 
-0092    8B EC                     mov         bp,sp 
-0094    9C                        pushf       
-0095    58                        pop         ax 
-0096    89 46 08                  mov         word ptr 0x8[bp],ax 
-0099    58                        pop         ax 
-009A    5D                        pop         bp 
-009B    CF                        iret        
+004F                          int21wrp_:
+004F    55                        push        bp 
+0050    87 E5                     xchg        bp,sp 
+0052    8B 66 06                  mov         sp,word ptr 0x6[bp] 
+0055    81 E4 FF FD               and         sp,0xfdff 
+0059    87 EC                     xchg        sp,bp 
+005B    55                        push        bp 
+005C    9D                        popf        
+005D    FB                        sti         
+005E    5D                        pop         bp 
+005F    9C                        pushf       
+0060    2E F6 06 00 00 FF         test        byte ptr cs:_diskio_in_progress,0xff 
+0066    75 13                     jne         L$8 
+0068    2E F6 06 01 00 FF         test        byte ptr cs:L$1,0xff 
+006E    74 03                     je          L$7 
+0070    9D                        popf        
+0071    EB 18                     jmp         L$9 
+0073                          L$7:
+0073    9D                        popf        
+0074    2E 89 26 04 00            mov         word ptr cs:L$3,sp 
+0079    EB 10                     jmp         L$9 
+007B                          L$8:
+007B    9D                        popf        
+007C    2E 89 26 06 00            mov         word ptr cs:L$4,sp 
+0081    2E 8E 16 08 00            mov         ss,word ptr cs:L$5 
+0086    2E 8B 26 0A 00            mov         sp,word ptr cs:L$6 
+008B                          L$9:
+008B    9C                        pushf       
+008C    2E FE 06 01 00            inc         byte ptr cs:L$1 
+0091    9D                        popf        
+0092    9C                        pushf       
+0093    FA                        cli         
+0094    9A                                              .
+0095                          _old_int21hdl:
+0095    00 00 00 00                                     ....
+0099    9C                        pushf       
+009A    2E FE 0E 01 00            dec         byte ptr cs:L$1 
+009F    2E F6 06 00 00 FF         test        byte ptr cs:_diskio_in_progress,0xff 
+00A5    74 0D                     je          L$10 
+00A7    9D                        popf        
+00A8    2E 8E 16 02 00            mov         ss,word ptr cs:L$2 
+00AD    2E 8B 26 06 00            mov         sp,word ptr cs:L$4 
+00B2    EB 01                     jmp         L$11 
+00B4                          L$10:
+00B4    9D                        popf        
+00B5                          L$11:
+00B5    55                        push        bp 
+00B6    9C                        pushf       
+00B7    5D                        pop         bp 
+00B8    FA                        cli         
+00B9    87 E5                     xchg        bp,sp 
+00BB    89 66 06                  mov         word ptr 0x6[bp],sp 
+00BE    8B E5                     mov         sp,bp 
+00C0    FB                        sti         
+00C1    5D                        pop         bp 
+00C2    CF                        iret        
 
-Routine Size: 70 bytes,    Routine Base: _TEXT + 0056
+Routine Size: 116 bytes,    Routine Base: _TEXT + 004F
 
 No disassembly errors
 

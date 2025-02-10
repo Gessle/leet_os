@@ -124,15 +124,16 @@ static struct return_string *build_instr(char *str)
   unsigned char wreg = 0;
   unsigned char check_imm = 0;
   unsigned temp;
+  const unsigned instr_count = sizeof(INSTR)/sizeof(char*);
+  struct symbol *symptr;
 
-  do
+  for(n=instr_count;n--;)
   {
     if(!comp_str(INSTR[n], str))
       break;
   }
-  while(INSTR[++n]);
 
-  if(!INSTR[n])
+  if(n == 0xFF)
   {
     sprintf(message, "Unknown instruction in line %u: %s\n", line_num, str);
     putstr(message);
@@ -167,6 +168,12 @@ static struct return_string *build_instr(char *str)
     if(instr_in_array(n, OPERIMM_INSTR))
       check_imm = 1;
   }
+  else if(instr_in_array(n, TBYTE_INSTR))
+  {
+    b=3;
+    if(instr_in_array(n, OPERIMM_INSTR))
+      check_imm = 1;
+  }
   else if(instr_in_array(n, SWORD_INSTR))
     w=1;
   else if(instr_in_array(n, DWORD_INSTR))
@@ -197,6 +204,32 @@ static struct return_string *build_instr(char *str)
 
   while(b--)
   {
+    if(check_imm)
+    {
+      if(*str == '$' || *str == ',') // variable from data segment
+      {
+        memmove(&retval->str[1], &retval->str[0], sizeof(retval->str)-1);
+        n++;
+        if(*str == '$')
+        {
+          shortp = (unsigned short*)&retval->str[n];
+          retval->str[0] = 0x40;
+          str++;
+          symptr = get_symbol_struct(str, 0);
+          *shortp = symptr->address;
+          if(symptr->type & 0x04)
+            retval->str[0] |= 0x80;
+          n += 2;
+        }
+        else // word from stack
+        {
+          retval->str[0] = 0x80;
+          str++;
+          retval->str[n++] = parse_wide_register(str);
+        }
+        goto imm_ready;
+      }
+    }
     if(detect_number(str) || *str == '\'')
     {
 //      temp = parse_number(str);
